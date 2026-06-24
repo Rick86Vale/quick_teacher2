@@ -1,0 +1,30 @@
+<div class="sidebar-menu">
+    <h3>Quick_Teacher2</h3>
+    
+    {% if is_admin %}
+        <p>Menu Administrador</p>
+        <nav><ul><li><a href="/admin/">Painel de Controle</a></li></ul></nav>
+
+    {% elif is_professor %}
+        <nav>
+            <ul>
+                <li><strong>Disciplinas</strong><ul><li><a href="#">Minhas disciplinas</a></li></ul></li>
+                <li><strong>Aulas</strong><ul><li><a href="#">Listar aulas</a></li><li><a href="#">Criar aula</a></li></ul></li>
+            </ul>
+        </nav>
+
+    {% elif is_aluno %}
+        <nav>
+            <ul><li><a href="#">Minhas Aulas</a></li></ul>
+        </nav>
+    {% endif %}
+
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" style="background:none; border:none; color:white; cursor:pointer; font-weight:bold;">
+                Sair
+            </button>
+        </form>
+    </div>
+</div>

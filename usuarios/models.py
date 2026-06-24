@@ -5,21 +5,20 @@ from django.db import models
 
 class CustomUser(AbstractUser):
     """
-    Modelo de usuário customizado estendendo AbstractUser.
+    Modelo de usuário customizado.
     """
-    # 1. Definimos as opções de papel (roles) do usuário
-    TIPOS_USUARIO = (
-        ('ALUNO', 'Aluno'),
-        ('PROFESSOR', 'Professor'),
+    TIPO_USUARIO_CHOICES = (
+        ('ADMIN', 'Administrador'),      # Para quem cuida do sistema
+        ('PROFESSOR', 'Professor'),      # Para quem cria aulas/conteúdo
+        ('ALUNO', 'Aluno'),              # Para quem consome aulas
     )
 
-    # 2. Adicionamos o campo para salvar essa escolha
     tipo_usuario = models.CharField(
-        max_length=10, 
-        choices=TIPOS_USUARIO, 
+        max_length=20, 
+        choices=TIPO_USUARIO_CHOICES, 
         default='ALUNO',
         verbose_name="Tipo de Usuário"
     )
 
     def __str__(self):
-        return f"{self.username} ({self.tipo_usuario})"
+        return f"{self.username} - {self.get_tipo_usuario_display()}"

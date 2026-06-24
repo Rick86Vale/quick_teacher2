@@ -1,0 +1,40 @@
+/* Path: static/css/style.css */
+
+:root {
+    --primary: #B8B68F;    /* Verde oliva suave */
+    --light-bg: #EBE6D2;   /* Creme claro */
+    --neutral: #DBD3C6;    /* Cinza bege */
+    --accent: #DECCA6;     /* Bege dourado */
+    --text-muted: #D0C0A7; /* Areia */
+    
+    /* Adaptando o Dashboard */
+    --sidebar-bg: #B8B68F; /* Usando o verde oliva na lateral */
+    --content-bg: #EBE6D2; /* Usando o creme no fundo */
+    --text-main: #5D5A46;  /* Um tom mais escuro do verde oliva para ler melhor */
+}
+
+/* Aplicando as variáveis */
+.sidebar {
+    background-color: var(--sidebar-bg);
+    color: #ffffff;
+}
+
+.content {
+    background-color: var(--content-bg);
+    color: var(--text-main);
+}
+
+.top-bar {
+    background: #ffffff;
+    border-left: 5px solid var(--primary); /* Detalhe da paleta */
+}
+
+/* Ajuste fino dos links da sidebar */
+.sidebar a {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.sidebar a:hover {
+    color: white;
+    background-color: rgba(0,0,0,0.1);
+}

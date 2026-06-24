@@ -1,38 +1,26 @@
-<!-- templates/base.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Quick_Teacher2</title>
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">
+    <title>Quick_Teacher2 | Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body>
-    <header>
-        <h1>Bem-vindo ao Quick_Teacher2</h1>
-        
-        {% if user.is_authenticated %}
-            <nav>
-                <span>Logado como: <strong>{{ user.first_name }}</strong></span>
-                
-                {% if user.tipo_usuario == 'PROFESSOR' %}
-                    <span style="background-color: #dc3545; color: white; padding: 2px 8px; border-radius: 4px;">Professor</span>
-                {% else %}
-                    <span style="background-color: #28a745; color: white; padding: 2px 8px; border-radius: 4px;">Aluno</span>
-                {% endif %}
-                
-                <form action="{% url 'logout' %}" method="post" style="display:inline;">
-    {% csrf_token %}
-    <button type="submit" style="background:none; border:none; color:blue; cursor:pointer; text-decoration:underline;">
-        Sair
-    </button>
-</form>
-            </nav>
-        {% endif %}
-    </header>
+<body class="dashboard-layout">
+    
+    <aside class="sidebar">
+        {% include 'partials/sidebar.html' %}
+    </aside>
 
-    <main>
-        {% block content %}
-        {% endblock %}
+    <main class="content">
+        <header class="top-bar">
+            <h1>Olá, {{ user.first_name }}</h1>
+        </header>
+        
+        <div class="main-content">
+            {% block content %}
+            {% endblock %}
+        </div>
     </main>
 </body>
 </html>
