@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Cadastro Realizado com Sucesso!</h2>
+    <p>Olá, {{ aluno.first_name }} {{ aluno.last_name }}.</p>
+    <p>Seu cadastro foi concluído com êxito.</p>
+    
+    <div style="border: 1px solid #ccc; padding: 15px; background-color: #f9f9f9;">
+        <h3>Sua Matrícula: <strong>{{ aluno.username }}</strong></h3>
+    </div>
+    
+    <p><a href="{% url 'login' %}">Clique aqui para fazer o login</a></p>
+{% endblock %}

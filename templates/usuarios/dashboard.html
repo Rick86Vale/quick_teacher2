@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Bem-vindo, {{ user.first_name }}!</h2>
+    <p>Sua matrícula: <strong>{{ user.username }}</strong></p>
+
+    <hr>
+    <h3>Conteúdo Acadêmico</h3>
+
+    {% for area in areas %}
+        <h4>{{ area.nome }}</h4>
+        <ul>
+            {% for disciplina in area.disciplinas.all %}
+                <li>{{ disciplina.nome }}</li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+
+    {% if orfas %}
+        <h4>Disciplinas Gerais</h4>
+        <ul>
+            {% for disciplina in orfas %}
+                <li>{{ disciplina.nome }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

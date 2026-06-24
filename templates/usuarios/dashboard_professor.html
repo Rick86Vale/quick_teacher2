@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Painel do Professor</h2>
+    <p>Bem-vindo, Professor {{ user.first_name }}.</p>
+    
+    <div class="professor-actions">
+        <h3>Gerenciar Conteúdo</h3>
+        <a href="{% url 'admin:index' %}">Acessar Painel Administrativo</a>
+    </div>
+{% endblock %}
