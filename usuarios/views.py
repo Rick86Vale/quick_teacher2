@@ -6,11 +6,11 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from django.views.generic.base import TemplateView
-from .forms import AlunoRegistrationForm
+from .forms import AlunoRegistrationForm, ProfessorRegistrationForm # Importando os dois
 from .models import CustomUser
 from academico.models import AreaConhecimento, Disciplina
 
-# 1. View de Registro
+# 1. Registro de Aluno
 class AlunoRegisterView(CreateView):
     form_class = AlunoRegistrationForm
     template_name = 'usuarios/registro.html'
@@ -20,7 +20,13 @@ class AlunoRegisterView(CreateView):
         self.request.session['novo_aluno_id'] = form.save().id
         return super().form_valid(form)
 
-# 2. View de Sucesso
+# 2. Registro de Professor
+class ProfessorRegisterView(CreateView):
+    form_class = ProfessorRegistrationForm
+    template_name = 'usuarios/registro_professor.html'
+    success_url = reverse_lazy('login')
+
+# 3. View de Sucesso
 class RegistroSucessoView(TemplateView):
     template_name = 'usuarios/registro_sucesso.html'
 
@@ -30,7 +36,7 @@ class RegistroSucessoView(TemplateView):
         context['aluno'] = CustomUser.objects.get(id=aluno_id)
         return context
 
-# 3. View de Login Customizada (Redirecionamento Inteligente)
+# 4. Login Customizado
 class CustomLoginView(LoginView):
     template_name = 'usuarios/login.html'
 
@@ -39,14 +45,13 @@ class CustomLoginView(LoginView):
             return reverse_lazy('dashboard_professor')
         return reverse_lazy('dashboard')
 
-# 4. Verificadores de Perfil
+# 5. Dashboards e Segurança
 def eh_aluno(user):
     return user.is_authenticated and user.tipo_usuario == 'ALUNO'
 
 def eh_professor(user):
     return user.is_authenticated and user.tipo_usuario == 'PROFESSOR'
 
-# 5. Dashboards
 @user_passes_test(eh_aluno, login_url='login')
 def dashboard_aluno(request):
     areas = AreaConhecimento.objects.all()
