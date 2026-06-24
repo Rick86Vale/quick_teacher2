@@ -1,3 +1,7 @@
-from django.contrib import admin
+# Path: academico/admin.py
 
-# Register your models here.
+from django.contrib import admin
+from .models import AreaConhecimento, Disciplina
+
+admin.site.register(AreaConhecimento)
+admin.site.register(Disciplina)
