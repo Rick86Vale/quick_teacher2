@@ -1,29 +1,17 @@
-{% extends 'base.html' %}
+<h1>Catálogo de Disciplinas</h1>
 
-{% block content %}
-    <h2>Estrutura Acadêmica</h2>
+{% for area in areas %}
+    <h2>{{ area.nome }}</h2>
+    <ul>
+        {% for disciplina in area.disciplinas.all %}
+            <li>{{ disciplina.codigo }} - {{ disciplina.nome }} (Prof. {{ disciplina.professor.first_name }})</li>
+        {% endfor %}
+    </ul>
+{% endfor %}
 
-    {% for area in areas %}
-        <div class="area-container">
-            <h3>{{ area.nome }}</h3>
-            <ul>
-                {% for disciplina in area.disciplinas.all %}
-                    <li>{{ disciplina.nome }}</li>
-                {% empty %}
-                    <li>Nenhuma disciplina nesta área.</li>
-                {% endfor %}
-            </ul>
-        </div>
+<h3>Disciplinas sem área definida:</h3>
+<ul>
+    {% for disciplina in orfas %}
+        <li>{{ disciplina.codigo }} - {{ disciplina.nome }}</li>
     {% endfor %}
-
-    {% if orfas %}
-        <div class="orfas-container">
-            <h3>Disciplinas Gerais (Sem Área)</h3>
-            <ul>
-                {% for disciplina in orfas %}
-                    <li>{{ disciplina.nome }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
-{% endblock %}
+</ul>

@@ -1,0 +1,28 @@
+    {% extends 'base.html' %}
+
+{% block content %}
+<div class="header-content" style="margin-bottom: 30px;">
+    <h1>Minhas Disciplinas</h1>
+    <p>Gerencie o conteúdo das suas aulas abaixo.</p>
+</div>
+
+<div class="disciplinas-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+    {% for disciplina in disciplinas %}
+    <div class="card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 5px solid var(--primary);">
+        <h3>{{ disciplina.nome }}</h3>
+        <p><strong>Código:</strong> {{ disciplina.codigo }}</p>
+        <p><strong>Área:</strong> {{ disciplina.area.nome|default:"Não definida" }}</p>
+        <p><strong>Total de aulas:</strong> {{ disciplina.aulas.count }}</p>
+        
+        <div style="margin-top: 15px;">
+            <a href="{% url 'gerenciar_aulas' disciplina.id %}" 
+            style="background: var(--primary); color: white; padding: 8px 12px; border-radius: 4px; text-decoration: none;">
+            Gerenciar Aulas
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <p>Você ainda não possui disciplinas cadastradas.</p>
+    {% endfor %}
+</div>
+{% endblock %}

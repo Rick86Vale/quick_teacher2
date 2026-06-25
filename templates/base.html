@@ -1,26 +1,25 @@
+<!--Path: templates/base.html -->
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quick_Teacher2 | Dashboard</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body class="dashboard-layout">
-    
-    <aside class="sidebar">
-        {% include 'partials/sidebar.html' %}
-    </aside>
+<body>
 
-    <main class="content">
-        <header class="top-bar">
-            <h1>Olá, {{ user.first_name }}</h1>
-        </header>
-        
-        <div class="main-content">
-            {% block content %}
-            {% endblock %}
-        </div>
-    </main>
+    <div class="wrapper">
+        <aside class="sidebar">
+            {% include 'partials/sidebar.html' %}
+        </aside>
+
+        <main class="content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
 </body>
 </html>

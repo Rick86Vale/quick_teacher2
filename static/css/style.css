@@ -1,40 +1,88 @@
 /* Path: static/css/style.css */
 
+/* 1. Variáveis Globais (Paleta de Cores) */
 :root {
-    --primary: #B8B68F;    /* Verde oliva suave */
-    --light-bg: #EBE6D2;   /* Creme claro */
-    --neutral: #DBD3C6;    /* Cinza bege */
-    --accent: #DECCA6;     /* Bege dourado */
-    --text-muted: #D0C0A7; /* Areia */
-    
-    /* Adaptando o Dashboard */
-    --sidebar-bg: #B8B68F; /* Usando o verde oliva na lateral */
-    --content-bg: #EBE6D2; /* Usando o creme no fundo */
-    --text-main: #5D5A46;  /* Um tom mais escuro do verde oliva para ler melhor */
+    --primary: #B8B68F;
+    --light-bg: #EBE6D2;
+    --neutral: #DBD3C6;
+    --accent: #DECCA6;
+    --text-muted: #D0C0A7;
+    --sidebar-bg: #B8B68F;
+    --content-bg: #EBE6D2;
+    --text-main: #5D5A46;
 }
 
-/* Aplicando as variáveis */
+/* 2. Estrutura de Layout (Base do Dashboard) */
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
 .sidebar {
+    width: 250px;
+    flex-shrink: 0;
     background-color: var(--sidebar-bg);
     color: #ffffff;
+    padding: 20px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
 }
 
 .content {
+    flex-grow: 1;
+    padding: 40px;
     background-color: var(--content-bg);
     color: var(--text-main);
 }
 
-.top-bar {
-    background: #ffffff;
-    border-left: 5px solid var(--primary); /* Detalhe da paleta */
-}
-
-/* Ajuste fino dos links da sidebar */
+/* 3. Componentes de Navegação */
 .sidebar a {
     color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    display: block;
+    padding: 8px 0;
 }
 
 .sidebar a:hover {
     color: white;
     background-color: rgba(0,0,0,0.1);
+    padding-left: 5px;
+}
+
+.top-bar {
+    background: #ffffff;
+    border-left: 5px solid var(--primary);
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+/* 4. Cartões (Cards) e Elementos de Conteúdo */
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--neutral);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+}
+
+/* 5. Botões e Ações */
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    transition: filter 0.2s;
+}
+
+.btn-primary:hover {
+    filter: brightness(90%);
 }
