@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Criar Nova Turma</h1>
+<form method="post" style="background: white; padding: 20px; border-radius: 8px;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn-primary">Criar Turma</button>
+</form>
+{% endblock %}

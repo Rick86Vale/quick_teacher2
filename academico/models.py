@@ -4,16 +4,28 @@ import datetime
 from django.db import models
 from usuarios.models import CustomUser
 
-# 1. Área de Conhecimento: Define grandes temas para categorizar disciplinas
+# 1. Instituição: A raiz do sistema
+class Instituicao(models.Model):
+    nome = models.CharField(max_length=200, verbose_name="Nome da Instituição")
+    professor = models.ForeignKey(
+        CustomUser, 
+        on_delete=models.CASCADE, 
+        limit_choices_to={'tipo_usuario': 'PROFESSOR'},
+        verbose_name="Professor Responsável"
+    )
+
+    def __str__(self):
+        return self.nome
+
+# 2. Área de Conhecimento
 class AreaConhecimento(models.Model):
     nome = models.CharField(max_length=100, unique=True, verbose_name="Área do Conhecimento")
 
     def __str__(self):
         return self.nome
 
-# 2. Disciplina: Contém o conteúdo e está vinculada a uma área e a um professor responsável
+# 3. Disciplina
 class Disciplina(models.Model):
-    # O campo 'codigo' agora é gerado automaticamente e opcional na edição manual
     codigo = models.CharField(
         max_length=20, 
         unique=True, 
@@ -38,31 +50,39 @@ class Disciplina(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        # Gera o código automaticamente se ainda não existir
         if not self.codigo:
             ano = datetime.datetime.now().year
-            # Pega as primeiras letras de cada palavra (até 3 palavras)
             palavras = self.nome.split()
             prefixo = "".join([p[0].upper() for p in palavras[:3]])
-            
-            # Busca a última disciplina que começa com esse prefixo no ano atual
             ultimo = Disciplina.objects.filter(codigo__startswith=f"{prefixo}{ano}").last()
-            
-            if ultimo:
-                # Extrai os 3 últimos dígitos e incrementa
-                sequencial = int(ultimo.codigo[-3:]) + 1
-            else:
-                sequencial = 1
-            
-            # Formata: ABC2026001
+            sequencial = int(ultimo.codigo[-3:]) + 1 if ultimo else 1
             self.codigo = f"{prefixo}{ano}{sequencial:03d}"
-            
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.codigo} - {self.nome}"
 
-# 3. Aula: A unidade fundamental de conteúdo vinculada a uma disciplina específica
+# 4. Turma: Vinculada à Instituição e possui M2M com Disciplina
+class Turma(models.Model):
+    instituicao = models.ForeignKey(
+        Instituicao, 
+        on_delete=models.CASCADE, 
+        related_name='turmas',
+        verbose_name="Instituição"
+    )
+    nome = models.CharField(max_length=100, verbose_name="Nome da Turma")
+    ano = models.PositiveIntegerField(default=datetime.datetime.now().year)
+    disciplinas = models.ManyToManyField(
+        Disciplina, 
+        related_name='turmas', 
+        blank=True,
+        verbose_name="Disciplinas vinculadas"
+    )
+
+    def __str__(self):
+        return f"{self.nome} - {self.ano} ({self.instituicao.nome})"
+
+# 5. Aula
 class Aula(models.Model):
     disciplina = models.ForeignKey(
         Disciplina, 
@@ -80,3 +100,11 @@ class Aula(models.Model):
 
     def __str__(self):
         return f"{self.ordem} - {self.titulo} ({self.disciplina.nome})"
+    
+
+# 6. Convite para criar conta professor
+class Convite(models.Model):
+    email = models.EmailField(unique=True)
+    token = models.CharField(max_length=64, unique=True)
+    tipo_usuario = models.CharField(max_length=20, choices=[('PROFESSOR', 'Professor'), ('ALUNO', 'Aluno')])
+    usado = models.BooleanField(default=False)

@@ -8,15 +8,15 @@
     {% elif is_professor %}
         <nav>
             <ul>
+                <li><strong>Turmas</strong>
+                    <ul style="list-style: none; padding-left: 10px;">
+                        <li><a href="{% url 'listar_turmas' %}">Listar turmas</a></li>
+                        <li><a href="{% url 'criar_turma' %}">Nova turma</a></li>
+                    </ul>
+                </li>
                 <li><strong>Disciplinas</strong>
                     <ul style="list-style: none; padding-left: 10px;">
                         <li><a href="{% url 'listar_disciplinas' %}">Minhas disciplinas</a></li>
-                    </ul>
-                </li>
-                <li><strong>Aulas</strong>
-                    <ul style="list-style: none; padding-left: 10px;">
-                        <li><a href="#">Listar aulas</a></li>
-                        <li><a href="#">Criar aula</a></li>
                     </ul>
                 </li>
             </ul>

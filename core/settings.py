@@ -115,6 +115,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-
-LOGIN_REDIRECT_URL = '/'  # Redireciona para a home (index) após o login
+# Adicione esta linha no final do seu settings.py
+LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = 'login'  # <--- ESSENCIAL para o @login_required funcionar

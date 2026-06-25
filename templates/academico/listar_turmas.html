@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Minhas Turmas</h1>
+<a href="{% url 'criar_turma' %}" class="btn-primary" style="margin-bottom: 20px;">+ Nova Turma</a>
+
+<div class="turmas-list">
+    {% for turma in turmas %}
+    <div class="card" style="margin-bottom: 15px;">
+        <h3>{{ turma.nome }} ({{ turma.ano }})</h3>
+        <p>Disciplinas: 
+            {% for disc in turma.disciplinas.all %}
+                {{ disc.nome }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+                Nenhuma disciplina vinculada.
+            {% endfor %}
+        </p>
+    </div>
+    {% empty %}
+    <p>Você ainda não criou nenhuma turma.</p>
+    {% endfor %}
+</div>
+{% endblock %}
