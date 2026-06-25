@@ -90,14 +90,16 @@ def detalhes_turma(request, pk):
 @login_required
 def editar_turma(request, pk):
     turma = get_object_or_404(Turma, pk=pk, instituicao__professor=request.user)
-    def acao_editar(req, p):
-        form = TurmaForm(req.POST, instance=turma, user=req.user)
+    if request.method == 'POST':
+        # Passar a instância no primeiro argumento é fundamental
+        form = TurmaForm(request.POST, instance=turma, user=request.user)
         if form.is_valid():
             form.save()
             return redirect('listar_turmas')
-        return render(req, 'academico/criar_turma.html', {'form': form})
-    if request.method == 'POST': return verificar_senha_e_executar(request, acao_editar, pk)
-    return render(request, 'academico/criar_turma.html', {'form': TurmaForm(instance=turma, user=req.user)})
+    else:
+        form = TurmaForm(instance=turma, user=request.user)
+    
+    return render(request, 'academico/criar_turma.html', {'form': form})
 
 # 2.5 Excluir
 @login_required
@@ -194,6 +196,7 @@ def excluir_disciplina(request, pk):
     return verificar_senha_e_executar(request, acao_excluir, pk)
 
 # --- 5. AULAS ---
+# 5.1 Gerenciar
 @login_required
 def gerenciar_aulas(request, disciplina_id):
     disciplina = get_object_or_404(Disciplina, id=disciplina_id, professor=request.user)
@@ -201,3 +204,25 @@ def gerenciar_aulas(request, disciplina_id):
     return render(request, 'academico/gerenciar_aulas.html', {
         'disciplina': disciplina, 'aulas': aulas
     })
+
+# --- 6. ALUNO ---
+# Aqui você insere as novas views de vinculação e controle do aluno
+@login_required
+def vincular_aluno_turma(request, turma_id):
+    # Lógica que você irá criar para vincular o request.user a uma turma
+    pass
+
+# 6.1 Disciplinas do Aluno
+@login_required
+def ver_disciplinas_do_aluno(request):
+    # Assume que você criou um método para pegar o aluno logado
+    aluno = request.user.aluno 
+    turma = aluno.turma
+    
+    if turma:
+        # O aluno acessa as disciplinas via relação many-to-many da turma
+        disciplinas = turma.disciplinas.all()
+    else:
+        disciplinas = []
+        
+    return render(request, 'academico/disciplinas_aluno.html', {'disciplinas': disciplinas})

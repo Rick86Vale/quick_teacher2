@@ -2,6 +2,11 @@
     <h3>Quick_Teacher2</h3>
     
     {% if user.is_authenticated %}
+        <div style="padding: 10px; color: #ddd; font-size: 0.9em; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 10px;">
+            <p><strong>{{ user.username }}</strong></p>
+            <p style="font-size: 0.8em; color: #aaa;">{{ user.tipo_usuario }}</p>
+        </div>
+
         {% if user.is_superuser %}
             <p>Menu Administrador</p>
             <nav>
@@ -40,9 +45,21 @@
 
         {% elif user.tipo_usuario == 'ALUNO' %}
             <nav>
-                <ul><li><a href="#">Minhas Aulas</a></li></ul>
+                <ul>
+                    <li><a href="{% url 'ver_disciplinas_aluno' %}">Minhas Disciplinas</a></li>
+                </ul>
             </nav>
         {% endif %}
 
-        {% endif %}
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" style="background:none; border:none; color:white; cursor:pointer; font-weight:bold;">
+                    Sair
+                </button>
+            </form>
+        </div>
+    {% else %}
+        <nav><ul><li><a href="{% url 'login' %}">Entrar</a></li></ul></nav>
+    {% endif %}
 </div>

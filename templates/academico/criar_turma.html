@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<h1>Criar Nova Turma</h1>
-<form method="post" style="background: white; padding: 20px; border-radius: 8px;">
+<h2>{{ form.instance.pk|yesno:"Editar Turma,Nova Turma" }}</h2>
+
+<form method="post" class="card">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn-primary">Criar Turma</button>
+    {{ form.as_p }} <button type="submit" class="btn-primary">Salvar Turma</button>
+    <a href="{% url 'listar_turmas' %}">Cancelar</a>
 </form>
 {% endblock %}

@@ -125,3 +125,13 @@ class Convite(models.Model):
     token = models.CharField(max_length=64, unique=True)
     tipo_usuario = models.CharField(max_length=20, choices=[('PROFESSOR', 'Professor'), ('ALUNO', 'Aluno')])
     usado = models.BooleanField(default=False)
+
+# 7. Aluno
+class Aluno(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    turma = models.ForeignKey(
+        Turma, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        related_name='alunos'
+    )

@@ -7,12 +7,17 @@ class TurmaForm(forms.ModelForm):
     class Meta:
         model = Turma
         fields = ['instituicao', 'nome', 'ano', 'disciplinas']
-        widgets = {'disciplinas': forms.CheckboxSelectMultiple()}
+        widgets = {
+            'disciplinas': forms.CheckboxSelectMultiple(),
+        }
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         if user:
+            # Filtra apenas as disciplinas que o professor logado criou
+            self.fields['disciplinas'].queryset = Disciplina.objects.filter(professor=user)
+            # Filtra também as instituições do professor
             self.fields['instituicao'].queryset = Instituicao.objects.filter(professor=user)
 
 # --- 2. INSTITUIÇÕES ---

@@ -1,38 +1,49 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<h1>Minhas Turmas</h1>
-<a href="{% url 'criar_turma' %}" class="btn-primary" style="margin-bottom: 20px;">+ Nova Turma</a>
+<div class="header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h1>Minhas Turmas</h1>
+    <a href="{% url 'criar_turma' %}" class="btn-primary" style="padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;">+ Nova Turma</a>
+</div>
 
-<div class="turmas-list">
-    {% regroup turmas by instituicao as lista_por_instituicao %}
-
-    {% for instituicao in lista_por_instituicao %}
-        <div class="instituicao-section" style="margin-top: 30px; border-bottom: 2px solid #ccc;">
-            <h2 style="color: #2c3e50;">{{ instituicao.grouper }}</h2>
-            
-            {% for turma in instituicao.list %}
-                <a href="{% url 'detalhes_turma' turma.pk %}" style="text-decoration: none; color: inherit;">
-                    <div class="card" style="margin: 15px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: background 0.2s;">
-                        <h3>{{ turma.nome }} ({{ turma.ano }})</h3>
-                        <p>Disciplinas: 
-                            {% for disc in turma.disciplinas.all %}
-                                {{ disc.nome }}{% if not forloop.last %}, {% endif %}
-                            {% empty %}
-                                Nenhuma disciplina vinculada.
-                            {% endfor %}
-                        </p>
-                    </div>
-                </a>
-                
-                <div class="actions" style="margin-bottom: 20px;">
-                    <a href="{% url 'editar_turma' turma.pk %}" style="margin-right: 10px;">Editar</a>
-                    <a href="{% url 'excluir_turma' turma.pk %}" style="color: red;">Excluir</a>
-                </div>
+<div class="table-container" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 2px solid #eee;">
+                <th style="text-align: left; padding: 12px;">Turma</th>
+                <th style="text-align: left; padding: 12px;">Disciplinas Vinculadas</th>
+                <th style="text-align: center; padding: 12px;">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in turmas %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 12px;">
+                    <strong>{{ t.nome }}</strong><br>
+                    <small style="color: #666;">Ano: {{ t.ano }} | Instituição: {{ t.instituicao.nome }}</small>
+                </td>
+                <td style="padding: 12px;">
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                    {% for disc in t.disciplinas.all %}
+                        <li style="display: inline-block; background: #e9ecef; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; margin-right: 5px; margin-bottom: 5px;">
+                            {{ disc.nome }}
+                        </li>
+                    {% empty %}
+                        <li style="color: #999; font-style: italic;">Nenhuma disciplina vinculada</li>
+                    {% endfor %}
+                    </ul>
+                </td>
+                <td style="padding: 12px; text-align: center;">
+                    <a href="{% url 'editar_turma' t.pk %}" style="color: #ffc107; text-decoration: none; font-weight: bold;">Editar</a>
+                    <span style="color: #ccc; margin: 0 10px;">|</span>
+                    <a href="{% url 'detalhes_turma' t.pk %}" style="color: #007bff; text-decoration: none; font-weight: bold;">Ver</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" style="padding: 20px; text-align: center; color: #777;">Nenhuma turma encontrada.</td>
+            </tr>
             {% endfor %}
-        </div>
-    {% empty %}
-        <p>Você ainda não criou nenhuma turma.</p>
-    {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}

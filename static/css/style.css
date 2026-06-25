@@ -1,5 +1,8 @@
 /* Path: static/css/style.css */
 
+.table-container { background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.tag { display: inline-block; background: #e9ecef; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; margin: 2px; }
+
 /* 1. Variáveis Globais (Paleta de Cores) */
 :root {
     --primary: #B8B68F;
