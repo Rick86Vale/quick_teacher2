@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Confirmar Exclusão</h2>
+<p>Tem certeza que deseja excluir a instituição: <strong>{{ item.nome }}</strong>?</p>
+<p style="color: red;">Isso removerá também todas as turmas vinculadas a ela!</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn">Confirmar Exclusão</button>
+    <a href="{% url 'listar_instituicoes' %}">Cancelar</a>
+</form>
+{% endblock %}

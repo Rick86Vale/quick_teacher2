@@ -1,10 +1,16 @@
 # Path: academico/models.py
-
 import datetime
 from django.db import models
 from usuarios.models import CustomUser
 
-# 1. Instituição: A raiz do sistema
+# 1. Área de Conhecimento (Definida antes para ser usada por Disciplina)
+class AreaConhecimento(models.Model):
+    nome = models.CharField(max_length=100, unique=True, verbose_name="Área do Conhecimento")
+
+    def __str__(self):
+        return self.nome
+
+# 2. Instituição: A raiz do sistema
 class Instituicao(models.Model):
     nome = models.CharField(max_length=200, verbose_name="Nome da Instituição")
     professor = models.ForeignKey(
@@ -13,13 +19,6 @@ class Instituicao(models.Model):
         limit_choices_to={'tipo_usuario': 'PROFESSOR'},
         verbose_name="Professor Responsável"
     )
-
-    def __str__(self):
-        return self.nome
-
-# 2. Área de Conhecimento
-class AreaConhecimento(models.Model):
-    nome = models.CharField(max_length=100, unique=True, verbose_name="Área do Conhecimento")
 
     def __str__(self):
         return self.nome
@@ -34,6 +33,8 @@ class Disciplina(models.Model):
         help_text="Gerado automaticamente (ex: LOG2026001)"
     )
     nome = models.CharField(max_length=200, verbose_name="Disciplina")
+    descricao = models.TextField(verbose_name="Descrição", blank=True, null=True)
+    
     area = models.ForeignKey(
         AreaConhecimento, 
         on_delete=models.SET_NULL, 
@@ -42,6 +43,7 @@ class Disciplina(models.Model):
         related_name='disciplinas',
         verbose_name="Área do Conhecimento"
     )
+    
     professor = models.ForeignKey(
         CustomUser, 
         on_delete=models.CASCADE, 
@@ -53,10 +55,21 @@ class Disciplina(models.Model):
         if not self.codigo:
             ano = datetime.datetime.now().year
             palavras = self.nome.split()
-            prefixo = "".join([p[0].upper() for p in palavras[:3]])
-            ultimo = Disciplina.objects.filter(codigo__startswith=f"{prefixo}{ano}").last()
-            sequencial = int(ultimo.codigo[-3:]) + 1 if ultimo else 1
+            # Gera prefixo de 3 letras com base no nome, preenche com 'X' se necessário
+            prefixo = "".join([p[0].upper() for p in palavras])[:3].ljust(3, 'X')
+            
+            # Busca o último registro para incrementar o sequencial
+            ultimo = Disciplina.objects.filter(codigo__startswith=f"{prefixo}{ano}").order_by('codigo').last()
+            
+            sequencial = 1
+            if ultimo:
+                try:
+                    sequencial = int(ultimo.codigo[-3:]) + 1
+                except (ValueError, IndexError):
+                    sequencial = 1
+            
             self.codigo = f"{prefixo}{ano}{sequencial:03d}"
+        
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -97,12 +110,12 @@ class Aula(models.Model):
 
     class Meta:
         ordering = ['ordem']
+        unique_together = ['disciplina', 'ordem'] # Protege a integridade da sequência
 
     def __str__(self):
         return f"{self.ordem} - {self.titulo} ({self.disciplina.nome})"
-    
 
-# 6. Convite para criar conta professor
+# 6. Convite
 class Convite(models.Model):
     email = models.EmailField(unique=True)
     token = models.CharField(max_length=64, unique=True)

@@ -5,19 +5,34 @@
 <a href="{% url 'criar_turma' %}" class="btn-primary" style="margin-bottom: 20px;">+ Nova Turma</a>
 
 <div class="turmas-list">
-    {% for turma in turmas %}
-    <div class="card" style="margin-bottom: 15px;">
-        <h3>{{ turma.nome }} ({{ turma.ano }})</h3>
-        <p>Disciplinas: 
-            {% for disc in turma.disciplinas.all %}
-                {{ disc.nome }}{% if not forloop.last %}, {% endif %}
-            {% empty %}
-                Nenhuma disciplina vinculada.
+    {% regroup turmas by instituicao as lista_por_instituicao %}
+
+    {% for instituicao in lista_por_instituicao %}
+        <div class="instituicao-section" style="margin-top: 30px; border-bottom: 2px solid #ccc;">
+            <h2 style="color: #2c3e50;">{{ instituicao.grouper }}</h2>
+            
+            {% for turma in instituicao.list %}
+                <a href="{% url 'detalhes_turma' turma.pk %}" style="text-decoration: none; color: inherit;">
+                    <div class="card" style="margin: 15px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: background 0.2s;">
+                        <h3>{{ turma.nome }} ({{ turma.ano }})</h3>
+                        <p>Disciplinas: 
+                            {% for disc in turma.disciplinas.all %}
+                                {{ disc.nome }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                Nenhuma disciplina vinculada.
+                            {% endfor %}
+                        </p>
+                    </div>
+                </a>
+                
+                <div class="actions" style="margin-bottom: 20px;">
+                    <a href="{% url 'editar_turma' turma.pk %}" style="margin-right: 10px;">Editar</a>
+                    <a href="{% url 'excluir_turma' turma.pk %}" style="color: red;">Excluir</a>
+                </div>
             {% endfor %}
-        </p>
-    </div>
+        </div>
     {% empty %}
-    <p>Você ainda não criou nenhuma turma.</p>
+        <p>Você ainda não criou nenhuma turma.</p>
     {% endfor %}
 </div>
 {% endblock %}

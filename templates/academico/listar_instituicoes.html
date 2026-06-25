@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Minhas Instituições</h2>
+<table>
+    <tr><th>Nome</th><th>Ações</th></tr>
+    {% for inst in instituicoes %}
+    <tr>
+        <td>{{ inst.nome }}</td>
+        <td>
+            <a href="{% url 'editar_instituicao' inst.pk %}">Editar</a>
+            <a href="{% url 'excluir_instituicao' inst.pk %}">Excluir</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{% url 'criar_instituicao' %}">+ Nova Instituição</a>
+{% endblock %}

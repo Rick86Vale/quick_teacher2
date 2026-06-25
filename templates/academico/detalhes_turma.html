@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="header" style="display: flex; justify-content: space-between; align-items: center;">
+    <h1>Turma: {{ turma.nome }}</h1>
+    <a href="{% url 'listar_turmas' %}" class="btn-secondary">Voltar para Turmas</a>
+</div>
+
+<p><strong>Instituição:</strong> {{ turma.instituicao.nome }}</p>
+<p><strong>Ano Letivo:</strong> {{ turma.ano }}</p>
+
+<h2 style="margin-top: 30px;">Disciplinas Vinculadas</h2>
+{% if turma.disciplinas.all %}
+    <ul class="disciplinas-list">
+        {% for disc in turma.disciplinas.all %}
+            <li style="margin: 10px 0; padding: 10px; border: 1px solid #ddd;">
+                <strong>{{ disc.codigo }}</strong> - {{ disc.nome }}
+                <br>
+                <small>{{ disc.descricao }}</small>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Nenhuma disciplina foi vinculada a esta turma ainda.</p>
+{% endif %}
+{% endblock %}
