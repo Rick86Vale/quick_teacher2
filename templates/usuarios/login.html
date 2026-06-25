@@ -7,4 +7,9 @@
         {{ form.as_p }}
         <button type="submit">Entrar</button>
     </form>
+    <div class="register-links">
+    <p>Ainda não tem cadastro?</p>
+    <a href="{% url 'registro' %}">Cadastrar como Aluno</a> | 
+    <a href="{% url 'registro_professor' %}">Cadastrar como Professor</a>
+    </div>
 {% endblock %}

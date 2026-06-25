@@ -10,6 +10,8 @@ urlpatterns = [
     path('turmas/', views.listar_turmas, name='listar_turmas'),
     path('turmas/nova/', views.criar_turma, name='criar_turma'),
     path('disciplina/<int:disciplina_id>/aulas/', views.gerenciar_aulas, name='gerenciar_aulas'),
+
+    path('instituicao/nova/', views.criar_instituicao, name='criar_instituicao'),
 ]
     
 

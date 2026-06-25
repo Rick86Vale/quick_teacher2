@@ -1,11 +1,17 @@
 {% extends 'base.html' %}
-
 {% block content %}
-    <h2>Painel do Professor</h2>
-    <p>Bem-vindo, Professor {{ user.first_name }}.</p>
-    
-    <div class="professor-actions">
-        <h3>Gerenciar Conteúdo</h3>
-        <a href="{% url 'admin:index' %}">Acessar Painel Administrativo</a>
-    </div>
+<h1>Olá, Professor!</h1>
+<hr>
+<h3>Suas Instituições:</h3>
+{% if instituicoes %}
+    <ul>
+        {% for inst in instituicoes %}
+            <li>{{ inst.nome }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Você ainda não possui instituições cadastradas.</p>
+{% endif %}
+
+<a href="{% url 'criar_instituicao' %}" class="btn">Criar nova Instituição</a>
 {% endblock %}

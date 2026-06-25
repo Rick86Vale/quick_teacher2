@@ -7,3 +7,4 @@ urlpatterns = [
     path('', include('academico.urls')),
     path('usuarios/', include('usuarios.urls')), # As rotas de login estão aqui dentro
 ]
+

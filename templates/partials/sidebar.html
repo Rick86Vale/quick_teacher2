@@ -1,38 +1,53 @@
 <div class="sidebar-menu">
     <h3>Quick_Teacher2</h3>
     
-    {% if is_admin %}
-        <p>Menu Administrador</p>
-        <nav><ul><li><a href="/admin/">Painel de Controle</a></li></ul></nav>
+    {% if user.is_authenticated %}
+        {% if user.is_superuser %}
+            <p>Menu Administrador</p>
+            <nav>
+                <ul>
+                    <li><a href="/admin/">Painel de Controle</a></li>
+                    <li><a href="{% url 'admin:usuarios_customuser_add' %}">Cadastrar Usuários</a></li>
+                </ul>
+            </nav>
 
-    {% elif is_professor %}
-        <nav>
-            <ul>
-                <li><strong>Turmas</strong>
-                    <ul style="list-style: none; padding-left: 10px;">
-                        <li><a href="{% url 'listar_turmas' %}">Listar turmas</a></li>
-                        <li><a href="{% url 'criar_turma' %}">Nova turma</a></li>
-                    </ul>
-                </li>
-                <li><strong>Disciplinas</strong>
-                    <ul style="list-style: none; padding-left: 10px;">
-                        <li><a href="{% url 'listar_disciplinas' %}">Minhas disciplinas</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </nav>
-    {% elif is_aluno %}
-        <nav>
-            <ul><li><a href="#">Minhas Aulas</a></li></ul>
-        </nav>
+        {% elif user.tipo_usuario == 'PROFESSOR' %}
+            <nav>
+                <ul>
+                    <li><strong>Instituições</strong>
+                        <ul style="list-style: none; padding-left: 10px;">
+                            <li><a href="{% url 'criar_instituicao' %}">Nova Instituição</a></li>
+                        </ul>
+                    </li>
+                    <li><strong>Turmas</strong>
+                        <ul style="list-style: none; padding-left: 10px;">
+                            <li><a href="{% url 'listar_turmas' %}">Listar turmas</a></li>
+                            <li><a href="{% url 'criar_turma' %}">Nova turma</a></li>
+                        </ul>
+                    </li>
+                    <li><strong>Disciplinas</strong>
+                        <ul style="list-style: none; padding-left: 10px;">
+                            <li><a href="{% url 'listar_disciplinas' %}">Minhas disciplinas</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+        {% elif user.tipo_usuario == 'ALUNO' %}
+            <nav>
+                <ul><li><a href="#">Minhas Aulas</a></li></ul>
+            </nav>
+        {% endif %}
+
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" style="background:none; border:none; color:white; cursor:pointer; font-weight:bold;">
+                    Sair
+                </button>
+            </form>
+        </div>
+    {% else %}
+        <nav><ul><li><a href="{% url 'login' %}">Entrar</a></li></ul></nav>
     {% endif %}
-
-    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
-        <form action="{% url 'logout' %}" method="post">
-            {% csrf_token %}
-            <button type="submit" style="background:none; border:none; color:white; cursor:pointer; font-weight:bold;">
-                Sair
-            </button>
-        </form>
-    </div>
 </div>
