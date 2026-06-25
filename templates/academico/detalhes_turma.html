@@ -1,26 +1,31 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<div class="header" style="display: flex; justify-content: space-between; align-items: center;">
+<div class="header">
     <h1>Turma: {{ turma.nome }}</h1>
-    <a href="{% url 'listar_turmas' %}" class="btn-secondary">Voltar para Turmas</a>
+    <p style="background: #e1e1e1; display: inline-block; padding: 5px 10px; border-radius: 4px; font-family: monospace;">
+        ID da Turma: <strong>{{ turma.pk }}</strong>
+    </p>
 </div>
 
-<p><strong>Instituição:</strong> {{ turma.instituicao.nome }}</p>
-<p><strong>Ano Letivo:</strong> {{ turma.ano }}</p>
-
-<h2 style="margin-top: 30px;">Disciplinas Vinculadas</h2>
-{% if turma.disciplinas.all %}
-    <ul class="disciplinas-list">
+<div class="turma-info" style="margin-top: 20px;">
+    <p><strong>Ano:</strong> {{ turma.ano }}</p>
+    <p><strong>Instituição:</strong> {{ turma.instituicao.nome }}</p>
+    
+    <h3>Disciplinas</h3>
+    <ul>
         {% for disc in turma.disciplinas.all %}
-            <li style="margin: 10px 0; padding: 10px; border: 1px solid #ddd;">
-                <strong>{{ disc.codigo }}</strong> - {{ disc.nome }}
-                <br>
-                <small>{{ disc.descricao }}</small>
-            </li>
+            <li>{{ disc.nome }}</li>
         {% endfor %}
     </ul>
-{% else %}
-    <p>Nenhuma disciplina foi vinculada a esta turma ainda.</p>
-{% endif %}
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; border: 1px dashed #007bff;">
+    <h3>Link de Matrícula</h3>
+    <p>Envie este link para seus alunos:</p>
+    <code style="background: #eee; padding: 5px; display: block; word-break: break-all;">
+        {{ request.scheme }}://{{ request.get_host }}{% url 'matricular_aluno' turma.pk %}
+    </code>
+</div>
+
+<a href="{% url 'listar_turmas' %}">Voltar para Turmas</a>
 {% endblock %}

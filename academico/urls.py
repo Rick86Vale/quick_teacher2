@@ -18,6 +18,7 @@ urlpatterns = [
     path('turma/editar/<int:pk>/', views.editar_turma, name='editar_turma'),
     path('turma/excluir/<int:pk>/', views.excluir_turma, name='excluir_turma'),
     path('turma/<int:pk>/', views.detalhes_turma, name='detalhes_turma'),
+    path('turma/<int:turma_id>/alunos/', views.listar_alunos_turma, name='listar_alunos_turma'),
     
     # 3. Áreas de Conhecimento
     path('areas/', views.listar_areas, name='listar_areas'),
@@ -38,5 +39,6 @@ urlpatterns = [
     # 6. Aluno (Vínculos e Visualização)
     path('aluno/minhas-disciplinas/', views.ver_disciplinas_do_aluno, name='ver_disciplinas_aluno'),
     # A view abaixo deve ser implementada no views.py para funcionar
-    path('aluno/vincular/<int:turma_id>/', views.vincular_aluno_turma, name='vincular_aluno'),
+    path('aluno/matricular/<int:turma_id>/', views.matricular_aluno, name='matricular_aluno'),
+    path('aluno/matricular-manual/', views.matricular_aluno_manual, name='matricular_aluno_manual'),
 ]

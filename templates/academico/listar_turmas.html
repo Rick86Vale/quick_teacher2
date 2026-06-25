@@ -32,11 +32,13 @@
                     {% endfor %}
                     </ul>
                 </td>
-                <td style="padding: 12px; text-align: center;">
-                    <a href="{% url 'editar_turma' t.pk %}" style="color: #ffc107; text-decoration: none; font-weight: bold;">Editar</a>
-                    <span style="color: #ccc; margin: 0 10px;">|</span>
-                    <a href="{% url 'detalhes_turma' t.pk %}" style="color: #007bff; text-decoration: none; font-weight: bold;">Ver</a>
-                </td>
+                
+                    <td style="padding: 12px; text-align: center;">
+                        <a href="{% url 'editar_turma' t.pk %}" style="color: #ffc107; font-weight: bold;">Editar Turma</a>
+                        <span style="color: #ccc; margin: 0 5px;">|</span>
+                        <a href="{% url 'detalhes_turma' t.pk %}" style="color: #007bff; text-decoration: none; font-weight: bold;">Detalhes </a>
+                        <a href="{% url 'listar_alunos_turma' t.pk %}" style="color: #28a745; font-weight: bold;">Ver Alunos</a>
+                    </td>
             </tr>
             {% empty %}
             <tr>

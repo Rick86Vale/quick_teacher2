@@ -1,21 +1,36 @@
-{% extends 'base.html' %}
+<!-- templates/academico/disciplinas_aluno.html -->
+ {% extends 'base.html' %}
 {% block content %}
-<div class="header">
+<div class="header" style="margin-bottom: 20px;">
     <h1>Minhas Disciplinas</h1>
+</div>
+
+<div style="background: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+    <h3>Matricular-se em nova turma</h3>
+    <form action="{% url 'matricular_aluno_manual' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="turma_id" placeholder="Digite o ID da turma" required 
+               style="padding: 10px; border: 1px solid #ccc; border-radius: 4px; width: 200px;">
+        <button type="submit" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            Confirmar Matrícula
+        </button>
+    </form>
 </div>
 
 {% if disciplinas %}
     <div class="card-container">
-        {% for disciplina in disciplinas %}
-            <div class="card" style="margin-bottom: 15px; padding: 15px; border: 1px solid #ccc;">
-                <h3>{{ disciplina.nome }}</h3>
-                <p><strong>Área:</strong> {{ disciplina.area.nome|default:"-" }}</p>
-                <p>{{ disciplina.descricao|truncatewords:20 }}</p>
-                <a href="{% url 'gerenciar_aulas' disciplina.id %}" class="btn-primary">Ver Aulas</a>
+        {% for d in disciplinas %}
+            <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 5px;">
+                <h3>{{ d.nome }}</h3>
+                <p><strong>Área:</strong> {{ d.area.nome|default:"-" }}</p>
+                <a href="{% url 'gerenciar_aulas' d.id %}" style="text-decoration: none; color: #007bff; font-weight: bold;">Acessar Aulas</a>
             </div>
         {% endfor %}
     </div>
 {% else %}
-    <p>Você ainda não está vinculado a nenhuma turma ou sua turma não possui disciplinas cadastradas.</p>
+    <div style="text-align: center; padding: 40px; background: #f8f9fa; border: 1px dashed #ccc;">
+        <p>Você ainda não está vinculado a nenhuma turma.</p>
+        <p><em>Use o formulário acima com o ID da turma fornecido pelo seu professor.</em></p>
+    </div>
 {% endif %}
 {% endblock %}

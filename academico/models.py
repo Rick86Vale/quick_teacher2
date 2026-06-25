@@ -133,5 +133,9 @@ class Aluno(models.Model):
         Turma, 
         on_delete=models.SET_NULL, 
         null=True, 
+        blank=True, 
         related_name='alunos'
     )
+
+    def __str__(self):
+        return self.user.username
