@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{% if form.instance.pk %}Editar Área{% else %}Nova Área{% endif %}</h2>
+
+<form method="post" class="card">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn-primary">Salvar Área</button>
+    <a href="{% url 'listar_areas' %}">Cancelar</a>
+</form>
+{% endblock %}

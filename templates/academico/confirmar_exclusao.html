@@ -3,16 +3,21 @@
 <h2>Confirmar Exclusão</h2>
 
 <div class="alert alert-warning" style="padding: 15px; background: #fff3cd; border: 1px solid #ffeeba;">
-    <p>Tem certeza que deseja excluir a instituição: <strong>{{ item.nome }}</strong>?</p>
-    <p style="color: red; font-weight: bold;">Aviso: Isso removerá permanentemente todas as turmas vinculadas a ela!</p>
+    <p>Tem certeza que deseja excluir: <strong>{{ item.nome }}</strong>?</p>
+    
+    {% if item.instituicao %}
+        <p style="color: red; font-weight: bold;">Aviso: Esta ação é irreversível!</p>
+    {% else %}
+        <p style="color: red; font-weight: bold;">Aviso: Isso removerá permanentemente todas as aulas vinculadas!</p>
+    {% endif %}
 </div>
 
 <form method="post" style="margin-top: 20px;">
     {% csrf_token %}
-    <p><em>* Após confirmar, será solicitada sua senha de acesso para finalizar esta ação irreversível.</em></p>
+    <p><em>* Após confirmar, será solicitada sua senha de acesso para finalizar esta ação.</em></p>
     <button type="submit" class="btn btn-danger" style="background: #dc3545; color: white; border: none; padding: 10px 20px; cursor: pointer;">
         Confirmar Exclusão
     </button>
-    <a href="{% url 'listar_instituicoes' %}" class="btn btn-secondary">Cancelar</a>
+    <a href="javascript:history.back()" class="btn btn-secondary">Cancelar</a>
 </form>
-{% endblock %}
+{% endblock %}  

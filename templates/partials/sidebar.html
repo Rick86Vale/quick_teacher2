@@ -14,21 +14,25 @@
         {% elif user.tipo_usuario == 'PROFESSOR' %}
             <nav>
                 <ul>
-                    <li><strong>Instituições</strong>
+                    <li><strong>Base e Configuração</strong>
                         <ul style="list-style: none; padding-left: 10px;">
-                            <li><a href="{% url 'listar_instituicoes' %}">Minhas Instituições</a></li>
-                            <li><a href="{% url 'criar_instituicao' %}">Nova Instituição</a></li>
+                            <li><a href="{% url 'listar_instituicoes' %}">Instituições</a></li>
+                            <li><a href="{% url 'listar_areas' %}">Áreas de Conhecimento</a></li>
                         </ul>
                     </li>
-                    <li><strong>Turmas</strong>
+
+                    <li><strong>Gestão Acadêmica</strong>
                         <ul style="list-style: none; padding-left: 10px;">
-                            <li><a href="{% url 'listar_turmas' %}">Listar turmas</a></li>
-                            <li><a href="{% url 'criar_turma' %}">Nova turma</a></li>
+                            <li><a href="{% url 'listar_disciplinas' %}">Disciplinas</a></li>
+                            <li><a href="{% url 'listar_turmas' %}">Turmas</a></li>
                         </ul>
                     </li>
-                    <li><strong>Disciplinas</strong>
+
+                    <li><strong>Novo Cadastro</strong>
                         <ul style="list-style: none; padding-left: 10px;">
-                            <li><a href="{% url 'listar_disciplinas' %}">Minhas disciplinas</a></li>
+                            <li><a href="{% url 'criar_disciplina' %}">+ Disciplina</a></li>
+                            <li><a href="{% url 'criar_turma' %}">+ Turma</a></li>
+                            <li><a href="{% url 'criar_area' %}">+ Área</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -40,15 +44,5 @@
             </nav>
         {% endif %}
 
-        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
-            <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit" style="background:none; border:none; color:white; cursor:pointer; font-weight:bold;">
-                    Sair
-                </button>
-            </form>
-        </div>
-    {% else %}
-        <nav><ul><li><a href="{% url 'login' %}">Entrar</a></li></ul></nav>
-    {% endif %}
+        {% endif %}
 </div>

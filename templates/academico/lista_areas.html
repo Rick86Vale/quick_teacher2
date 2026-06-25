@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="header">
+    <h1>Áreas de Conhecimento</h1>
+    <a href="{% url 'criar_area' %}" class="btn-primary">+ Nova Área</a>
+</div>
+
+<div class="card-container">
+    {% for area in areas %}
+        <div class="card">
+            <h3>{{ area.nome }}</h3>
+            <a href="{% url 'editar_area' area.pk %}">Editar</a> |
+            <a href="{% url 'excluir_area' area.pk %}" style="color: red;">Excluir</a>
+        </div>
+    {% empty %}
+        <p>Nenhuma área cadastrada.</p>
+    {% endfor %}
+</div>
+{% endblock %}

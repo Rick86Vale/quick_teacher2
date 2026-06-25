@@ -1,11 +1,15 @@
 # Path: academico/models.py
 import datetime
 from django.db import models
-from usuarios.models import CustomUser
+from django.contrib.auth import get_user_model
 
-# 1. Área de Conhecimento (Definida antes para ser usada por Disciplina)
+# Obtém o modelo de usuário configurado no projeto
+User = get_user_model()
+
+# 1. Área de Conhecimento
 class AreaConhecimento(models.Model):
-    nome = models.CharField(max_length=100, unique=True, verbose_name="Área do Conhecimento")
+    nome = models.CharField(max_length=100)
+    professor = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.nome
@@ -14,7 +18,7 @@ class AreaConhecimento(models.Model):
 class Instituicao(models.Model):
     nome = models.CharField(max_length=200, verbose_name="Nome da Instituição")
     professor = models.ForeignKey(
-        CustomUser, 
+        User, 
         on_delete=models.CASCADE, 
         limit_choices_to={'tipo_usuario': 'PROFESSOR'},
         verbose_name="Professor Responsável"
@@ -45,7 +49,7 @@ class Disciplina(models.Model):
     )
     
     professor = models.ForeignKey(
-        CustomUser, 
+        User, 
         on_delete=models.CASCADE, 
         limit_choices_to={'tipo_usuario': 'PROFESSOR'},
         verbose_name="Professor Responsável"
@@ -110,7 +114,7 @@ class Aula(models.Model):
 
     class Meta:
         ordering = ['ordem']
-        unique_together = ['disciplina', 'ordem'] # Protege a integridade da sequência
+        unique_together = ['disciplina', 'ordem']
 
     def __str__(self):
         return f"{self.ordem} - {self.titulo} ({self.disciplina.nome})"

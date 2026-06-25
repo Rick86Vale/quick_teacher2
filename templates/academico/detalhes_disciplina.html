@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="header" style="display: flex; justify-content: space-between; align-items: center;">
+    <h1>{{ disciplina.nome }}</h1>
+    <span style="background: #333; color: #fff; padding: 5px 10px; border-radius: 4px;">{{ disciplina.codigo }}</span>
+</div>
+
+<p><strong>Área:</strong> {{ disciplina.area|default:"Não definida" }}</p>
+<p><strong>Descrição:</strong> {{ disciplina.descricao }}</p>
+
+<div class="actions" style="margin: 20px 0;">
+    <a href="{% url 'gerenciar_aulas' disciplina.id %}" class="btn-primary">Gerenciar Aulas</a>
+    <a href="{% url 'editar_disciplina' disciplina.pk %}" style="margin-left: 10px;">Editar</a>
+    <a href="{% url 'excluir_disciplina' disciplina.pk %}" style="color: red; margin-left: 10px;">Excluir</a>
+</div>
+
+<h3 style="margin-top: 30px;">Cronograma de Aulas</h3>
+{% if disciplina.aulas.all %}
+    <ul>
+        {% for aula in disciplina.aulas.all %}
+            <li><strong>Aula {{ aula.ordem }}:</strong> {{ aula.titulo }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Nenhuma aula cadastrada ainda.</p>
+{% endif %}
+
+<a href="{% url 'listar_disciplinas' %}" style="display: block; margin-top: 20px;">« Voltar para disciplinas</a>
+{% endblock %}

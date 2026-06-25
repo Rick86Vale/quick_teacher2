@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from usuarios.views import eh_professor
 from .models import AreaConhecimento, Disciplina, Aula, Turma, Instituicao
-from .forms import TurmaForm, InstituicaoForm, DisciplinaForm, AreaConhecimentoForm
+from .forms import TurmaForm, InstituicaoForm, DisciplinaForm
 
 # --- UTILS ---
 def verificar_senha_e_executar(request, acao_func, pk=None):
@@ -97,7 +97,7 @@ def editar_turma(request, pk):
             return redirect('listar_turmas')
         return render(req, 'academico/criar_turma.html', {'form': form})
     if request.method == 'POST': return verificar_senha_e_executar(request, acao_editar, pk)
-    return render(request, 'academico/criar_turma.html', {'form': TurmaForm(instance=turma, user=req.user)})
+    return render(request, 'academico/criar_turma.html', {'form': TurmaForm(instance=turma, user=request.user)})
 
 # 2.5 Excluir
 @login_required
@@ -107,85 +107,39 @@ def excluir_turma(request, pk):
         return redirect('listar_turmas')
     return verificar_senha_e_executar(request, acao_excluir, pk)
 
-# --- 3. ÁREAS DO CONHECIMENTO ---
+# --- 3. DISCIPLINAS ---
 # 3.1 Criar
-@login_required
-def criar_area(request):
-    if request.method == 'POST':
-        form = AreaConhecimentoForm(request.POST)
-        if form.is_valid():
-            area = form.save(commit=False)
-            area.professor = request.user
-            area.save()
-            return redirect('listar_areas')
-    return render(request, 'academico/criar_area.html', {'form': AreaConhecimentoForm()})
-
-# 3.2 Listar
-@login_required
-def listar_areas(request):
-    areas = AreaConhecimento.objects.filter(professor=request.user)
-    return render(request, 'academico/lista_areas.html', {'areas': areas})
-
-# 3.4 Editar
-@login_required
-def editar_area(request, pk):
-    area = get_object_or_404(AreaConhecimento, pk=pk, professor=request.user)
-    def acao_editar(req, p):
-        form = AreaConhecimentoForm(req.POST, instance=area)
-        if form.is_valid():
-            form.save()
-            return redirect('listar_areas')
-        return render(req, 'academico/criar_area.html', {'form': form})
-    if request.method == 'POST': return verificar_senha_e_executar(request, acao_editar, pk)
-    return render(request, 'academico/criar_area.html', {'form': AreaConhecimentoForm(instance=area)})
-
-# 3.5 Excluir
-@login_required
-def excluir_area(request, pk):
-    def acao_excluir(req, p):
-        get_object_or_404(AreaConhecimento, pk=p, professor=req.user).delete()
-        return redirect('listar_areas')
-    return verificar_senha_e_executar(request, acao_excluir, pk)
-
-# --- 4. DISCIPLINAS ---
-# 4.1 Criar
 @login_required
 def criar_disciplina(request):
     if request.method == 'POST':
-        form = DisciplinaForm(request.POST, user=request.user)
+        form = DisciplinaForm(request.POST)
         if form.is_valid():
             d = form.save(commit=False)
             d.professor = request.user
             d.save()
             return redirect('listar_disciplinas')
-    return render(request, 'academico/criar_disciplina.html', {'form': DisciplinaForm(user=request.user)})
+    return render(request, 'academico/criar_disciplina.html', {'form': DisciplinaForm()})
 
-# 4.2 Listar
+# 3.2 Listar
 @login_required
 def listar_disciplinas(request):
     disciplinas = Disciplina.objects.filter(professor=request.user)
     return render(request, 'academico/lista_disciplinas.html', {'disciplinas': disciplinas})
 
-# 4.3 Detalhes
-@login_required
-def detalhes_disciplina(request, pk):
-    disciplina = get_object_or_404(Disciplina, pk=pk, professor=request.user)
-    return render(request, 'academico/detalhes_disciplina.html', {'disciplina': disciplina})
-
-# 4.4 Editar
+# 3.4 Editar
 @login_required
 def editar_disciplina(request, pk):
     disc = get_object_or_404(Disciplina, pk=pk, professor=request.user)
     def acao_editar(req, p):
-        form = DisciplinaForm(req.POST, instance=disc, user=req.user)
+        form = DisciplinaForm(req.POST, instance=disc)
         if form.is_valid():
             form.save()
             return redirect('listar_disciplinas')
         return render(req, 'academico/criar_disciplina.html', {'form': form})
     if request.method == 'POST': return verificar_senha_e_executar(request, acao_editar, pk)
-    return render(request, 'academico/criar_disciplina.html', {'form': DisciplinaForm(instance=disc, user=request.user)})
+    return render(request, 'academico/criar_disciplina.html', {'form': DisciplinaForm(instance=disc)})
 
-# 4.5 Excluir
+# 3.5 Excluir
 @login_required
 def excluir_disciplina(request, pk):
     def acao_excluir(req, p):
@@ -193,7 +147,9 @@ def excluir_disciplina(request, pk):
         return redirect('listar_disciplinas')
     return verificar_senha_e_executar(request, acao_excluir, pk)
 
-# --- 5. AULAS ---
+
+
+# 4. Aulas
 @login_required
 def gerenciar_aulas(request, disciplina_id):
     disciplina = get_object_or_404(Disciplina, id=disciplina_id, professor=request.user)
@@ -201,3 +157,5 @@ def gerenciar_aulas(request, disciplina_id):
     return render(request, 'academico/gerenciar_aulas.html', {
         'disciplina': disciplina, 'aulas': aulas
     })
+
+
