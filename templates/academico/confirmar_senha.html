@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Confirmação de Segurança</h2>
+<p>Para concluir esta alteração, por favor, confirme a sua senha de professor:</p>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label>Senha:</label>
+        <input type="password" name="password_confirm" class="form-control" required autofocus>
+    </div>
+    <div style="margin-top: 15px;">
+        <button type="submit" class="btn-primary">Confirmar Ação</button>
+        <a href="javascript:history.back()" class="btn-secondary">Cancelar</a>
+    </div>
+</form>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li style="color: red;">{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}  
