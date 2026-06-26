@@ -9,10 +9,10 @@ from django.views.decorators.http import require_POST
 from django.forms import inlineformset_factory
 
 # Importações dos modelos e formulários
-from ..models import Disciplina, Aula, Aluno, Recurso
-from ..forms import AulaForm, RecursoFormSet
+from ..models import Disciplina, Aula, Aluno
+from ..forms import AulaForm
 
-# --- 5. AULAS E RECURSOS ---
+# --- 5. AULAS 
 
 # 5.1. Listagem de Aulas
 @login_required
@@ -45,35 +45,14 @@ def criar_aula(request, disciplina_id):
             aula.disciplina = disciplina
             aula.ordem = Aula.objects.filter(disciplina=disciplina).count() + 1
             aula.save()
-            return redirect('menu_recursos', aula_id=aula.pk) 
+            
+            # CORREÇÃO AQUI: Redireciona para a listagem de aulas em vez de 'menu_recursos'
+            return redirect('gerenciar_aulas', disciplina_id=disciplina.pk) 
+            
     else:
         form = AulaForm()
     return render(request, 'academico/aulas/criar_aula.html', {'form': form, 'disciplina': disciplina})
 
-# 5.3. Menu Central de Recursos
-@login_required
-def menu_recursos(request, aula_id):
-    aula = get_object_or_404(Aula, pk=aula_id)
-    return render(request, 'academico/recursos/menu_recursos.html', {'aula': aula})
-
-# 5.4. Gestão de Recursos por Tipo
-@login_required
-def gerenciar_recursos_por_tipo(request, aula_id, tipo):
-    aula = get_object_or_404(Aula, pk=aula_id)
-    RecursoFormSet = inlineformset_factory(Aula, Recurso, fields=('titulo', 'url', 'arquivo', 'thumbnail', 'tipo'), extra=1)
-    
-    if request.method == 'POST':
-        formset = RecursoFormSet(request.POST, request.FILES, instance=aula, queryset=Recurso.objects.filter(tipo=tipo))
-        if formset.is_valid():
-            for form in formset:
-                if form.cleaned_data:
-                    form.instance.tipo = tipo
-            formset.save()
-            return redirect('menu_recursos', aula_id=aula.pk)
-    else:
-        formset = RecursoFormSet(instance=aula, queryset=Recurso.objects.filter(tipo=tipo))
-    
-    return render(request, 'academico/recursos/gerenciar_tipo.html', {'aula': aula, 'formset': formset, 'tipo': tipo})
 
 # 5.5. Alternar Publicação
 @login_required

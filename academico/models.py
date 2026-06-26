@@ -133,16 +133,8 @@ class Aula(models.Model):
     def __str__(self):
         return f"{self.titulo} ({'Público' if self.publicado else 'Rascunho'})"
 
-class Recurso(models.Model):
-    TIPO_CHOICES = [('VIDEO', 'Vídeo'), ('PDF', 'PDF'), ('LINK', 'Link')]
-    aula = models.ForeignKey(Aula, related_name='recursos', on_delete=models.CASCADE)
-    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
-    titulo = models.CharField(max_length=200)
-    url = models.URLField(blank=True, null=True)
-    arquivo = models.FileField(upload_to='aulas/materiais/', blank=True, null=True)
 
-    def __str__(self):
-        return f"{self.tipo}: {self.titulo}"
+
 
 # 6. Convite
 class Convite(models.Model):

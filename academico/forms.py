@@ -1,8 +1,7 @@
 # Path: academico/forms.py
 from django import forms
-from .models import Turma, Instituicao, Disciplina, AreaConhecimento, Aula, Recurso
+from .models import Turma, Instituicao, Disciplina, AreaConhecimento, Aula
 from django.forms import inlineformset_factory
-
 
 # --- 1. TURMAS ---
 class TurmaForm(forms.ModelForm):
@@ -58,16 +57,3 @@ class AulaForm(forms.ModelForm):
             'conteudo': forms.Textarea(attrs={'class': 'form-control', 'style': 'width: 100%; height: 400px; font-family: monospace;', 'placeholder': 'Escreva o conteúdo da aula em Markdown...'}),
         }
 
-class RecursoForm(forms.ModelForm):
-    class Meta:
-        model = Recurso
-        fields = ['tipo', 'titulo', 'url', 'arquivo']
-
-# Cria um conjunto de formulários (FormSet) para permitir adicionar vários recursos de uma vez
-RecursoFormSet = inlineformset_factory(
-    Aula, 
-    Recurso, 
-    form=RecursoForm, 
-    extra=3,  # Quantos campos extras aparecerão por padrão
-    can_delete=True
-)
