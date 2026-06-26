@@ -8,7 +8,8 @@ from django.views.generic.edit import CreateView
 from django.views.generic.base import TemplateView
 from .forms import AlunoRegistrationForm, ProfessorRegistrationForm # Importando os dois
 from .models import CustomUser
-from academico.models import AreaConhecimento, Disciplina
+from academico.models import AreaConhecimento, Disciplina, Instituicao
+from django.db.models import Count, Q
 
 
 @login_required
@@ -66,3 +67,19 @@ def dashboard_aluno(request):
 @user_passes_test(eh_professor, login_url='login')
 def dashboard_professor(request):
     return render(request, 'usuarios/dashboard_professor.html')
+
+
+from django.db.models import Count, Q
+
+@login_required
+def dashboard_professor(request):
+    instituicoes = Instituicao.objects.filter(professor=request.user).prefetch_related(
+        'turmas__disciplinas__aulas',
+        'turmas__alunos'
+    )
+    
+    # Dica: Se quiser contagens separadas, o Django fará isso automaticamente 
+    # se acessarmos as propriedades da relação 'aulas' filtrada no template.
+    return render(request, 'usuarios/dashboard_professor.html', {
+        'instituicoes': instituicoes
+    })

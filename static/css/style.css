@@ -21,6 +21,10 @@
 .alert-info { background-color: #d1ecf1; color: #0c5460; border-color: #bee5eb; }
 .alert-warning { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
 
+.section { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+.resource-group { display: flex; gap: 15px; flex-wrap: wrap; }
+.card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; width: 320px; }
+
 /* ==========================================================================
    LAYOUT
    ========================================================================== */

@@ -1,17 +1,49 @@
-{% extends 'base.html' %}
-{% block content %}
-<h1>Olá, Professor!</h1>
-<hr>
-<h3>Suas Instituições:</h3>
-{% if instituicoes %}
-    <ul>
-        {% for inst in instituicoes %}
-            <li>{{ inst.nome }}</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>Você ainda não possui instituições cadastradas.</p>
-{% endif %}
+<!-- usuarios/dashboard_professor.html -->
 
-<a href="{% url 'criar_instituicao' %}" class="btn">Criar nova Instituição</a>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="dashboard-container" style="padding: 20px;">
+    <h1>Dashboard do Professor</h1>
+
+    {% for inst in instituicoes %}
+        <div class="card" style="margin-bottom: 30px; border: 1px solid #ccc; padding: 15px; border-radius: 8px;">
+            <h2>🏢 Instituição: {{ inst.nome }}</h2>
+
+            {% for turma in inst.turmas.all %}
+                <div style="margin-left: 20px; margin-top: 15px;">
+                    <h3>🎓 Turma: {{ turma.nome }} 
+                        <span style="font-size: 0.8em; color: #666; font-weight: normal;">
+                            ({{ turma.alunos.count }} aluno{{ turma.alunos.count|pluralize }})
+                        </span>
+                    </h3>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                        <thead>
+                            <tr style="background: #f4f4f4;">
+                                <th style="padding: 8px; border: 1px solid #ddd;">Disciplina</th>
+                                <th style="padding: 8px; border: 1px solid #ddd;">Aulas (Pub/Rasc)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for disc in turma.disciplinas.all %}
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #ddd;">{{ disc.nome }}</td>
+                                <td style="padding: 8px; border: 1px solid #ddd;">
+                                    {% with aulas=disc.aulas.all %}
+                                        Pub: {{ aulas|dictsortreversed:"publicado"|length }} | 
+                                        Rasc: {{ aulas|dictsort:"publicado"|length }}
+                                    {% endwith %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endfor %}
+        </div>
+    {% empty %}
+        <p>Você ainda não criou nenhuma instituição.</p>
+    {% endfor %}
+</div>
 {% endblock %}

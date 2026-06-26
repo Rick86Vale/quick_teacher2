@@ -1,18 +1,61 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Recursos de: {{ aula.titulo }}</h2>
+
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ formset.management_form }}
-    
-    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-        {% for form in formset %}
-            <div class="card" style="border: 1px solid #ccc; padding: 15px; width: 300px;">
-                {{ form.as_p }}
-            </div>
-        {% endfor %}
+
+    <div class="section">
+        <h3>🎥 Vídeos</h3>
+        <div class="resource-group">
+            {% for form in formset %}
+                {% if form.instance.tipo == 'VIDEO' %}
+                    <div class="card">
+                        {{ form.as_p }}
+                        {# O campo da Thumb deve estar no form do Video #}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
     </div>
-    
-    <button type="submit" class="btn-primary" style="margin-top: 20px;">Salvar Recursos</button>
+
+    <div class="section">
+        <h3>📄 Documentos PDF</h3>
+        <div class="resource-group">
+            {% for form in formset %}
+                {% if form.instance.tipo == 'PDF' %}
+                    <div class="card">{{ form.as_p }}</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>📝 Atividades de Fixação</h3>
+        <div class="resource-group">
+            {% for form in formset %}
+                {% if form.instance.tipo == 'ATIVIDADE' %}
+                    <div class="card">{{ form.as_p }}</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>🔗 Links Úteis</h3>
+        <div class="resource-group">
+            {% for form in formset %}
+                {% if form.instance.tipo == 'LINK' %}
+                    <div class="card">{{ form.as_p }}</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div style="margin-top: 30px;">
+        <button type="submit" class="btn-primary">Salvar Todos os Recursos</button>
+        <a href="{% url 'visualizar_aula' aula.pk %}" class="btn-secondary">Salvar sem Recursos</a>
+    </div>
 </form>
 {% endblock %}
