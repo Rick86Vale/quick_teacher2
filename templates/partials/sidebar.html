@@ -1,43 +1,45 @@
-<div class="sidebar-menu">
-    <h3>Quick_Teacher2</h3>
+<div class="sidebar-menu" style="padding: 15px; color: white;">
+    <h3 style="margin-bottom: 20px;">Quick_Teacher2</h3>
     
     {% if user.is_authenticated %}
-        <div style="padding: 10px; color: #ddd; font-size: 0.9em; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 10px;">
+        <div style="padding: 10px; color: #ddd; font-size: 0.9em; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 20px;">
             <p><strong>{{ user.username }}</strong></p>
             <p style="font-size: 0.8em; color: #aaa;">{{ user.tipo_usuario }}</p>
         </div>
 
-        {% if user.is_superuser %}
-            <p>Menu Administrador</p>
-            <nav>
-                <ul>
-                    <li><a href="/admin/">Painel de Controle</a></li>
-                    <li><a href="{% url 'admin:usuarios_customuser_add' %}">Cadastrar Usuários</a></li>
+        {% if user.is_staff %}
+            <div style="margin-bottom: 20px;">
+                <p style="font-size: 0.75em; color: #aaa; text-transform: uppercase; letter-spacing: 1px;">Admin</p>
+                <ul style="list-style: none; padding: 0;">
+                    <li><a href="/admin/" style="color: #fff; text-decoration: none;">Painel Django</a></li>
+                    <li><a href="{% url 'admin_dashboard' %}">Dashboard Acadêmico</a></li>
+                    <li><a href="{% url 'admin:usuarios_customuser_add' %}" style="color: #fff; text-decoration: none;">Cadastrar Usuários</a></li>
                 </ul>
-            </nav>
+            </div>
+        {% endif %}
 
-        {% elif user.tipo_usuario == 'PROFESSOR' %}
+        {% if user.tipo_usuario == 'PROFESSOR' %}
             <nav>
-                <ul>
-                    <li><strong>Base e Configuração</strong>
-                        <ul style="list-style: none; padding-left: 10px;">
-                            <li><a href="{% url 'listar_instituicoes' %}">Instituições</a></li>
-                            <li><a href="{% url 'listar_areas' %}">Áreas de Conhecimento</a></li>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 15px;"><strong>Base e Configuração</strong>
+                        <ul style="list-style: none; padding-left: 10px; margin-top: 5px;">
+                            <li><a href="{% url 'listar_instituicoes' %}" style="color: #ccc; text-decoration: none;">Instituições</a></li>
+                            <li><a href="{% url 'listar_areas' %}" style="color: #ccc; text-decoration: none;">Áreas de Conhecimento</a></li>
                         </ul>
                     </li>
 
-                    <li><strong>Gestão Acadêmica</strong>
-                        <ul style="list-style: none; padding-left: 10px;">
-                            <li><a href="{% url 'listar_disciplinas' %}">Disciplinas</a></li>
-                            <li><a href="{% url 'listar_turmas' %}">Turmas</a></li>
+                    <li style="margin-bottom: 15px;"><strong>Gestão Acadêmica</strong>
+                        <ul style="list-style: none; padding-left: 10px; margin-top: 5px;">
+                            <li><a href="{% url 'listar_disciplinas' %}" style="color: #ccc; text-decoration: none;">Disciplinas</a></li>
+                            <li><a href="{% url 'listar_turmas' %}" style="color: #ccc; text-decoration: none;">Turmas</a></li>
                         </ul>
                     </li>
 
-                    <li><strong>Novo Cadastro</strong>
-                        <ul style="list-style: none; padding-left: 10px;">
-                            <li><a href="{% url 'criar_disciplina' %}">+ Disciplina</a></li>
-                            <li><a href="{% url 'criar_turma' %}">+ Turma</a></li>
-                            <li><a href="{% url 'criar_area' %}">+ Área</a></li>
+                    <li style="margin-bottom: 15px;"><strong>Novo Cadastro</strong>
+                        <ul style="list-style: none; padding-left: 10px; margin-top: 5px;">
+                            <li><a href="{% url 'criar_disciplina' %}" style="color: #ccc; text-decoration: none;">+ Disciplina</a></li>
+                            <li><a href="{% url 'criar_turma' %}" style="color: #ccc; text-decoration: none;">+ Turma</a></li>
+                            <li><a href="{% url 'criar_area' %}" style="color: #ccc; text-decoration: none;">+ Área</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -45,21 +47,21 @@
 
         {% elif user.tipo_usuario == 'ALUNO' %}
             <nav>
-                <ul>
-                    <li><a href="{% url 'ver_disciplinas_aluno' %}">Minhas Disciplinas</a></li>
+                <ul style="list-style: none; padding: 0;">
+                    <li><a href="{% url 'ver_disciplinas_aluno' %}" style="color: #fff; text-decoration: none;">Minhas Disciplinas</a></li>
                 </ul>
             </nav>
         {% endif %}
 
-        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
             <form action="{% url 'logout' %}" method="post">
                 {% csrf_token %}
-                <button type="submit" style="background:none; border:none; color:white; cursor:pointer; font-weight:bold;">
+                <button type="submit" style="background:none; border:none; color:white; cursor:pointer; font-weight:bold; font-size: 1em;">
                     Sair
                 </button>
             </form>
         </div>
     {% else %}
-        <nav><ul><li><a href="{% url 'login' %}">Entrar</a></li></ul></nav>
+        <nav><ul style="list-style: none; padding: 0;"><li><a href="{% url 'login' %}" style="color: #fff; text-decoration: none;">Entrar</a></li></ul></nav>
     {% endif %}
 </div>

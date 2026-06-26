@@ -5,6 +5,23 @@ from django.contrib import messages
 from usuarios.views import eh_professor
 from .models import AreaConhecimento, Disciplina, Aula, Turma, Instituicao, Aluno
 from .forms import TurmaForm, InstituicaoForm, DisciplinaForm, AreaConhecimentoForm
+from django.db.models import Count
+from django.contrib.admin.views.decorators import staff_member_required
+
+# --- ADMINISTRADOR ---
+@staff_member_required
+def excluir_turma_admin(request, turma_id):
+    turma = get_object_or_404(Turma, pk=turma_id)
+    nome_turma = turma.nome
+    turma.delete()
+    messages.success(request, f"Turma '{nome_turma}' excluída com sucesso.")
+    return redirect('admin_dashboard')
+
+@staff_member_required # Garante que apenas administradores vejam
+def dashboard_administrativo(request):
+    turmas = Turma.objects.annotate(total_alunos=Count('alunos'))
+    return render(request, 'academico/admin_dashboard.html', {'turmas': turmas})
+
 
 # --- UTILS ---
 def verificar_senha_e_executar(request, acao_func, pk=None):
@@ -97,6 +114,15 @@ def excluir_turma(request, pk):
         get_object_or_404(Turma, pk=p, instituicao__professor=req.user).delete()
         return redirect('listar_turmas')
     return verificar_senha_e_executar(request, acao_excluir, pk)
+
+@login_required
+@user_passes_test(eh_professor)
+def remover_aluno_turma(request, aluno_id):
+    aluno = get_object_or_404(Aluno, pk=aluno_id, turma__instituicao__professor=request.user)
+    aluno.turma = None
+    aluno.save()
+    messages.success(request, f"Matrícula do aluno {aluno.user.username} removida com sucesso.")
+    return redirect('listar_alunos_turma', turma_id=aluno.turma_id if aluno.turma else 1) # Ajuste aqui se necessário
 
 # --- 3. ÁREAS DO CONHECIMENTO ---
 @login_required

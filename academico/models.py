@@ -1,7 +1,10 @@
 # Path: academico/models.py
 import datetime
+import random
+import string
 from django.db import models
 from django.contrib.auth import get_user_model
+
 
 # Obtém o modelo de usuário configurado no projeto
 User = get_user_model()
@@ -96,8 +99,17 @@ class Turma(models.Model):
         verbose_name="Disciplinas vinculadas"
     )
 
-    def __str__(self):
-        return f"{self.nome} - {self.ano} ({self.instituicao.nome})"
+    codigo_convite = models.CharField(max_length=3, unique=True, editable=False, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.codigo_convite:
+            # Gera 3 caracteres (letras maiúsculas ou números)
+            while True:
+                novo_codigo = ''.join(random.choices(string.ascii_uppercase + string.digits, k=3))
+                if not Turma.objects.filter(codigo_convite=novo_codigo).exists():
+                    self.codigo_convite = novo_codigo
+                    break
+        super().save(*args, **kwargs)
 
 # 5. Aula
 class Aula(models.Model):
