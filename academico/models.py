@@ -127,9 +127,11 @@ class Aula(models.Model):
     class Meta:
         ordering = ['ordem']
         unique_together = ['disciplina', 'ordem']
+    
+    publicado = models.BooleanField(default=False, verbose_name="Publicado")
 
     def __str__(self):
-        return f"{self.ordem} - {self.titulo} ({self.disciplina.nome})"
+        return f"{self.titulo} ({'Público' if self.publicado else 'Rascunho'})"
 
 # 6. Convite
 class Convite(models.Model):

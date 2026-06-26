@@ -1,4 +1,6 @@
 # Path: academico/views.py
+import markdown
+from django.utils.safestring import mark_safe
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -7,7 +9,8 @@ from .models import AreaConhecimento, Disciplina, Aula, Turma, Instituicao, Alun
 from .forms import TurmaForm, InstituicaoForm, DisciplinaForm, AreaConhecimentoForm, AulaForm
 from django.db.models import Count
 from django.contrib.admin.views.decorators import staff_member_required
-
+from django.core.exceptions import PermissionDenied
+from django.views.decorators.http import require_POST
 
 # --- ADMINISTRADOR ---
 @staff_member_required
@@ -184,6 +187,7 @@ def detalhes_disciplina(request, pk):
     return render(request, 'academico/detalhes_disciplina.html', {'disciplina': disciplina})
 
 @login_required
+@login_required
 def editar_disciplina(request, pk):
     disc = get_object_or_404(Disciplina, pk=pk, professor=request.user)
     def acao_editar(req, p):
@@ -192,8 +196,11 @@ def editar_disciplina(request, pk):
             form.save()
             return redirect('listar_disciplinas')
         return render(req, 'academico/criar_disciplina.html', {'form': form})
-    if request.method == 'POST': return verificar_senha_e_executar(request, acao_editar, pk)
-    return render(request, 'academico/criar_disciplina.html', {'form': DisciplinaForm(instance=disc, user=req.user)})
+    
+    if request.method == 'POST': 
+        return verificar_senha_e_executar(request, acao_editar, pk)
+        
+    return render(request, 'academico/criar_disciplina.html', {'form': DisciplinaForm(instance=disc, user=request.user)})
 
 @login_required
 def excluir_disciplina(request, pk):
@@ -229,6 +236,63 @@ def criar_aula(request, disciplina_id):
         form = AulaForm()
         
     return render(request, 'academico/criar_aula.html', {'form': form, 'disciplina': disciplina})
+
+@require_POST
+def alternar_publicacao(request, aula_id):
+    aula = get_object_or_404(Aula, pk=aula_id)
+    
+    # Garante que apenas o professor da disciplina possa publicar
+    if request.user == aula.disciplina.professor or request.user.is_staff:
+        aula.publicado = not aula.publicado
+        aula.save()
+        
+        # Feedback visual para o professor
+        estado = "publicada" if aula.publicado else "ocultada"
+        messages.success(request, f"Aula '{aula.titulo}' {estado} com sucesso.")
+        
+    return redirect('gerenciar_aulas', disciplina_id=aula.disciplina.id)
+
+def visualizar_aula(request, aula_id):
+    aula = get_object_or_404(Aula, pk=aula_id)
+    disciplina = aula.disciplina
+    
+    # Verifica permissão
+    e_autor = (request.user == disciplina.professor or request.user.is_staff)
+    
+    # Bloqueia alunos de acessar rascunhos
+    if not aula.publicado and not e_autor:
+        raise PermissionDenied("Esta aula ainda não foi publicada.")
+    
+    # Converte Markdown
+    conteudo_html = mark_safe(markdown.markdown(
+        aula.conteudo, 
+        extensions=['fenced_code', 'tables']
+    ))
+        
+    return render(request, 'academico/visualizar_aula.html', {
+        'aula': aula,
+        'disciplina': disciplina,
+        'conteudo_html': conteudo_html
+    })
+
+@login_required
+def editar_aula(request, pk):
+    aula = get_object_or_404(Aula, pk=pk)
+    
+    # Verifica se o usuário é o professor ou staff
+    if not (request.user == aula.disciplina.professor or request.user.is_staff):
+        raise PermissionDenied("Você não tem permissão para editar esta aula.")
+
+    if request.method == 'POST':
+        form = AulaForm(request.POST, instance=aula)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Aula atualizada com sucesso!")
+            return redirect('visualizar_aula', aula_id=aula.pk)
+    else:
+        form = AulaForm(instance=aula)
+        
+    return render(request, 'academico/editar_aula.html', {'form': form, 'aula': aula})
 
 # --- 6. ALUNO ---
 @login_required
