@@ -125,3 +125,14 @@ def editar_aula(request, pk):
         form = AulaForm(instance=aula)
         
     return render(request, 'academico/editar_aula.html', {'form': form, 'aula': aula})
+
+@login_required
+def selecionar_disciplina_para_aula(request):
+    # Lista apenas as disciplinas que pertencem a este professor
+    disciplinas = Disciplina.objects.filter(professor=request.user)
+    
+    if request.method == 'POST':
+        disciplina_id = request.POST.get('disciplina_id')
+        return redirect('criar_aula', disciplina_id=disciplina_id)
+        
+    return render(request, 'academico/selecionar_disciplina.html', {'disciplinas': disciplinas})
