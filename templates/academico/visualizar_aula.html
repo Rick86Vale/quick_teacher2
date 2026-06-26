@@ -5,7 +5,6 @@
 
     <aside style="width: 250px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
         <h3>Capítulos</h3>
-
         <ul style="list-style: none; padding: 0;">
             {% for a in disciplina.aulas.all %}
                 {% if a.publicado or user.is_staff or user == disciplina.professor %}
@@ -13,10 +12,10 @@
                         <a href="{% url 'visualizar_aula' a.pk %}"
                            style="text-decoration: none; color: {% if a == aula %}#007bff{% else %}#333{% endif %}; font-weight: bold;">
                             {{ a.ordem }}. {{ a.titulo }}
-                            {% if not a.publicado %}
-                                <span style="font-size: 0.7em; color: orange;">(Rascunho)</span>
-                            {% endif %}
                         </a>
+                        {% if not a.publicado %}
+                            <br><span style="font-size: 0.7em; color: orange;">(Rascunho)</span>
+                        {% endif %}
                     </li>
                 {% endif %}
             {% endfor %}
@@ -28,8 +27,7 @@
         {% if not aula.publicado %}
             {% if user.is_staff or user == disciplina.professor %}
                 <div style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
-                    <strong>Modo Edição:</strong>
-                    Esta aula está como <strong>Rascunho</strong> e invisível para os alunos.
+                    <strong>Modo Edição:</strong> Esta aula está como <strong>Rascunho</strong> e invisível para os alunos.
                 </div>
             {% endif %}
         {% endif %}
@@ -38,21 +36,12 @@
 
         {% if user.is_staff or user == disciplina.professor %}
             <div class="actions" style="margin-bottom: 20px;">
-                <a href="{% url 'editar_aula' aula.pk %}" class="btn-primary">
-                    Editar
-                </a>
+                <a href="{% url 'editar_aula' aula.pk %}" class="btn-primary" style="text-decoration: none;">Editar</a>
 
-                <form action="{% url 'alternar_publicacao' aula.pk %}"
-                      method="post"
-                      style="display: inline;">
+                <form action="{% url 'alternar_publicacao' aula.pk %}" method="post" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit"
-                            style="background: none; border: none; color: green; cursor: pointer; text-decoration: underline;">
-                        {% if aula.publicado %}
-                            Ocultar aula
-                        {% else %}
-                            Publicar aula
-                        {% endif %}
+                    <button type="submit" style="background: none; border: none; color: green; cursor: pointer; text-decoration: underline; margin-left: 15px;">
+                        {% if aula.publicado %}Ocultar aula{% else %}Publicar aula{% endif %}
                     </button>
                 </form>
             </div>
@@ -61,8 +50,34 @@
         <article class="markdown-body">
             {{ conteudo_html|safe }}
         </article>
-
     </main>
+
+    <aside style="width: 250px; padding: 15px; border-left: 1px solid #eee;">
+        <h3>Recursos</h3>
+        
+        <div class="card" style="margin-bottom: 15px;">
+            <p><strong>📺 Vídeos</strong></p>
+            {% for video in aula.recursos.all %}
+                {% if video.tipo == 'VIDEO' %}
+                    <a href="{{ video.url }}" target="_blank">{{ video.titulo }}</a><br>
+                {% endif %}
+            {% empty %} <small>Nenhum vídeo.</small> {% endfor %}
+        </div>
+
+        <div class="card" style="margin-bottom: 15px;">
+            <p><strong>📄 PDFs / Materiais</strong></p>
+            {% for arquivo in aula.recursos.all %}
+                {% if arquivo.tipo == 'PDF' %}
+                    <a href="{{ arquivo.arquivo.url }}">Baixar {{ arquivo.titulo }}</a><br>
+                {% endif %}
+            {% empty %} <small>Nenhum material.</small> {% endfor %}
+        </div>
+        
+        <div class="card" style="margin-bottom: 15px; border: 1px solid #007bff; padding: 10px;">
+            <p><strong>✏️ Atividade</strong></p>
+            <a href="#">Responder Questionário</a>
+        </div>
+    </aside>
 
 </div>
 {% endblock %}
