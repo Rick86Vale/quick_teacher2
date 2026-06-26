@@ -1,4 +1,4 @@
-# academico/urls.py
+# Path: academico/urls.py
 from django.urls import path
 from . import views
 
@@ -6,11 +6,11 @@ urlpatterns = [
     # 0. Index
     path('', views.index, name='index'),
 
-    # 1. Administrador (Removido o prefixo 'admin/' para evitar conflito)
+    # 1. Administrador
     path('dashboard-administrativo/', views.dashboard_administrativo, name='admin_dashboard'),
     path('gestao/excluir-turma/<int:turma_id>/', views.excluir_turma_admin, name='excluir_turma_admin'),
     
-    # 2. Instituições (CRUD Completo)
+    # 2. Instituições
     path('instituicoes/', views.listar_instituicoes, name='listar_instituicoes'),
     path('instituicao/nova/', views.criar_instituicao, name='criar_instituicao'),
     path('instituicao/editar/<int:pk>/', views.editar_instituicao, name='editar_instituicao'),
@@ -31,7 +31,7 @@ urlpatterns = [
     path('area/editar/<int:pk>/', views.editar_area, name='editar_area'),
     path('area/excluir/<int:pk>/', views.excluir_area, name='excluir_area'),
     
-    # 5. Disciplinas (CRUD)
+    # 5. Disciplinas
     path('minhas-disciplinas/', views.listar_disciplinas, name='listar_disciplinas'),
     path('disciplina/nova/', views.criar_disciplina, name='criar_disciplina'),
     path('disciplina/editar/<int:pk>/', views.editar_disciplina, name='editar_disciplina'),
@@ -44,13 +44,14 @@ urlpatterns = [
     path('aula/<int:pk>/editar/', views.editar_aula, name='editar_aula'),
     path('aula/<int:aula_id>/alternar-publicacao/', views.alternar_publicacao, name='alternar_publicacao'),
     path('aula/<int:aula_id>/', views.visualizar_aula, name='visualizar_aula'),
-    path('aula/<int:aula_id>/recursos/', views.gerenciar_recursos, name='gerenciar_recursos'),
     path('aula/selecionar-disciplina/', views.selecionar_disciplina_para_aula, name='selecionar_disciplina_para_aula'),
     
-
-    # 7. Aluno (Vínculos e Visualização)
+    # 6.1 Recursos (Fluxo Novo)
+    path('aula/<int:aula_id>/recursos/', views.menu_recursos, name='menu_recursos'),
+    path('aula/<int:aula_id>/recursos/<str:tipo>/', views.gerenciar_recursos_por_tipo, name='gerenciar_recursos_por_tipo'),
+    
+    # 7. Aluno
     path('aluno/minhas-disciplinas/', views.ver_disciplinas_do_aluno, name='ver_disciplinas_aluno'),
-    # A view abaixo deve ser implementada no views.py para funcionar
     path('aluno/matricular/<int:turma_id>/', views.matricular_aluno, name='matricular_aluno'),
     path('aluno/matricular-manual/', views.matricular_aluno_manual, name='matricular_aluno_manual'),
 ]

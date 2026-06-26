@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="padding: 20px;">
+    <h2>Gerenciar Recursos: {{ aula.titulo }}</h2>
+    <p>Selecione o tipo de recurso que deseja adicionar ou editar:</p>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
+        <a href="{% url 'gerenciar_recursos_por_tipo' aula.pk 'VIDEO' %}" class="card" style="padding: 20px; text-decoration: none; border: 1px solid #ddd; border-radius: 8px;">🎥 Gerenciar Vídeos</a>
+        <a href="{% url 'gerenciar_recursos_por_tipo' aula.pk 'PDF' %}" class="card" style="padding: 20px; text-decoration: none; border: 1px solid #ddd; border-radius: 8px;">📄 Gerenciar PDFs</a>
+        <a href="{% url 'gerenciar_recursos_por_tipo' aula.pk 'ATIVIDADE' %}" class="card" style="padding: 20px; text-decoration: none; border: 1px solid #ddd; border-radius: 8px;">📝 Gerenciar Atividades</a>
+        <a href="{% url 'gerenciar_recursos_por_tipo' aula.pk 'LINK' %}" class="card" style="padding: 20px; text-decoration: none; border: 1px solid #ddd; border-radius: 8px;">🔗 Gerenciar Links</a>
+    </div>
+
+    <div style="margin-top: 30px;">
+        <a href="{% url 'visualizar_aula' aula.pk %}" class="btn-secondary">Voltar para a aula</a>
+    </div>
+</div>
+{% endblock %}
