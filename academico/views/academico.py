@@ -1,34 +1,14 @@
-# Path: academico/views.py
-import markdown
-from django.utils.safestring import mark_safe
+# Path: academico/views/academico.py
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+from ..models import AreaConhecimento, Disciplina, Turma, Instituicao, Aluno
+from ..forms import TurmaForm, InstituicaoForm, DisciplinaForm, AreaConhecimentoForm
 from usuarios.views import eh_professor
-from .models import AreaConhecimento, Disciplina, Aula, Turma, Instituicao, Aluno
-from .forms import TurmaForm, InstituicaoForm, DisciplinaForm, AreaConhecimentoForm, AulaForm
-from django.db.models import Count
-from django.contrib.admin.views.decorators import staff_member_required
-from django.core.exceptions import PermissionDenied
-from django.views.decorators.http import require_POST
-
-# --- ADMINISTRADOR ---
-@staff_member_required
-def excluir_turma_admin(request, turma_id):
-    turma = get_object_or_404(Turma, pk=turma_id)
-    nome_turma = turma.nome
-    turma.delete()
-    messages.success(request, f"Turma '{nome_turma}' excluída com sucesso.")
-    return redirect('admin_dashboard')
-
-@staff_member_required # Garante que apenas administradores vejam
-def dashboard_administrativo(request):
-    turmas = Turma.objects.annotate(total_alunos=Count('alunos'))
-    return render(request, 'academico/admin_dashboard.html', {'turmas': turmas})
-
 
 # --- UTILS ---
 def verificar_senha_e_executar(request, acao_func, pk=None):
+    """Função utilitária para exigir senha antes de ações destrutivas."""
     if request.method == 'POST':
         senha = request.POST.get('password_confirm')
         if request.user.check_password(senha):
@@ -126,7 +106,7 @@ def remover_aluno_turma(request, aluno_id):
     aluno.turma = None
     aluno.save()
     messages.success(request, f"Matrícula do aluno {aluno.user.username} removida com sucesso.")
-    return redirect('listar_alunos_turma', turma_id=aluno.turma_id if aluno.turma else 1) # Ajuste aqui se necessário
+    return redirect('listar_alunos_turma', turma_id=aluno.turma_id if aluno.turma else 1)
 
 # --- 3. ÁREAS DO CONHECIMENTO ---
 @login_required
@@ -187,7 +167,6 @@ def detalhes_disciplina(request, pk):
     return render(request, 'academico/detalhes_disciplina.html', {'disciplina': disciplina})
 
 @login_required
-@login_required
 def editar_disciplina(request, pk):
     disc = get_object_or_404(Disciplina, pk=pk, professor=request.user)
     def acao_editar(req, p):
@@ -209,92 +188,7 @@ def excluir_disciplina(request, pk):
         return redirect('listar_disciplinas')
     return verificar_senha_e_executar(request, acao_excluir, pk)
 
-# --- 5. AULAS ---
-# View para apenas listar e gerenciar
-def gerenciar_aulas(request, disciplina_id):
-    disciplina = get_object_or_404(Disciplina, pk=disciplina_id)
-    aulas = Aula.objects.filter(disciplina=disciplina).order_by('ordem')
-    return render(request, 'academico/gerenciar_aulas.html', {
-        'disciplina': disciplina,
-        'aulas': aulas
-    })
-
-# Nova view para criação
-def criar_aula(request, disciplina_id):
-    disciplina = get_object_or_404(Disciplina, pk=disciplina_id)
-    
-    if request.method == 'POST':
-        form = AulaForm(request.POST)
-        if form.is_valid():
-            aula = form.save(commit=False)
-            aula.disciplina = disciplina
-            # Define a ordem baseada na contagem atual + 1
-            aula.ordem = Aula.objects.filter(disciplina=disciplina).count() + 1
-            aula.save()
-            return redirect('gerenciar_aulas', disciplina_id=disciplina.id)
-    else:
-        form = AulaForm()
-        
-    return render(request, 'academico/criar_aula.html', {'form': form, 'disciplina': disciplina})
-
-@require_POST
-def alternar_publicacao(request, aula_id):
-    aula = get_object_or_404(Aula, pk=aula_id)
-    
-    # Garante que apenas o professor da disciplina possa publicar
-    if request.user == aula.disciplina.professor or request.user.is_staff:
-        aula.publicado = not aula.publicado
-        aula.save()
-        
-        # Feedback visual para o professor
-        estado = "publicada" if aula.publicado else "ocultada"
-        messages.success(request, f"Aula '{aula.titulo}' {estado} com sucesso.")
-        
-    return redirect('gerenciar_aulas', disciplina_id=aula.disciplina.id)
-
-def visualizar_aula(request, aula_id):
-    aula = get_object_or_404(Aula, pk=aula_id)
-    disciplina = aula.disciplina
-    
-    # Verifica permissão
-    e_autor = (request.user == disciplina.professor or request.user.is_staff)
-    
-    # Bloqueia alunos de acessar rascunhos
-    if not aula.publicado and not e_autor:
-        raise PermissionDenied("Esta aula ainda não foi publicada.")
-    
-    # Converte Markdown
-    conteudo_html = mark_safe(markdown.markdown(
-        aula.conteudo, 
-        extensions=['fenced_code', 'tables']
-    ))
-        
-    return render(request, 'academico/visualizar_aula.html', {
-        'aula': aula,
-        'disciplina': disciplina,
-        'conteudo_html': conteudo_html
-    })
-
-@login_required
-def editar_aula(request, pk):
-    aula = get_object_or_404(Aula, pk=pk)
-    
-    # Verifica se o usuário é o professor ou staff
-    if not (request.user == aula.disciplina.professor or request.user.is_staff):
-        raise PermissionDenied("Você não tem permissão para editar esta aula.")
-
-    if request.method == 'POST':
-        form = AulaForm(request.POST, instance=aula)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Aula atualizada com sucesso!")
-            return redirect('visualizar_aula', aula_id=aula.pk)
-    else:
-        form = AulaForm(instance=aula)
-        
-    return render(request, 'academico/editar_aula.html', {'form': form, 'aula': aula})
-
-# --- 6. ALUNO ---
+# --- 5. ALUNO ---
 @login_required
 def ver_disciplinas_do_aluno(request):
     aluno = getattr(request.user, 'aluno', None)
@@ -302,7 +196,7 @@ def ver_disciplinas_do_aluno(request):
     disciplinas = turma.disciplinas.all() if turma else []
     return render(request, 'academico/disciplinas_aluno.html', {'disciplinas': disciplinas})
 
-# --- 7. MATRÍCULAS ---
+# --- 6. MATRÍCULAS ---
 @login_required
 @user_passes_test(eh_professor)
 def listar_alunos_turma(request, turma_id):
@@ -319,7 +213,6 @@ def matricular_aluno(request, turma_id):
     messages.success(request, f"Matrícula realizada na turma: {turma.nome}!")
     return redirect('ver_disciplinas_aluno')
 
-# --- 8. MATRÍCULA MANUAL (Adicionar ao views.py) ---
 @login_required
 def matricular_aluno_manual(request):
     if request.method == 'POST':

@@ -4,10 +4,7 @@
 {% block content %}
 <div class="header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
     <h1>Aulas de: {{ disciplina.nome }}</h1>
-    <a href="{% url 'criar_aula' disciplina.pk %}" 
-       style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
-       + Adicionar Aula
-    </a>
+    <a href="{% url 'criar_aula' disciplina.pk %}" class="btn-primary">+ Nova Aula</a>
 </div>
 
 <div class="table-container">
@@ -41,8 +38,6 @@
 
                 <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: center;">
                     <a href="{% url 'visualizar_aula' aula.pk %}" style="margin-right: 10px; color: #333;">Ver</a>
-                    <a href="#" style="margin-right: 10px; color: #333;">Editar</a>
-                    <a href="#" style="color: red;">Excluir</a>
                 </td>
             </tr>
             {% empty %}

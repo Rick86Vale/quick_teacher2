@@ -41,9 +41,11 @@ urlpatterns = [
     # 6. Aulas
     path('disciplina/<int:disciplina_id>/aulas/', views.gerenciar_aulas, name='gerenciar_aulas'),
     path('disciplina/<int:disciplina_id>/aula/nova/', views.criar_aula, name='criar_aula'),
-    path('aula/<int:pk>/editar/', views.editar_aula, name='editar_aula'), # ADICIONE ESTA LINHA
+    path('aula/<int:pk>/editar/', views.editar_aula, name='editar_aula'),
     path('aula/<int:aula_id>/alternar-publicacao/', views.alternar_publicacao, name='alternar_publicacao'),
     path('aula/<int:aula_id>/', views.visualizar_aula, name='visualizar_aula'),
+    # Nova rota adicionada:
+    path('aula/<int:aula_id>/recursos/', views.gerenciar_recursos, name='gerenciar_recursos'),
 
     # 7. Aluno (Vínculos e Visualização)
     path('aluno/minhas-disciplinas/', views.ver_disciplinas_do_aluno, name='ver_disciplinas_aluno'),

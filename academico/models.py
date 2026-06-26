@@ -141,6 +141,9 @@ class Recurso(models.Model):
     url = models.URLField(blank=True, null=True)
     arquivo = models.FileField(upload_to='aulas/materiais/', blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.tipo}: {self.titulo}"
+
 # 6. Convite
 class Convite(models.Model):
     email = models.EmailField(unique=True)

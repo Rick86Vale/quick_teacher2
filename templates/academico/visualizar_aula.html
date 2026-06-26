@@ -23,20 +23,17 @@
     </aside>
 
     <main style="flex: 1; background: white; padding: 30px; border-radius: 8px;">
-
-        {% if not aula.publicado %}
-            {% if user.is_staff or user == disciplina.professor %}
-                <div style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
-                    <strong>Modo Edição:</strong> Esta aula está como <strong>Rascunho</strong> e invisível para os alunos.
+        
+        {% if user.is_staff or user == disciplina.professor %}
+            {% if not aula.publicado %}
+                <div style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
+                    <strong>Modo Edição:</strong> Aula em <strong>Rascunho</strong> (invisível aos alunos).
                 </div>
             {% endif %}
-        {% endif %}
-
-        <h1>{{ aula.titulo }}</h1>
-
-        {% if user.is_staff or user == disciplina.professor %}
+            
             <div class="actions" style="margin-bottom: 20px;">
-                <a href="{% url 'editar_aula' aula.pk %}" class="btn-primary" style="text-decoration: none;">Editar</a>
+                <a href="{% url 'editar_aula' aula.pk %}" class="btn-primary" style="text-decoration: none; padding: 5px 15px; background: #007bff; color: white; border-radius: 4px;">Editar Conteúdo</a>
+                <a href="{% url 'gerenciar_recursos' aula.pk %}" class="btn-secondary" style="margin-left: 10px; text-decoration: none; color: #555;">Gerenciar Recursos</a>
 
                 <form action="{% url 'alternar_publicacao' aula.pk %}" method="post" style="display: inline;">
                     {% csrf_token %}
@@ -46,6 +43,8 @@
                 </form>
             </div>
         {% endif %}
+
+        <h1>{{ aula.titulo }}</h1>
 
         <article class="markdown-body">
             {{ conteudo_html|safe }}
@@ -68,14 +67,15 @@
             <p><strong>📄 PDFs / Materiais</strong></p>
             {% for arquivo in aula.recursos.all %}
                 {% if arquivo.tipo == 'PDF' %}
-                    <a href="{{ arquivo.arquivo.url }}">Baixar {{ arquivo.titulo }}</a><br>
+                    {% if arquivo.arquivo %}
+                        <a href="{{ arquivo.arquivo.url }}">Baixar {{ arquivo.titulo }}</a><br>
+                    {% else %}
+                        <span>{{ arquivo.titulo }} (Sem arquivo)</span><br>
+                    {% endif %}
                 {% endif %}
-            {% empty %} <small>Nenhum material.</small> {% endfor %}
-        </div>
-        
-        <div class="card" style="margin-bottom: 15px; border: 1px solid #007bff; padding: 10px;">
-            <p><strong>✏️ Atividade</strong></p>
-            <a href="#">Responder Questionário</a>
+            {% empty %} 
+                <small>Nenhum material.</small> 
+            {% endfor %}
         </div>
     </aside>
 

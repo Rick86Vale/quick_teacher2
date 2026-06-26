@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Recursos de: {{ aula.titulo }}</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    
+    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+        {% for form in formset %}
+            <div class="card" style="border: 1px solid #ccc; padding: 15px; width: 300px;">
+                {{ form.as_p }}
+            </div>
+        {% endfor %}
+    </div>
+    
+    <button type="submit" class="btn-primary" style="margin-top: 20px;">Salvar Recursos</button>
+</form>
+{% endblock %}
