@@ -8,3 +8,4 @@ urlpatterns = [
     path('usuarios/', include('usuarios.urls')), # As rotas de login estão aqui dentro
 ]
 
+

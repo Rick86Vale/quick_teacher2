@@ -1,5 +1,6 @@
 # Path: usuarios/urls.py
-from django.urls import path
+from django.urls import path, include   
+from . import views
 from django.contrib.auth import views as auth_views 
 from .views import (
     AlunoRegisterView, 
@@ -23,4 +24,8 @@ urlpatterns = [
     # Dashboards
     path('dashboard/', dashboard_aluno, name='dashboard'),
     path('professor/dashboard/', dashboard_professor, name='dashboard_professor'),
+
+    #Usuários
+    path('', include('django.contrib.auth.urls')), # <--- ISSO adiciona 'password_change', 'login', 'logout', etc.
+    path('perfil/', views.perfil_usuario, name='perfil_usuario'),
 ]

@@ -41,6 +41,8 @@
                 <li><a href="{% url 'ver_disciplinas_aluno' %}">Minhas Disciplinas</a></li>
             {% endif %}
 
+            <li><a href="{% url 'perfil_usuario' %}">Perfil</a></li>
+            
             <li><span>Olá, {{ user.username }}</span></li>
             <li>
                 <form action="{% url 'logout' %}" method="post">

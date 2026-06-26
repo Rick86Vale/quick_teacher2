@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 40px auto; padding: 25px; border: 1px solid #ddd; border-radius: 8px; background: #fff;">
+    <h2 style="border-bottom: 2px solid #007bff; padding-bottom: 10px;">Perfil de Usuário</h2>
+    
+    <div style="line-height: 2;">
+        <p><strong>Nome de Usuário:</strong> {{ user.username }}</p>
+        <p><strong>E-mail:</strong> {{ user.email }}</p>
+        <p><strong>Tipo de Usuário:</strong> {{ user.get_tipo_usuario_display }}</p>
+        
+        <!-- Adicione aqui outros campos do seu modelo, por exemplo: -->
+        {% if user.first_name %}
+            <p><strong>Nome Completo:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+        {% endif %}
+        
+        {% if user.data_nascimento %}
+            <p><strong>Data de Nascimento:</strong> {{ user.data_nascimento|date:"d/m/Y" }}</p>
+        {% endif %}
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+        
+        <a href="{% url 'password_change' %}" style="color: #007bff; text-decoration: none;">Alterar Senha</a>
+    </div>
+</div>
+{% endblock %}

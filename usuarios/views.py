@@ -10,6 +10,11 @@ from .forms import AlunoRegistrationForm, ProfessorRegistrationForm # Importando
 from .models import CustomUser
 from academico.models import AreaConhecimento, Disciplina
 
+
+@login_required
+def perfil_usuario(request):
+    return render(request, 'usuarios/perfil.html', {'user': request.user})
+
 # 1. Registro de Aluno
 class AlunoRegisterView(CreateView):
     form_class = AlunoRegistrationForm
