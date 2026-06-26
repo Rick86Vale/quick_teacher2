@@ -1,35 +1,28 @@
-/* Path: static/css/style.css */
+/* ==========================================================================
+   VARIÁVEIS GLOBAIS
+   ========================================================================== */
 
-.table-container { background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-.tag { display: inline-block; background: #e9ecef; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; margin: 2px; }
-
-/* 1. Variáveis Globais (Paleta de Cores) */
 :root {
     --primary: #B8B68F;
     --light-bg: #EBE6D2;
     --neutral: #DBD3C6;
     --accent: #DECCA6;
     --text-muted: #D0C0A7;
+
     --sidebar-bg: #B8B68F;
-    --content-bg: #EBE6D2;
+    --content-bg: #D2D9EB;
+
     --text-main: #5D5A46;
 }
 
-/* 2. Estrutura de Layout (Base do Dashboard) */
+
+/* ==========================================================================
+   LAYOUT
+   ========================================================================== */
+
 .wrapper {
     display: flex;
     min-height: 100vh;
-}
-
-.sidebar {
-    width: 250px;
-    flex-shrink: 0;
-    background-color: var(--sidebar-bg);
-    color: #ffffff;
-    padding: 20px;
-    position: sticky;
-    top: 0;
-    height: 100vh;
 }
 
 .content {
@@ -39,53 +32,194 @@
     color: var(--text-main);
 }
 
-/* 3. Componentes de Navegação */
-.sidebar a {
-    color: rgba(255, 255, 255, 0.8);
+
+/* ==========================================================================
+   NAVBAR
+   ========================================================================== */
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+
+    background: #333;
+    color: #fff;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+
+    list-style: none;
+}
+
+.nav-links a {
+    color: #fff;
     text-decoration: none;
+}
+
+
+/* ==========================================================================
+   DROPDOWN
+   ========================================================================== */
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+
+    min-width: 150px;
+    padding: 10px;
+
+    list-style: none;
+    background: #444;
+
+    z-index: 1000;
+}
+
+.dropdown:hover .dropdown-menu {
     display: block;
-    padding: 8px 0;
 }
 
-.sidebar a:hover {
-    color: white;
-    background-color: rgba(0,0,0,0.1);
-    padding-left: 5px;
+.dropdown-menu li a {
+    display: block;
+    padding: 5px 0;
+
+    color: #ccc;
 }
 
-.top-bar {
-    background: #ffffff;
-    border-left: 5px solid var(--primary);
-    padding: 15px;
-    margin-bottom: 20px;
+.dropdown-menu li a:hover {
+    color: #fff;
 }
 
-/* 4. Cartões (Cards) e Elementos de Conteúdo */
+
+/* ==========================================================================
+   MENU MOBILE
+   ========================================================================== */
+
+.menu-toggle {
+    display: none;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+
+/* ==========================================================================
+   COMPONENTES
+   ========================================================================== */
+
+/* Card */
+
 .card {
-    background: white;
     padding: 20px;
-    border-radius: 8px;
+
+    background: #fff;
     border: 1px solid var(--neutral);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 8px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+    transition: transform .2s, box-shadow .2s;
 }
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .1);
 }
 
-/* 5. Botões e Ações */
-.btn-primary {
-    background-color: var(--primary);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    text-decoration: none;
+/* Barra superior */
+
+.top-bar {
+    margin-bottom: 20px;
+    padding: 15px;
+
+    background: #fff;
+    border-left: 5px solid var(--primary);
+}
+
+/* Tabela */
+
+.table-container {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+}
+
+/* Tag */
+
+.tag {
     display: inline-block;
-    transition: filter 0.2s;
+
+    margin: 2px;
+    padding: 4px 8px;
+
+    font-size: .85em;
+
+    background: #E9ECEF;
+    border-radius: 4px;
+}
+
+
+/* ==========================================================================
+   BOTÕES
+   ========================================================================== */
+
+.btn-primary {
+    display: inline-block;
+
+    padding: 10px 20px;
+
+    color: #fff;
+    text-decoration: none;
+
+    background: var(--primary);
+    border-radius: 5px;
+
+    transition: filter .2s;
 }
 
 .btn-primary:hover {
     filter: brightness(90%);
+}
+
+.logout-btn {
+    background: none;
+    border: none;
+
+    color: #FF9999;
+    cursor: pointer;
+}
+
+
+/* ==========================================================================
+   RESPONSIVIDADE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+
+        position: absolute;
+        top: 60px;
+        left: 0;
+
+        width: 100%;
+        padding: 20px;
+
+        background: #444;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
 }

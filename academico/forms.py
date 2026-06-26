@@ -1,6 +1,7 @@
 # Path: academico/forms.py
 from django import forms
-from .models import Turma, Instituicao, Disciplina, AreaConhecimento
+from .models import Turma, Instituicao, Disciplina, AreaConhecimento, Aula
+
 
 # --- 1. TURMAS ---
 class TurmaForm(forms.ModelForm):
@@ -45,3 +46,13 @@ class DisciplinaForm(forms.ModelForm):
         if user:
             # Garante que o professor veja apenas as áreas que ele criou
             self.fields['area'].queryset = AreaConhecimento.objects.filter(professor=user)
+
+# --- 5. AULAS ---
+class AulaForm(forms.ModelForm):
+    class Meta:
+        model = Aula
+        fields = ['titulo', 'conteudo'] # Ordem removida daqui
+        widgets = {
+            'titulo': forms.TextInput(attrs={'class': 'form-control', 'style': 'width: 100%; padding: 10px;'}),
+            'conteudo': forms.Textarea(attrs={'class': 'form-control', 'style': 'width: 100%; height: 400px; font-family: monospace;', 'placeholder': 'Escreva o conteúdo da aula em Markdown...'}),
+        }

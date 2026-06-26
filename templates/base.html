@@ -6,20 +6,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quick_Teacher2 | Dashboard</title>
+    <title>Quick_Teacher2</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
 
-    <div class="wrapper">
-        <aside class="sidebar">
-            {% include 'partials/sidebar.html' %}
-        </aside>
+    {% include 'partials/navbar.html' %}
 
-        <main class="content">
-            {% block content %}{% endblock %}
-        </main>
-    </div>
+    <main class="content" style="padding: 20px;">
+        {% block content %}{% endblock %}
+    </main>
 
+    <script src="{% static 'js/menu.js' %}"></script>
 </body>
 </html>

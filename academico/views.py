@@ -4,9 +4,10 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from usuarios.views import eh_professor
 from .models import AreaConhecimento, Disciplina, Aula, Turma, Instituicao, Aluno
-from .forms import TurmaForm, InstituicaoForm, DisciplinaForm, AreaConhecimentoForm
+from .forms import TurmaForm, InstituicaoForm, DisciplinaForm, AreaConhecimentoForm, AulaForm
 from django.db.models import Count
 from django.contrib.admin.views.decorators import staff_member_required
+
 
 # --- ADMINISTRADOR ---
 @staff_member_required
@@ -202,13 +203,32 @@ def excluir_disciplina(request, pk):
     return verificar_senha_e_executar(request, acao_excluir, pk)
 
 # --- 5. AULAS ---
-@login_required
+# View para apenas listar e gerenciar
 def gerenciar_aulas(request, disciplina_id):
-    disciplina = get_object_or_404(Disciplina, id=disciplina_id, professor=request.user)
-    aulas = Aula.objects.filter(disciplina=disciplina)
+    disciplina = get_object_or_404(Disciplina, pk=disciplina_id)
+    aulas = Aula.objects.filter(disciplina=disciplina).order_by('ordem')
     return render(request, 'academico/gerenciar_aulas.html', {
-        'disciplina': disciplina, 'aulas': aulas
+        'disciplina': disciplina,
+        'aulas': aulas
     })
+
+# Nova view para criação
+def criar_aula(request, disciplina_id):
+    disciplina = get_object_or_404(Disciplina, pk=disciplina_id)
+    
+    if request.method == 'POST':
+        form = AulaForm(request.POST)
+        if form.is_valid():
+            aula = form.save(commit=False)
+            aula.disciplina = disciplina
+            # Define a ordem baseada na contagem atual + 1
+            aula.ordem = Aula.objects.filter(disciplina=disciplina).count() + 1
+            aula.save()
+            return redirect('gerenciar_aulas', disciplina_id=disciplina.id)
+    else:
+        form = AulaForm()
+        
+    return render(request, 'academico/criar_aula.html', {'form': form, 'disciplina': disciplina})
 
 # --- 6. ALUNO ---
 @login_required

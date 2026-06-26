@@ -8,7 +8,7 @@ urlpatterns = [
 
     # 1. Administrador (Removido o prefixo 'admin/' para evitar conflito)
     path('dashboard-administrativo/', views.dashboard_administrativo, name='admin_dashboard'),
-    path('gestao/excluir-turma/<int:turma_id>/', views.excluir_turma_admin, name='excluir_turma_admin'),git status
+    path('gestao/excluir-turma/<int:turma_id>/', views.excluir_turma_admin, name='excluir_turma_admin'),
     
     # 2. Instituições (CRUD Completo)
     path('instituicoes/', views.listar_instituicoes, name='listar_instituicoes'),
@@ -40,6 +40,7 @@ urlpatterns = [
 
     # 6. Aulas
     path('disciplina/<int:disciplina_id>/aulas/', views.gerenciar_aulas, name='gerenciar_aulas'),
+    path('disciplina/<int:disciplina_id>/aula/nova/', views.criar_aula, name='criar_aula'),
 
     # 7. Aluno (Vínculos e Visualização)
     path('aluno/minhas-disciplinas/', views.ver_disciplinas_do_aluno, name='ver_disciplinas_aluno'),

@@ -1,32 +1,38 @@
+<!--templates/academico/gerenciar_aulas.html-->
 {% extends 'base.html' %}
-
 {% block content %}
-<div class="header-content">
+<div class="header" style="display: flex; justify-content: space-between; align-items: center;">
     <h1>Aulas de: {{ disciplina.nome }}</h1>
-    <a href="{% url 'listar_disciplinas' %}">← Voltar para minhas disciplinas</a>
+    <a href="{% url 'criar_aula' disciplina.pk %}" 
+       style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
+       + Adicionar Aula
+    </a>
 </div>
 
-<div class="content-body" style="margin-top: 20px;">
-    <table style="width: 100%; border-collapse: collapse; background: white;">
+<div style="margin-top: 20px;">
+    <table style="width: 100%; border-collapse: collapse;">
         <thead>
-            <tr style="background: #f4f4f4;">
-                <th style="padding: 10px; text-align: left;">Ordem</th>
-                <th style="padding: 10px; text-align: left;">Título da Aula</th>
-                <th style="padding: 10px; text-align: left;">Ações</th>
+            <tr style="background-color: #f8f9fa; text-align: left;">
+                <th style="padding: 12px; border-bottom: 2px solid #ddd;">Ordem</th>
+                <th style="padding: 12px; border-bottom: 2px solid #ddd;">Título</th>
+                <th style="padding: 12px; border-bottom: 2px solid #ddd; text-align: center;">Ações</th>
             </tr>
         </thead>
         <tbody>
             {% for aula in aulas %}
             <tr>
-                <td style="padding: 10px;">{{ aula.ordem }}</td>
-                <td style="padding: 10px;">{{ aula.titulo }}</td>
-                <td style="padding: 10px;">
-                    <a href="#">Editar</a> | <a href="#">Excluir</a>
+                <td style="padding: 12px; border-bottom: 1px solid #eee;">{{ aula.ordem }}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #eee;">{{ aula.titulo }}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: center;">
+                    <a href="#" style="margin-right: 10px;">Editar</a>
+                    <a href="#" style="color: red;">Excluir</a>
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="3" style="padding: 20px; text-align: center;">Nenhuma aula cadastrada ainda.</td>
+                <td colspan="3" style="padding: 20px; text-align: center; color: #666;">
+                    Nenhuma aula cadastrada nesta disciplina.
+                </td>
             </tr>
             {% endfor %}
         </tbody>
