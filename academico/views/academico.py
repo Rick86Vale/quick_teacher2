@@ -68,17 +68,17 @@ def criar_turma(request):
         if form.is_valid():
             form.save()
             return redirect('listar_turmas')
-    return render(request, 'academico/criar_turma.html', {'form': TurmaForm(user=request.user)})
+    return render(request, 'academico/turmas/criar_turma.html', {'form': TurmaForm(user=request.user)})
 
 @login_required
 def listar_turmas(request):
     turmas = Turma.objects.filter(instituicao__professor=request.user).order_by('instituicao__nome', 'nome')
-    return render(request, 'academico/listar_turmas.html', {'turmas': turmas})
+    return render(request, 'academico/turmas/listar_turmas.html', {'turmas': turmas})
 
 @login_required
 def detalhes_turma(request, pk):
     turma = get_object_or_404(Turma, pk=pk, instituicao__professor=request.user)
-    return render(request, 'academico/detalhes_turma.html', {'turma': turma})
+    return render(request, 'academico/turmas/detalhes_turma.html', {'turma': turma})
 
 @login_required
 def editar_turma(request, pk):
@@ -90,7 +90,7 @@ def editar_turma(request, pk):
             return redirect('listar_turmas')
     else:
         form = TurmaForm(instance=turma, user=request.user)
-    return render(request, 'academico/criar_turma.html', {'form': form})
+    return render(request, 'academico/turmas/criar_turma.html', {'form': form})
 
 @login_required
 def excluir_turma(request, pk):
@@ -154,17 +154,17 @@ def criar_disciplina(request):
             d.professor = request.user
             d.save()
             return redirect('listar_disciplinas')
-    return render(request, 'academico/criar_disciplina.html', {'form': DisciplinaForm(user=request.user)})
+    return render(request, 'academico/disciplinas/criar_disciplina.html', {'form': DisciplinaForm(user=request.user)})
 
 @login_required
 def listar_disciplinas(request):
     disciplinas = Disciplina.objects.filter(professor=request.user)
-    return render(request, 'academico/lista_disciplinas.html', {'disciplinas': disciplinas})
+    return render(request, 'academico/disciplinas/lista_disciplinas.html', {'disciplinas': disciplinas})
 
 @login_required
 def detalhes_disciplina(request, pk):
     disciplina = get_object_or_404(Disciplina, pk=pk, professor=request.user)
-    return render(request, 'academico/detalhes_disciplina.html', {'disciplina': disciplina})
+    return render(request, 'academico/disciplinas/detalhes_disciplina.html', {'disciplina': disciplina})
 
 @login_required
 def editar_disciplina(request, pk):
@@ -174,12 +174,12 @@ def editar_disciplina(request, pk):
         if form.is_valid():
             form.save()
             return redirect('listar_disciplinas')
-        return render(req, 'academico/criar_disciplina.html', {'form': form})
+        return render(req, 'academico/disciplinas/criar_disciplina.html', {'form': form})
     
     if request.method == 'POST': 
         return verificar_senha_e_executar(request, acao_editar, pk)
         
-    return render(request, 'academico/criar_disciplina.html', {'form': DisciplinaForm(instance=disc, user=request.user)})
+    return render(request, 'academico/disciplinas/criar_disciplina.html', {'form': DisciplinaForm(instance=disc, user=request.user)})
 
 @login_required
 def excluir_disciplina(request, pk):
@@ -194,7 +194,7 @@ def ver_disciplinas_do_aluno(request):
     aluno = getattr(request.user, 'aluno', None)
     turma = aluno.turma if aluno else None
     disciplinas = turma.disciplinas.all() if turma else []
-    return render(request, 'academico/disciplinas_aluno.html', {'disciplinas': disciplinas})
+    return render(request, 'academico/disciplinas/disciplinas_aluno.html', {'disciplinas': disciplinas})
 
 # --- 6. MATRÍCULAS ---
 @login_required

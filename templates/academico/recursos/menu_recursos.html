@@ -11,8 +11,9 @@
         <a href="{% url 'gerenciar_recursos_por_tipo' aula.pk 'LINK' %}" class="card" style="padding: 20px; text-decoration: none; border: 1px solid #ddd; border-radius: 8px;">🔗 Gerenciar Links</a>
     </div>
 
-    <div style="margin-top: 30px;">
+    <div style="margin-top: 30px; display: flex; gap: 10px;">
         <a href="{% url 'visualizar_aula' aula.pk %}" class="btn-secondary">Voltar para a aula</a>
+        <a href="{% url 'visualizar_aula' aula.pk %}" class="btn-primary" style="text-decoration: none;">Salvar aula sem recursos</a>
     </div>
 </div>
 {% endblock %}
