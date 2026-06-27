@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="padding: 20px;">
+    <h2>Minhas Disciplinas</h2>
+    
+    {% if disciplinas %}
+        <div class="resource-group" style="display: flex; gap: 20px; flex-wrap: wrap;">
+            {% for disciplina in disciplinas %}
+                <div class="card" style="width: 300px;">
+                    <h3>{{ disciplina.nome }}</h3>
+                    <p><strong>Código:</strong> {{ disciplina.codigo }}</p>
+                    <p>{{ disciplina.descricao|truncatewords:20 }}</p>
+                    <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn-primary">Acessar Aulas</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card">
+            <p>Você ainda não está matriculado em nenhuma disciplina.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
