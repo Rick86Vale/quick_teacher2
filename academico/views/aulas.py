@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils.safestring import mark_safe
 from django.views.decorators.http import require_POST
 from django.forms import inlineformset_factory
+from academico.models import Aula
 
 # Importações dos modelos e formulários
 from ..models import Disciplina, Aula, Aluno, Video, PDF
@@ -67,19 +68,28 @@ def editar_aula(request, pk):
 
 # 4. Visualizar Aula
 def visualizar_aula(request, aula_id):
+    # Busca a aula pelo ID
     aula = get_object_or_404(Aula, pk=aula_id)
+    
+    # Define se o usuário tem permissão de autor ou staff
     e_autor = (request.user == aula.disciplina.professor or request.user.is_staff)
+    
+    # Verifica a permissão de visualização (se não publicado e não for autor)
     if not aula.publicado and not e_autor:
         raise PermissionDenied("Esta aula ainda não foi publicada.")
     
-    conteudo_html = mark_safe(markdown.markdown(aula.conteudo, extensions=['fenced_code', 'tables', 'nl2br']))
+    # A MUDANÇA PRINCIPAL:
+    # Passamos o texto puro (aula.conteudo) diretamente para o template.
+    # A renderização e a aplicação de cores (codehilite) acontecerão
+    # através do filtro personalizado que criamos no 'markdown_extras.py'.
     
     return render(request, 'academico/aulas/visualizar_aula.html', {
         'aula': aula, 
         'disciplina': aula.disciplina, 
-        'conteudo_html': conteudo_html, 
+        'conteudo_html': aula.conteudo, 
         'e_autor': e_autor
     })
+
 
 # 5. Alternar Publicação
 @login_required
