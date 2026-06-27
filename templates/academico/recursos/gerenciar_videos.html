@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Gerenciar Vídeos: {{ aula.titulo }}</h2>
+    <form method="post" id="video-form">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        
+        <div id="video-forms-container">
+            {% for form in formset %}
+                <div class="video-card" style="border: 1px solid #ccc; margin: 10px; padding: 10px;">
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" id="add-video" class="btn-secondary">+ Adicionar mais um vídeo</button>
+        <button type="submit" class="btn-primary">Salvar Vídeos</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('add-video').addEventListener('click', function() {
+        const container = document.getElementById('video-forms-container');
+        const totalForms = document.getElementById('id_videos-TOTAL_FORMS');
+        const newFormCount = parseInt(totalForms.value);
+        
+        // Clona o primeiro formulário (simplificado)
+        const newForm = container.firstElementChild.cloneNode(true);
+        newForm.innerHTML = newForm.innerHTML.replace(/-0-/g, '-' + newFormCount + '-');
+        container.appendChild(newForm);
+        totalForms.value = newFormCount + 1;
+    });
+</script>
+{% endblock %}

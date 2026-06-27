@@ -232,3 +232,17 @@
     }
 
 }
+
+.video-item {
+    width: 250px; /* Define um tamanho fixo para o container do vídeo */
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.video-thumb img {
+    width: 80%;       /* Garante que a imagem preencha a largura do container */
+    height: 116px;     /* Altura fixa para uniformizar todos os cards */
+    object-fit: cover; /* Corta a imagem proporcionalmente em vez de distorcê-la */
+    border-radius: 8px;
+}

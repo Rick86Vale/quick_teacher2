@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="padding: 20px;">
+    <h2>Recursos para: {{ aula.titulo }}</h2>
+    <p>O que você deseja adicionar a esta aula?</p>
+
+    <div class="menu-opcoes" style="display: flex; gap: 15px;">
+        <a href="{% url 'gerenciar_videos' aula.pk %}" class="btn-primary">🎥 Gerenciar Vídeos</a>
+        <a href="#" class="btn-primary">📄 Gerenciar PDFs</a>
+        <a href="#" class="btn-primary">📝 Gerenciar Atividades</a>
+        <a href="#" class="btn-primary">🔗 Gerenciar Links</a>
+    </div>
+
+    <hr>
+    <a href="{% url 'visualizar_aula' aula.pk %}" class="btn-secondary">Finalizar e Visualizar Aula</a>
+</div>
+{% endblock %}

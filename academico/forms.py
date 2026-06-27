@@ -1,7 +1,8 @@
 # Path: academico/forms.py
 from django import forms
-from .models import Turma, Instituicao, Disciplina, AreaConhecimento, Aula
+from .models import Turma, Instituicao, Disciplina, AreaConhecimento, Aula, Video
 from django.forms import inlineformset_factory
+
 
 # --- 1. TURMAS ---
 class TurmaForm(forms.ModelForm):
@@ -57,3 +58,11 @@ class AulaForm(forms.ModelForm):
             'conteudo': forms.Textarea(attrs={'class': 'form-control', 'style': 'width: 100%; height: 400px; font-family: monospace;', 'placeholder': 'Escreva o conteúdo da aula em Markdown...'}),
         }
 
+
+VideoFormSet = inlineformset_factory(
+    Aula, 
+    Video, 
+    fields=('titulo', 'url', 'thumbnail_url'), 
+    extra=1, 
+    can_delete=True
+)

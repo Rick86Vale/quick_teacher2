@@ -1,4 +1,3 @@
-# Path: academico/views/aulas.py
 import markdown
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -9,12 +8,12 @@ from django.views.decorators.http import require_POST
 from django.forms import inlineformset_factory
 
 # Importações dos modelos e formulários
-from ..models import Disciplina, Aula, Aluno
-from ..forms import AulaForm
+from ..models import Disciplina, Aula, Aluno, Video
+from ..forms import AulaForm, VideoFormSet
 
-# --- 5. AULAS 
+# --- GESTÃO DE AULAS
 
-# 5.1. Listagem de Aulas
+# 1. Listagem de Aulas
 @login_required
 def gerenciar_aulas(request, disciplina_id):
     disciplina = get_object_or_404(Disciplina, pk=disciplina_id)
@@ -31,7 +30,7 @@ def gerenciar_aulas(request, disciplina_id):
         
     return render(request, 'academico/aulas/gerenciar_aulas.html', {'disciplina': disciplina, 'aulas': aulas, 'e_autor': e_autor})
 
-# 5.2. Criação de Aula
+# 2. Criação de Aula
 @login_required
 def criar_aula(request, disciplina_id):
     disciplina = get_object_or_404(Disciplina, pk=disciplina_id)
@@ -45,45 +44,13 @@ def criar_aula(request, disciplina_id):
             aula.disciplina = disciplina
             aula.ordem = Aula.objects.filter(disciplina=disciplina).count() + 1
             aula.save()
-            
-            # CORREÇÃO AQUI: Redireciona para a listagem de aulas em vez de 'menu_recursos'
-            return redirect('gerenciar_aulas', disciplina_id=disciplina.pk) 
-            
+            # Em criar_aula, após salvar a aula:
+            return redirect('menu_recursos', aula_id=aula.pk)
     else:
         form = AulaForm()
     return render(request, 'academico/aulas/criar_aula.html', {'form': form, 'disciplina': disciplina})
 
-
-# 5.5. Alternar Publicação
-@login_required
-@require_POST
-def alternar_publicacao(request, aula_id):
-    aula = get_object_or_404(Aula, pk=aula_id)
-    if request.user == aula.disciplina.professor or request.user.is_staff:
-        aula.publicado = not aula.publicado
-        aula.save()
-    return redirect('gerenciar_aulas', disciplina_id=aula.disciplina.id)
-
-# 5.6. Visualizar Aula
-def visualizar_aula(request, aula_id):
-    aula = get_object_or_404(Aula, pk=aula_id)
-    # A variável disciplina já está disponível através de aula.disciplina
-    
-    e_autor = (request.user == aula.disciplina.professor or request.user.is_staff)
-    if not aula.publicado and not e_autor:
-        raise PermissionDenied("Esta aula ainda não foi publicada.")
-    
-    conteudo_html = mark_safe(markdown.markdown(aula.conteudo, extensions=['fenced_code', 'tables', 'nl2br']))
-    
-    # Certifique-se de passar o objeto aula no contexto
-    return render(request, 'academico/aulas/visualizar_aula.html', {
-        'aula': aula, 
-        'disciplina': aula.disciplina, # <--- ADICIONE ESTA LINHA SE ELA NÃO EXISTIR
-        'conteudo_html': conteudo_html, 
-        'e_autor': e_autor
-    })
-
-# 5.7. Editar Aula
+# 3. Edição de Aula
 @login_required
 def editar_aula(request, pk):
     aula = get_object_or_404(Aula, pk=pk)
@@ -99,10 +66,62 @@ def editar_aula(request, pk):
         form = AulaForm(instance=aula)
     return render(request, 'academico/aulas/editar_aula.html', {'form': form, 'aula': aula})
 
-# 5.8. Seletor de Disciplina
+# 4. Visualizar Aula
+def visualizar_aula(request, aula_id):
+    aula = get_object_or_404(Aula, pk=aula_id)
+    e_autor = (request.user == aula.disciplina.professor or request.user.is_staff)
+    if not aula.publicado and not e_autor:
+        raise PermissionDenied("Esta aula ainda não foi publicada.")
+    
+    conteudo_html = mark_safe(markdown.markdown(aula.conteudo, extensions=['fenced_code', 'tables', 'nl2br']))
+    
+    return render(request, 'academico/aulas/visualizar_aula.html', {
+        'aula': aula, 
+        'disciplina': aula.disciplina, 
+        'conteudo_html': conteudo_html, 
+        'e_autor': e_autor
+    })
+
+# 5. Alternar Publicação
+@login_required
+@require_POST
+def alternar_publicacao(request, aula_id):
+    aula = get_object_or_404(Aula, pk=aula_id)
+    if request.user == aula.disciplina.professor or request.user.is_staff:
+        aula.publicado = not aula.publicado
+        aula.save()
+    return redirect('gerenciar_aulas', disciplina_id=aula.disciplina.id)
+
+# 6. Seletor de Disciplina
 @login_required
 def selecionar_disciplina_para_aula(request):
     disciplinas = Disciplina.objects.filter(professor=request.user)
     if request.method == 'POST':
         return redirect('criar_aula', disciplina_id=request.POST.get('disciplina_id'))
     return render(request, 'academico/disciplinas/selecionar_disciplina.html', {'disciplinas': disciplinas})
+
+# 7. Recursos
+# -- 7.1 Menu de Recursos
+@login_required
+def menu_recursos(request, aula_id):
+    aula = get_object_or_404(Aula, pk=aula_id)
+    return render(request, 'academico/recursos/menu_recursos.html', {'aula': aula})
+
+# -- 7.1.1 Videos
+@login_required
+def gerenciar_videos(request, aula_id):
+    aula = get_object_or_404(Aula, pk=aula_id)
+    
+    if request.method == 'POST':
+        formset = VideoFormSet(request.POST, instance=aula)
+        if formset.is_valid():
+            formset.save()
+            messages.success(request, "Vídeos atualizados com sucesso!")
+            return redirect('visualizar_aula', aula_id=aula.pk)
+    else:
+        formset = VideoFormSet(instance=aula)
+        
+    return render(request, 'academico/recursos/gerenciar_videos.html', {
+        'aula': aula,
+        'formset': formset
+    })

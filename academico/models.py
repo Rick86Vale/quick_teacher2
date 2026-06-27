@@ -132,8 +132,21 @@ class Aula(models.Model):
 
     def __str__(self):
         return f"{self.titulo} ({'Público' if self.publicado else 'Rascunho'})"
+    
+# 5.1 Recursos (Vídeos)
+# No seu academico/models.py
+class Video(models.Model):
+    aula = models.ForeignKey('Aula', related_name='videos', on_delete=models.CASCADE)
+    titulo = models.CharField(max_length=200)
+    url = models.URLField()
+    thumbnail_url = models.URLField(blank=True, null=True, help_text="Opcional: link da imagem da capa")
 
-
+    def get_thumbnail(self):
+        if self.thumbnail_url:
+            return self.thumbnail_url
+        # Lógica automática mantida
+        video_id = self.url.split('v=')[-1].split('&')[0] if 'v=' in self.url else None
+        return f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg" if video_id else ""
 
 
 # 6. Convite

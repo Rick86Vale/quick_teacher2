@@ -59,13 +59,23 @@
     <aside style="width: 250px; padding: 15px; border-left: 1px solid #eee;">
         <h3>Recursos</h3>
         
-        <div class="card" style="margin-bottom: 15px;">
-            <p><strong>📺 Vídeos</strong></p>
-            {% for video in aula.recursos.all %}
-                {% if video.tipo == 'VIDEO' %}
-                    <a href="{{ video.url }}" target="_blank">{{ video.titulo }}</a><br>
-                {% endif %}
-            {% empty %} <small>Nenhum vídeo.</small> {% endfor %}
+        <div class="extra-card">
+            <h4>🎥 Vídeos</h4>
+            <div class="video-list">
+                {% for video in aula.videos.all %}
+                   <figure class="video-item">
+                        <a href="{{ video.url }}" target="_blank" class="video-thumb">
+                            <img src="{{ video.get_thumbnail }}" alt="{{ video.titulo }}">
+                            <span class="play-button">▶</span>
+                        </a>
+                        <figcaption style="font-size: 0.9em; margin-top: 5px;">
+                            {{ video.titulo }}
+                        </figcaption>
+                    </figure>
+                {% empty %}
+                    <p>Nenhum vídeo cadastrado nesta aula.</p>
+                {% endfor %}
+            </div>
         </div>
 
         <div class="card" style="margin-bottom: 15px;">
