@@ -41,7 +41,8 @@
             <div class="actions" style="margin-bottom: 20px;">
                 <a href="{% url 'editar_aula' aula.pk %}" class="btn-primary" style="text-decoration: none; padding: 5px 15px; background: #007bff; color: white; border-radius: 4px;">Editar Conteúdo</a>
                 
-                
+                <!-- Botão de Gerenciamento de Recursos -->
+                <a href="{% url 'menu_recursos' aula.pk %}" class="btn-secondary" style="margin-left: 10px; text-decoration: none; padding: 5px 15px; background: #6c757d; color: white; border-radius: 4px;">Gerenciar Recursos</a>
                 
                 <a href="{% url 'criar_aula' disciplina.pk %}" style="margin-left: 10px; text-decoration: none; color: #28a745; font-weight: bold;">+ Nova Aula</a>
 
