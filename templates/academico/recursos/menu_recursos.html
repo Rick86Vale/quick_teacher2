@@ -6,9 +6,9 @@
 
     <div class="menu-opcoes" style="display: flex; gap: 15px;">
         <a href="{% url 'gerenciar_videos' aula.pk %}" class="btn-primary">🎥 Gerenciar Vídeos</a>
-        <a href="#" class="btn-primary">📄 Gerenciar PDFs</a>
-        <a href="#" class="btn-primary">📝 Gerenciar Atividades</a>
-        <a href="#" class="btn-primary">🔗 Gerenciar Links</a>
+        <a href="{% url 'gerenciar_pdfs' aula.pk %}" class="btn-primary">📄 Gerenciar PDFs</a>
+        <a href="{% url 'gerenciar_links' aula.pk %}" class="btn-primary">🔗 Gerenciar Links</a>
+        
     </div>
 
     <hr>

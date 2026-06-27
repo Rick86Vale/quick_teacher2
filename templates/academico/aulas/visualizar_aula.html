@@ -1,6 +1,11 @@
 <!--templates/academico/visualizar_aula.html-->
 
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/aulas.css' %}">
+{% endblock %}
 
 {% block content %}
 <div style="display: flex; gap: 20px; padding: 20px;">
@@ -78,20 +83,26 @@
             </div>
         </div>
 
-        <div class="card" style="margin-bottom: 15px;">
+        <div class="card">
             <p><strong>📄 PDFs / Materiais</strong></p>
-            {% for arquivo in aula.recursos.all %}
-                {% if arquivo.tipo == 'PDF' %}
-                    {% if arquivo.arquivo %}
-                        <a href="{{ arquivo.arquivo.url }}">Baixar {{ arquivo.titulo }}</a><br>
-                    {% else %}
-                        <span>{{ arquivo.titulo }} (Sem arquivo)</span><br>
-                    {% endif %}
-                {% endif %}
-            {% empty %} 
-                <small>Nenhum material.</small> 
+            {% for pdf in aula.pdfs.all %}
+                <a href="{{ pdf.link }}" target="_blank">📄 {{ pdf.titulo }}</a><br>
+            {% empty %}
+                <small>Nenhum material disponível.</small>
             {% endfor %}
         </div>
+
+        <div class="card">
+            <h4>🔗 Links Úteis</h4>
+            <ul>
+                {% for link in aula.links_uteis.all %}
+                    <li><a href="{{ link.url }}" target="_blank">{{ link.titulo }}</a></li>
+                {% empty %}
+                    <li>Nenhum link adicionado.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
     </aside>
 
 </div>

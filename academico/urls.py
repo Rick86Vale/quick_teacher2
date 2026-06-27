@@ -49,6 +49,8 @@ urlpatterns = [
     # 6.1 Recursos (Fluxo Novo)
     path('aula/<int:aula_id>/recursos/', views.menu_recursos, name='menu_recursos'),
     path('aula/<int:aula_id>/videos/', views.gerenciar_videos, name='gerenciar_videos'),
+    path('aula/<int:aula_id>/pdfs/', views.gerenciar_pdfs, name='gerenciar_pdfs'),
+    path('aula/<int:aula_id>/links/', views.gerenciar_links, name='gerenciar_links'),
     
     # 7. Aluno
     path('aluno/minhas-disciplinas/', views.ver_disciplinas_do_aluno, name='ver_disciplinas_aluno'),

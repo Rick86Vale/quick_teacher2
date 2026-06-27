@@ -134,7 +134,6 @@ class Aula(models.Model):
         return f"{self.titulo} ({'Público' if self.publicado else 'Rascunho'})"
     
 # 5.1 Recursos (Vídeos)
-# No seu academico/models.py
 class Video(models.Model):
     aula = models.ForeignKey('Aula', related_name='videos', on_delete=models.CASCADE)
     titulo = models.CharField(max_length=200)
@@ -147,7 +146,25 @@ class Video(models.Model):
         # Lógica automática mantida
         video_id = self.url.split('v=')[-1].split('&')[0] if 'v=' in self.url else None
         return f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg" if video_id else ""
+    
+# 5.2 Recursos (PDF)
+class PDF(models.Model):
+    aula = models.ForeignKey('Aula', related_name='pdfs', on_delete=models.CASCADE)
+    titulo = models.CharField(max_length=200)
+    link = models.URLField(help_text="Cole o link do PDF hospedado (Google Drive, Dropbox, etc.)")
 
+    def __str__(self):
+        return self.titulo
+
+# 5.3 Recursos (Links Úteis)
+class LinkUtil(models.Model):
+    aula = models.ForeignKey('Aula', related_name='links_uteis', on_delete=models.CASCADE)
+    titulo = models.CharField(max_length=200)
+    url = models.URLField()
+
+    def __str__(self):
+        return self.titulo
+    
 
 # 6. Convite
 class Convite(models.Model):

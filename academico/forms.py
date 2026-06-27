@@ -1,6 +1,6 @@
 # Path: academico/forms.py
 from django import forms
-from .models import Turma, Instituicao, Disciplina, AreaConhecimento, Aula, Video
+from .models import Turma, Instituicao, Disciplina, AreaConhecimento, Aula, Video, PDF, LinkUtil
 from django.forms import inlineformset_factory
 
 
@@ -63,6 +63,22 @@ VideoFormSet = inlineformset_factory(
     Aula, 
     Video, 
     fields=('titulo', 'url', 'thumbnail_url'), 
+    extra=1, 
+    can_delete=True
+)
+
+PDFFormSet = inlineformset_factory(
+    Aula, 
+    PDF, 
+    fields=('titulo', 'link'), 
+    extra=1, 
+    can_delete=True
+)
+
+LinkUtilFormSet = inlineformset_factory(
+    Aula, 
+    LinkUtil, 
+    fields=('titulo', 'url'), 
     extra=1, 
     can_delete=True
 )

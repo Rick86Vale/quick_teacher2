@@ -8,9 +8,8 @@ from django.views.decorators.http import require_POST
 from django.forms import inlineformset_factory
 
 # Importações dos modelos e formulários
-from ..models import Disciplina, Aula, Aluno, Video
-from ..forms import AulaForm, VideoFormSet
-
+from ..models import Disciplina, Aula, Aluno, Video, PDF
+from ..forms import AulaForm, VideoFormSet, PDFFormSet, LinkUtilFormSet
 # --- GESTÃO DE AULAS
 
 # 1. Listagem de Aulas
@@ -122,6 +121,44 @@ def gerenciar_videos(request, aula_id):
         formset = VideoFormSet(instance=aula)
         
     return render(request, 'academico/recursos/gerenciar_videos.html', {
+        'aula': aula,
+        'formset': formset
+    })
+
+# -- 7.1.2 PDF
+@login_required
+def gerenciar_pdfs(request, aula_id):
+    aula = get_object_or_404(Aula, pk=aula_id)
+    
+    if request.method == 'POST':
+        formset = PDFFormSet(request.POST, instance=aula)
+        if formset.is_valid():
+            formset.save()
+            messages.success(request, "Links de PDF atualizados!")
+            return redirect('visualizar_aula', aula_id=aula.pk)
+    else:
+        formset = PDFFormSet(instance=aula)
+        
+    return render(request, 'academico/recursos/gerenciar_pdfs.html', {
+        'aula': aula,
+        'formset': formset
+    })
+
+# -- 7.1.3 Links Úteis
+@login_required
+def gerenciar_links(request, aula_id):
+    aula = get_object_or_404(Aula, pk=aula_id)
+    
+    if request.method == 'POST':
+        formset = LinkUtilFormSet(request.POST, instance=aula)
+        if formset.is_valid():
+            formset.save()
+            messages.success(request, "Links úteis atualizados!")
+            return redirect('visualizar_aula', aula_id=aula.pk)
+    else:
+        formset = LinkUtilFormSet(instance=aula)
+        
+    return render(request, 'academico/recursos/gerenciar_links.html', {
         'aula': aula,
         'formset': formset
     })

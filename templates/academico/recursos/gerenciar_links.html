@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="padding: 20px;">
+    <h2>Gerenciar Links Úteis: {{ aula.titulo }}</h2>
+    <form method="post" id="link-form">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        
+        <div id="link-forms-container">
+            {% for form in formset %}
+                <div class="card" style="margin-bottom: 10px;">
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+        
+        <button type="button" id="add-link" class="btn-secondary">+ Adicionar outro Link</button>
+        <button type="submit" class="btn-primary">Salvar Links</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('add-link').addEventListener('click', function() {
+        const container = document.getElementById('link-forms-container');
+        const totalForms = document.getElementById('id_links_uteis-TOTAL_FORMS');
+        const newFormCount = parseInt(totalForms.value);
+        const newForm = container.firstElementChild.cloneNode(true);
+        newForm.innerHTML = newForm.innerHTML.replace(/-0-/g, '-' + newFormCount + '-');
+        container.appendChild(newForm);
+        totalForms.value = newFormCount + 1;
+    });
+</script>
+{% endblock %}
