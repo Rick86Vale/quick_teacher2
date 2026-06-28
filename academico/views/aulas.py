@@ -6,29 +6,24 @@ from django.core.exceptions import PermissionDenied
 from django.utils.safestring import mark_safe
 from django.views.decorators.http import require_POST
 from django.forms import inlineformset_factory
-from academico.models import Aula
+from academico.models import Aula, Disciplina, Aluno
 
 # Importações dos modelos e formulários
 from ..models import Disciplina, Aula, Aluno, Video, PDF
 from ..forms import AulaForm, VideoFormSet, PDFFormSet, LinkUtilFormSet
+
 # --- GESTÃO DE AULAS
+
 
 # 1. Listagem de Aulas
 @login_required
 def gerenciar_aulas(request, disciplina_id):
+    # Fluxo estrito do PROFESSOR
     disciplina = get_object_or_404(Disciplina, pk=disciplina_id)
-    e_autor = (request.user == disciplina.professor or request.user.is_staff)
-    e_aluno = Aluno.objects.filter(user=request.user, turmas__disciplinas=disciplina).exists()
-    
-    if not e_autor and not e_aluno:
-        raise PermissionDenied("Você não está matriculado nesta disciplina.")
-    
-    if e_aluno and not e_autor:
-        aulas = Aula.objects.filter(disciplina=disciplina, publicado=True).order_by('ordem')
-    else:
-        aulas = Aula.objects.filter(disciplina=disciplina).order_by('ordem')
-        
-    return render(request, 'academico/aulas/gerenciar_aulas.html', {'disciplina': disciplina, 'aulas': aulas, 'e_autor': e_autor})
+    # A lógica aqui pode ser focada apenas em EDITAR/CRIAR
+    aulas = Aula.objects.filter(disciplina=disciplina).order_by('ordem')
+    return render(request, 'academico/aulas/gerenciar_aulas.html', {'disciplina': disciplina, 'aulas': aulas})
+
 
 # 2. Criação de Aula
 @login_required

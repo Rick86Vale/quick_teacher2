@@ -164,8 +164,22 @@ def listar_disciplinas(request):
 
 @login_required
 def detalhes_disciplina(request, pk):
-    disciplina = get_object_or_404(Disciplina, pk=pk, professor=request.user)
-    return render(request, 'academico/disciplinas/detalhes_disciplina.html', {'disciplina': disciplina})
+    disciplina = get_object_or_404(Disciplina, pk=pk)
+    
+    # Define se o usuário atual é o professor
+    e_autor = (request.user == disciplina.professor or request.user.is_staff)
+    
+    # Verifica se é aluno matriculado (apenas para garantir segurança)
+    e_aluno = Aluno.objects.filter(user=request.user, turmas__disciplinas=disciplina).exists()
+    
+    if not e_autor and not e_aluno:
+        raise PermissionDenied("Você não tem acesso a esta disciplina.")
+
+    return render(request, 'academico/disciplinas/detalhes_disciplina.html', {
+        'disciplina': disciplina,
+        'e_autor': e_autor
+    })
+
 
 @login_required
 def editar_disciplina(request, pk):

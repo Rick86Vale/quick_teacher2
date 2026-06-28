@@ -26,7 +26,7 @@
                         <div class="card" style="width: 300px; border: 1px solid #ddd; padding: 10px;">
                             <h4>{{ disciplina.nome }}</h4>
                             <p><strong>Código:</strong> {{ disciplina.codigo }}</p>
-                            <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn-primary">Acessar Aulas</a>
+                            <a href="{% url 'detalhes_disciplina' disciplina.pk %}" class="btn-primary">Acessar Aulas</a>
                         </div>
                     {% empty %}
                         <p>Nenhuma disciplina nesta turma.</p>
