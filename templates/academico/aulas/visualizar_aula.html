@@ -6,7 +6,30 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/aulas.css' %}">
-
+    <style>
+    /* Container principal */
+    .codehilite { 
+        background: #272822 !important; 
+        color: #f8f8f2 !important; 
+        padding: 15px; 
+        border-radius: 6px; 
+        overflow-x: auto; 
+        font-family: 'Consolas', 'Monaco', monospace;
+        margin: 15px 0;
+    }
+    
+    /* Cores detalhadas do esquema Monokai */
+    .codehilite .c, .codehilite .cm, .codehilite .c1, .codehilite .cs { color: #75715e } /* Comentários */
+    .codehilite .k, .codehilite .kc, .codehilite .kd, .codehilite .kn, .codehilite .kp, .codehilite .kr { color: #f92672 } /* Keywords (def, import, etc) */
+    .codehilite .s, .codehilite .sa, .codehilite .sb, .codehilite .sc, .codehilite .sd, .codehilite .s1, .codehilite .s2 { color: #e6db74 } /* Strings */
+    .codehilite .nf, .codehilite .fm { color: #a6e22e } /* Funções */
+    .codehilite .m, .codehilite .mi { color: #ae81ff } /* Números */
+    .codehilite .o { color: #f92672 } /* Operadores */
+    .codehilite .n { color: #f8f8f2 } /* Variáveis/Nomes */
+    .codehilite .nt { color: #f92672 } /* Tags HTML */
+    .codehilite .na { color: #a6e22e } /* Atributos HTML */
+    .codehilite .p { color: #f8f8f2 } /* Pontuação */
+</style>
 {% endblock %}
 
 {% block content %}

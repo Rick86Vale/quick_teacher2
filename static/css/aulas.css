@@ -73,19 +73,3 @@
 .video-thumb:hover .play-button {
     background: #FF0000;
 }
-
-/* ==========================================================================
-   CÓDIGO (HIGHLIGHT)
-   ========================================================================== 
-Otimização: Se você usa o pygments.css, estas cores abaixo são redundantes 
-   e podem causar conflito. Se o pygments.css não estiver funcionando, 
-   mantenha estas aqui. Caso esteja, remova-as para deixar o arquivo limpo. 
-.codehilite {
-    background: #272822;
-    color: #f8f8f2;
-    padding: 15px;
-    border-radius: 6px;
-    overflow-x: auto;
-    margin: 15px 0;
-}
-    */
