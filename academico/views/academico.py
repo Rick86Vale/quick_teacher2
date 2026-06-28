@@ -103,7 +103,7 @@ def excluir_turma(request, pk):
 @user_passes_test(eh_professor)
 def remover_aluno_turma(request, aluno_id):
     # Nota: Lógica mantida caso você utilize ForeignKey simples, adapte conforme migração para M2M
-    aluno = get_object_or_404(Aluno, pk=aluno_id, turma__instituicao__professor=request.user)
+    aluno = get_object_or_404(Aluno, pk=aluno_id, turmas__instituicao__professor=request.user)
     aluno.turma = None
     aluno.save()
     messages.success(request, f"Matrícula do aluno {aluno.user.username} removida com sucesso.")

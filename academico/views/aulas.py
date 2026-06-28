@@ -18,7 +18,7 @@ from ..forms import AulaForm, VideoFormSet, PDFFormSet, LinkUtilFormSet
 def gerenciar_aulas(request, disciplina_id):
     disciplina = get_object_or_404(Disciplina, pk=disciplina_id)
     e_autor = (request.user == disciplina.professor or request.user.is_staff)
-    e_aluno = Aluno.objects.filter(user=request.user, turma__disciplinas=disciplina).exists()
+    e_aluno = Aluno.objects.filter(user=request.user, turmas__disciplinas=disciplina).exists()
     
     if not e_autor and not e_aluno:
         raise PermissionDenied("Você não está matriculado nesta disciplina.")
