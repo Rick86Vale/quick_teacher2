@@ -1,11 +1,11 @@
 # Path: academico/views/academico.py
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from ..models import AreaConhecimento, Disciplina, Turma, Instituicao, Aluno
-from ..forms import TurmaForm, InstituicaoForm, DisciplinaForm, AreaConhecimentoForm
+from ..models import AreaConhecimento, Turma, Instituicao, Aluno
+from ..forms import TurmaForm, InstituicaoForm, AreaConhecimentoForm
 from usuarios.views import eh_professor
-from itertools import groupby
 
 # --- 0. UTILS ---
 def verificar_senha_e_executar(request, acao_func, pk=None):
@@ -20,6 +20,9 @@ def verificar_senha_e_executar(request, acao_func, pk=None):
 
 # --- 1. INDEX ---
 def index(request):
+    # Importante: Como movi as Disciplinas, se o index precisar delas, 
+    # você deve importar o modelo Disciplina aqui.
+    from ..models import Disciplina
     areas = AreaConhecimento.objects.all()
     orfas = Disciplina.objects.filter(area__isnull=True)
     return render(request, 'academico/index.html', {'areas': areas, 'orfas': orfas})
@@ -96,14 +99,13 @@ def editar_turma(request, pk):
 @login_required
 def excluir_turma(request, pk):
     def acao_excluir(req, p):
-        get_object_or_404(Turma, pk=p, instituicao__professor=req.user).delete()
+        get_object_or_404(Turma, pk=p, professor=req.user).delete()
         return redirect('listar_turmas')
     return verificar_senha_e_executar(request, acao_excluir, pk)
 
 @login_required
 @user_passes_test(eh_professor)
 def remover_aluno_turma(request, aluno_id):
-    # Nota: Lógica mantida caso você utilize ForeignKey simples, adapte conforme migração para M2M
     aluno = get_object_or_404(Aluno, pk=aluno_id, turmas__instituicao__professor=request.user)
     aluno.turma = None
     aluno.save()
@@ -144,75 +146,4 @@ def excluir_area(request, pk):
     def acao_excluir(req, p):
         get_object_or_404(AreaConhecimento, pk=p, professor=req.user).delete()
         return redirect('listar_areas')
-    return verificar_senha_e_executar(request, acao_excluir, pk)
-
-# --- 5. DISCIPLINAS ---
-@login_required
-def criar_disciplina(request):
-    if request.method == 'POST':
-        form = DisciplinaForm(request.POST, user=request.user)
-        if form.is_valid():
-            d = form.save(commit=False)
-            d.professor = request.user
-            d.save()
-            return redirect('listar_disciplinas')
-    return render(request, 'academico/disciplinas/criar_disciplina.html', {'form': DisciplinaForm(user=request.user)})
-
-
-
-def listar_disciplinas(request):
-    # Busca as disciplinas ordenadas por área para o groupby funcionar
-    disciplinas = Disciplina.objects.filter(professor=request.user).order_by('area__nome')
-    
-    # Agrupa no Python ou use um dicionário manual
-    disciplinas_por_area = {}
-    for d in disciplinas:
-        nome_area = d.area.nome if d.area else "Sem Área Definida"
-        if nome_area not in disciplinas_por_area:
-            disciplinas_por_area[nome_area] = []
-        disciplinas_por_area[nome_area].append(d)
-        
-    return render(request, 'academico/disciplinas/lista_disciplinas.html', {
-        'disciplinas_por_area': disciplinas_por_area
-    })
-
-@login_required
-def detalhes_disciplina(request, pk):
-    disciplina = get_object_or_404(Disciplina, pk=pk)
-    
-    # Define se o usuário atual é o professor
-    e_autor = (request.user == disciplina.professor or request.user.is_staff)
-    
-    # Verifica se é aluno matriculado (apenas para garantir segurança)
-    e_aluno = Aluno.objects.filter(user=request.user, turmas__disciplinas=disciplina).exists()
-    
-    if not e_autor and not e_aluno:
-        raise PermissionDenied("Você não tem acesso a esta disciplina.")
-
-    return render(request, 'academico/disciplinas/detalhes_disciplina.html', {
-        'disciplina': disciplina,
-        'e_autor': e_autor
-    })
-
-
-@login_required
-def editar_disciplina(request, pk):
-    disc = get_object_or_404(Disciplina, pk=pk, professor=request.user)
-    def acao_editar(req, p):
-        form = DisciplinaForm(req.POST, instance=disc, user=req.user)
-        if form.is_valid():
-            form.save()
-            return redirect('listar_disciplinas')
-        return render(req, 'academico/disciplinas/criar_disciplina.html', {'form': form})
-    
-    if request.method == 'POST': 
-        return verificar_senha_e_executar(request, acao_editar, pk)
-        
-    return render(request, 'academico/disciplinas/criar_disciplina.html', {'form': DisciplinaForm(instance=disc, user=request.user)})
-
-@login_required
-def excluir_disciplina(request, pk):
-    def acao_excluir(req, p):
-        get_object_or_404(Disciplina, pk=p, professor=req.user).delete()
-        return redirect('listar_disciplinas')
     return verificar_senha_e_executar(request, acao_excluir, pk)

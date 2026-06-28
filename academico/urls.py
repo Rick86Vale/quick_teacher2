@@ -1,6 +1,8 @@
 # Path: academico/urls.py
 from django.urls import path
-from .views import academico, admin, aluno, aulas
+from .views import academico, admin, aluno, aulas, disciplinas
+
+
 
 urlpatterns = [
     # 0. Index
@@ -23,7 +25,7 @@ urlpatterns = [
     path('turma/excluir/<int:pk>/', academico.excluir_turma, name='excluir_turma'),
     path('turma/<int:pk>/', academico.detalhes_turma, name='detalhes_turma'),
     path('turma/<int:turma_id>/alunos/', aluno.listar_alunos_turma, name='listar_alunos_turma'),
-    path('aluno/remover/<int:aluno_id>/', academico.remover_aluno_turma, name='remover_aluno'),
+    #path('aluno/remover/<int:aluno_id>/', academico.remover_aluno_turma, name='remover_aluno'),
     
     # 4. Áreas de Conhecimento (views/academico.py)
     path('areas/', academico.listar_areas, name='listar_areas'),
@@ -32,11 +34,14 @@ urlpatterns = [
     path('area/excluir/<int:pk>/', academico.excluir_area, name='excluir_area'),
     
     # 5. Disciplinas (views/academico.py)
-    path('minhas-disciplinas/', academico.listar_disciplinas, name='listar_disciplinas'),
-    path('disciplina/nova/', academico.criar_disciplina, name='criar_disciplina'),
-    path('disciplina/editar/<int:pk>/', academico.editar_disciplina, name='editar_disciplina'),
-    path('disciplina/excluir/<int:pk>/', academico.excluir_disciplina, name='excluir_disciplina'),
-    path('disciplina/<int:pk>/', academico.detalhes_disciplina, name='detalhes_disciplina'),
+    path('minhas-disciplinas/', disciplinas.listar_disciplinas, name='listar_disciplinas'),
+    path('disciplina/nova/', disciplinas.criar_disciplina, name='criar_disciplina'),
+    path('disciplina/editar/<int:pk>/', disciplinas.editar_disciplina, name='editar_disciplina'),
+    path('disciplina/excluir/<int:pk>/', disciplinas.excluir_disciplina, name='excluir_disciplina'),
+    path('disciplina/<int:pk>/', disciplinas.detalhes_disciplina, name='detalhes_disciplina'),
+    # Exportar/Importar disciplina
+    path('disciplina/<int:disciplina_id>/exportar/', disciplinas.exportar_disciplina, name='exportar_disciplina'),
+    path('disciplina/importar/', disciplinas.importar_disciplina, name='importar_disciplina'),
 
     # 6. Aulas (views/academico.py)
     path('disciplina/<int:disciplina_id>/aulas/', aulas.gerenciar_aulas, name='gerenciar_aulas'),
@@ -46,7 +51,7 @@ urlpatterns = [
     path('aula/<int:aula_id>/', aulas.visualizar_aula, name='visualizar_aula'),
     path('aula/selecionar-disciplina/', aulas.selecionar_disciplina_para_aula, name='selecionar_disciplina_para_aula'),
     path('aula/<int:pk>/excluir/', aulas.excluir_aula, name='excluir_aula'),
-    path('aula/<int:pk>/editar/', aulas.editar_aula, name='editar_aula'),
+
     
     # 6.1 Recursos (views/academico.py)
     path('aula/<int:aula_id>/recursos/', aulas.menu_recursos, name='menu_recursos'),
