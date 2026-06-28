@@ -9,8 +9,10 @@ from django.forms import inlineformset_factory
 from academico.models import Aula, Disciplina, Aluno
 
 # Importações dos modelos e formulários
-from ..models import Disciplina, Aula, Aluno, Video, PDF
+from ..models import Disciplina, Aula, Aluno, Video, PDF, LinkUtil
 from ..forms import AulaForm, VideoFormSet, PDFFormSet, LinkUtilFormSet
+
+
 
 
 # --- GESTÃO DE AULAS
@@ -69,7 +71,7 @@ def editar_aula(request, pk):
         form = AulaForm(instance=aula)
     return render(request, 'academico/aulas/editar_aula.html', {'form': form, 'aula': aula})
 
-# 45. Visualizar Aula
+# 5. Visualizar Aula
 def visualizar_aula(request, aula_id):
     # Busca a aula pelo ID
     aula = get_object_or_404(Aula, pk=aula_id)
@@ -175,3 +177,4 @@ def gerenciar_links(request, aula_id):
         'aula': aula,
         'formset': formset
     })
+

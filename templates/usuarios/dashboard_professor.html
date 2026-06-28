@@ -3,54 +3,56 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="dashboard-container" style="padding: 20px;">
-    <h1>Dashboard do Professor</h1>
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <h1 style="margin-bottom: 30px; color: #2c3e50;">Painel do Professor</h1>
 
     {% for inst in instituicoes %}
-        <div class="card" style="margin-bottom: 30px; border: 1px solid #ccc; padding: 15px; border-radius: 8px;">
-            <h2>🏢 Instituição: {{ inst.nome }}</h2>
+        <section style="margin-bottom: 40px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <span style="font-size: 1.5em;">🏢</span>
+                <h2 style="margin: 0; color: #34495e;">{{ inst.nome }}</h2>
+            </div>
 
-            {% for turma in inst.turmas.all %}
-                <div style="margin-left: 20px; margin-top: 15px;">
-                    <h3 style="display: flex; align-items: center; justify-content: space-between;">
-                        <span>🎓 Turma: {{ turma.nome }} 
-                            <span style="font-size: 0.8em; color: #666; font-weight: normal;">
-                            ({{ turma.turmas.count }} aluno{{ turma.turmas.count|pluralize }})
-                        </span>
-                        </span>
-                        <a href="{% url 'listar_alunos_turma' turma.pk %}" style="font-size: 0.7em; color: #007bff; text-decoration: none;">Ver Alunos</a>
-                    </h3>
-                    
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                        <thead>
-                            <tr style="background: #f4f4f4;">
-                                <th style="padding: 8px; border: 1px solid #ddd;">Disciplina</th>
-                                <th style="padding: 8px; border: 1px solid #ddd;">Aulas (Pub/Rasc)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
+                {% for turma in inst.turmas.all %}
+                <div style="background: #ffffff; border: 1px solid #e1e8ed; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                        <h3 style="margin: 0; color: #2c3e50;">🎓 {{ turma.nome }}</h3>
+                        <a href="{% url 'listar_alunos_turma' turma.pk %}" style="font-size: 0.85em; background: #eef6ff; color: #007bff; padding: 5px 10px; border-radius: 6px; text-decoration: none; font-weight: 600;">
+                            {{ turma.turmas.count }} Alunos
+                        </a>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <h4 style="margin: 0 0 10px 0; font-size: 0.9em; color: #7f8c8d; text-transform: uppercase;">Disciplinas</h4>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
                             {% for disc in turma.disciplinas.all %}
-                            <tr>
-                                <td style="padding: 8px; border: 1px solid #ddd;">
-                                    <a href="{% url 'detalhes_disciplina' disc.pk %}" style="text-decoration: none; color: #333; font-weight: bold;">
-                                        {{ disc.nome }}
-                                    </a>
-                                </td>
-                                <td style="padding: 8px; border: 1px solid #ddd;">
-                                    {% with aulas=disc.aulas.all %}
-                                        Pub: {{ aulas|dictsortreversed:"publicado"|length }} | 
-                                        Rasc: {{ aulas|dictsort:"publicado"|length }}
-                                    {% endwith %}
-                                </td>
-                            </tr>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f8f9fa; border-radius: 6px;">
+                                <a href="{% url 'detalhes_disciplina' disc.pk %}" style="text-decoration: none; color: #2c3e50; font-weight: 500;">
+                                    {{ disc.nome }}
+                                </a>
+                                {% with aulas=disc.aulas.all %}
+                                <div style="font-size: 0.75em;">
+                                    <span style="color: #27ae60;">● {{ aulas|dictsortreversed:"publicado"|length }}</span>
+                                    <span style="color: #e67e22; margin-left: 8px;">○ {{ aulas|dictsort:"publicado"|length }}</span>
+                                </div>
+                                {% endwith %}
+                            </div>
+                            {% empty %}
+                            <p style="font-size: 0.8em; color: #95a5a6;">Nenhuma disciplina vinculada.</p>
                             {% endfor %}
-                        </tbody>
-                    </table>
+                        </div>
+                    </div>
                 </div>
-            {% endfor %}
-        </div>
+                {% empty %}
+                <p>Nenhuma turma cadastrada nesta instituição.</p>
+                {% endfor %}
+            </div>
+        </section>
     {% empty %}
-        <p>Você ainda não criou nenhuma instituição.</p>
+        <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 12px;">
+            <p>Você ainda não tem instituições cadastradas.</p>
+        </div>
     {% endfor %}
 </div>
 {% endblock %}

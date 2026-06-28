@@ -1,37 +1,55 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="header" style="display: flex; justify-content: space-between; align-items: center;">
-    <h4>templates/academico/disciplinas/detalhes_disciplina.html</h4>
-    <h1>{{ disciplina.nome }}</h1>
-    <span style="background: #333; color: #fff; padding: 5px 10px; border-radius: 4px;">{{ disciplina.codigo }}</span>
-</div>
-
-<p><strong>Área:</strong> {{ disciplina.area|default:"Não definida" }}</p>
-<p><strong>Descrição:</strong> {{ disciplina.descricao }}</p>
-
-{% if e_autor %}
-<div class="actions" style="margin: 20px 0;">
-    <a href="{% url 'gerenciar_aulas' disciplina.id %}" class="btn-primary" 
-       style="background: #6c757d; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;">Gerenciar Aulas</a>
+<div style="max-width: 900px; margin: 0 auto; padding: 20px;">
     
-    <a href="{% url 'criar_aula' disciplina.id %}" 
-       style="background: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; margin-left: 10px;">+ Nova Aula</a>
-</div>
-{% endif %}
+    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px;">
+        <div>
+            <h1 style="margin: 0; color: #2c3e50;">{{ disciplina.nome }}</h1>
+            <div style="color: #7f8c8d; margin-top: 5px;">
+                <strong>Área:</strong> {{ disciplina.area|default:"Não definida" }}
+            </div>
+        </div>
+        <span style="background: #2c3e50; color: #fff; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-family: monospace;">
+            {{ disciplina.codigo }}
+        </span>
+    </div>
 
-<h3 style="margin-top: 30px;">Cronograma de Aulas</h3>
-{% if disciplina.aulas.all %}
-    <ul>
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+        <h4 style="margin: 0 0 10px 0; color: #7f8c8d; text-transform: uppercase; font-size: 0.8em;">Descrição</h4>
+        <p style="margin: 0; line-height: 1.6; color: #34495e;">{{ disciplina.descricao|default:"Nenhuma descrição fornecida." }}</p>
+    </div>
+
+    {% if e_autor %}
+    <div style="display: flex; gap: 10px; margin-bottom: 40px;">
+        <a href="{% url 'gerenciar_aulas' disciplina.pk %}" style="background: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: 500;">Gerenciar Aulas</a>
+        <a href="{% url 'criar_aula' disciplina.pk %}" style="background: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: 500;">+ Nova Aula</a>
+    </div>
+    {% endif %}
+
+    <h3 style="color: #2c3e50; margin-bottom: 20px;">Cronograma de Aulas</h3>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
         {% for aula in disciplina.aulas.all %}
-            <li>
-                <strong>Aula {{ aula.ordem }}:</strong> {{ aula.titulo }}
-                <a href="{% url 'visualizar_aula' aula.id %}">(Acessar)</a>
-            </li>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 15px; border: 1px solid #e1e8ed; border-radius: 8px; background: #fff;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span style="background: #eef2f7; color: #34495e; padding: 5px 12px; border-radius: 5px; font-weight: bold;">
+                        {{ aula.ordem }}
+                    </span>
+                    <span style="font-weight: 500;">{{ aula.titulo }}</span>
+                </div>
+                <a href="{% url 'visualizar_aula' aula.pk %}" style="color: #007bff; text-decoration: none; font-weight: 600; font-size: 0.9em;">
+                    Acessar Conteúdo →
+                </a>
+            </div>
+        {% empty %}
+            <div style="padding: 30px; text-align: center; border: 2px dashed #e1e8ed; border-radius: 8px; color: #95a5a6;">
+                Nenhuma aula cadastrada ainda.
+            </div>
         {% endfor %}
-    </ul>
-{% else %}
-    <p>Nenhuma aula cadastrada ainda.</p>
-{% endif %}
+    </div>
 
-<a href="{% url 'listar_disciplinas' %}" style="display: block; margin-top: 20px;">« Voltar para disciplinas</a>
+    <a href="{% url 'listar_disciplinas' %}" style="display: inline-block; margin-top: 30px; color: #7f8c8d; text-decoration: none;">
+        « Voltar para disciplinas
+    </a>
+</div>
 {% endblock %}

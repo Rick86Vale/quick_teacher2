@@ -5,6 +5,7 @@ from django.contrib import messages
 from ..models import AreaConhecimento, Disciplina, Turma, Instituicao, Aluno
 from ..forms import TurmaForm, InstituicaoForm, DisciplinaForm, AreaConhecimentoForm
 from usuarios.views import eh_professor
+from itertools import groupby
 
 # --- 0. UTILS ---
 def verificar_senha_e_executar(request, acao_func, pk=None):
@@ -157,10 +158,23 @@ def criar_disciplina(request):
             return redirect('listar_disciplinas')
     return render(request, 'academico/disciplinas/criar_disciplina.html', {'form': DisciplinaForm(user=request.user)})
 
-@login_required
+
+
 def listar_disciplinas(request):
-    disciplinas = Disciplina.objects.filter(professor=request.user)
-    return render(request, 'academico/disciplinas/lista_disciplinas.html', {'disciplinas': disciplinas})
+    # Busca as disciplinas ordenadas por área para o groupby funcionar
+    disciplinas = Disciplina.objects.filter(professor=request.user).order_by('area__nome')
+    
+    # Agrupa no Python ou use um dicionário manual
+    disciplinas_por_area = {}
+    for d in disciplinas:
+        nome_area = d.area.nome if d.area else "Sem Área Definida"
+        if nome_area not in disciplinas_por_area:
+            disciplinas_por_area[nome_area] = []
+        disciplinas_por_area[nome_area].append(d)
+        
+    return render(request, 'academico/disciplinas/lista_disciplinas.html', {
+        'disciplinas_por_area': disciplinas_por_area
+    })
 
 @login_required
 def detalhes_disciplina(request, pk):
