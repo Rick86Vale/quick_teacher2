@@ -12,10 +12,13 @@
 
             {% for turma in inst.turmas.all %}
                 <div style="margin-left: 20px; margin-top: 15px;">
-                    <h3>🎓 Turma: {{ turma.nome }} 
-                        <span style="font-size: 0.8em; color: #666; font-weight: normal;">
-                            ({{ turma.alunos.count }} aluno{{ turma.alunos.count|pluralize }})
+                    <h3 style="display: flex; align-items: center; justify-content: space-between;">
+                        <span>🎓 Turma: {{ turma.nome }} 
+                            <span style="font-size: 0.8em; color: #666; font-weight: normal;">
+                            ({{ turma.turmas.count }} aluno{{ turma.turmas.count|pluralize }})
                         </span>
+                        </span>
+                        <a href="{% url 'listar_alunos_turma' turma.pk %}" style="font-size: 0.7em; color: #007bff; text-decoration: none;">Ver Alunos</a>
                     </h3>
                     
                     <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
@@ -28,7 +31,11 @@
                         <tbody>
                             {% for disc in turma.disciplinas.all %}
                             <tr>
-                                <td style="padding: 8px; border: 1px solid #ddd;">{{ disc.nome }}</td>
+                                <td style="padding: 8px; border: 1px solid #ddd;">
+                                    <a href="{% url 'detalhes_disciplina' disc.pk %}" style="text-decoration: none; color: #333; font-weight: bold;">
+                                        {{ disc.nome }}
+                                    </a>
+                                </td>
                                 <td style="padding: 8px; border: 1px solid #ddd;">
                                     {% with aulas=disc.aulas.all %}
                                         Pub: {{ aulas|dictsortreversed:"publicado"|length }} | 

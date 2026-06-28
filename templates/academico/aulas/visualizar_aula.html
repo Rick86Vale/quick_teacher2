@@ -1,5 +1,3 @@
-<!--templates/academico/aulas/visualizar_aula.html-->
-
 {% extends 'base.html' %}
 {% load static %}
 {% load markdown_extras %}
@@ -7,34 +5,27 @@
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/aulas.css' %}">
     <style>
-    /* Container principal */
-    .codehilite { 
-        background: #272822 !important; 
-        color: #f8f8f2 !important; 
-        padding: 15px; 
-        border-radius: 6px; 
-        overflow-x: auto; 
-        font-family: 'Consolas', 'Monaco', monospace;
-        margin: 15px 0;
-    }
-    
-    /* Cores detalhadas do esquema Monokai */
-    .codehilite .c, .codehilite .cm, .codehilite .c1, .codehilite .cs { color: #75715e } /* Comentários */
-    .codehilite .k, .codehilite .kc, .codehilite .kd, .codehilite .kn, .codehilite .kp, .codehilite .kr { color: #f92672 } /* Keywords (def, import, etc) */
-    .codehilite .s, .codehilite .sa, .codehilite .sb, .codehilite .sc, .codehilite .sd, .codehilite .s1, .codehilite .s2 { color: #e6db74 } /* Strings */
-    .codehilite .nf, .codehilite .fm { color: #a6e22e } /* Funções */
-    .codehilite .m, .codehilite .mi { color: #ae81ff } /* Números */
-    .codehilite .o { color: #f92672 } /* Operadores */
-    .codehilite .n { color: #f8f8f2 } /* Variáveis/Nomes */
-    .codehilite .nt { color: #f92672 } /* Tags HTML */
-    .codehilite .na { color: #a6e22e } /* Atributos HTML */
-    .codehilite .p { color: #f8f8f2 } /* Pontuação */
-</style>
+        .codehilite { 
+            background: #272822 !important; 
+            color: #f8f8f2 !important; 
+            padding: 15px; 
+            border-radius: 6px; 
+            overflow-x: auto; 
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin: 15px 0;
+        }
+        .codehilite .k { color: #f92672; } 
+        .codehilite .nf { color: #a6e22e; } 
+        .codehilite .s { color: #e6db74; } 
+        .codehilite .c { color: #75715e; } 
+        .codehilite .o { color: #f92672; } 
+        .codehilite .m { color: #ae81ff; } 
+        .codehilite .n { color: #f8f8f2; } 
+    </style>
 {% endblock %}
 
 {% block content %}
 <div style="display: flex; gap: 20px; padding: 20px;">
-    <!--Barra Lateral Esquerda (Índice)-->
     <aside style="width: 250px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
         <h3>Capítulos</h3>
         <ul style="list-style: none; padding: 0;">
@@ -45,40 +36,40 @@
                            style="text-decoration: none; color: {% if a == aula %}#007bff{% else %}#333{% endif %}; font-weight: bold;">
                             {{ a.ordem }}. {{ a.titulo }}
                         </a>
-                        {% if not a.publicado %}
-                            <br><span style="font-size: 0.7em; color: orange;">(Rascunho)</span>
-                        {% endif %}
+                        {% if not a.publicado %}<br><span style="font-size: 0.7em; color: orange;">(Rascunho)</span>{% endif %}
                     </li>
                 {% endif %}
             {% endfor %}
         </ul>
     </aside>
-    <!--Conteúdo Principal (Aula)-->
+
     <main style="flex: 1; background: white; padding: 30px; border-radius: 8px;">
         
+        <div class="actions" style="margin-bottom: 20px; padding: 15px; background: #e9ecef; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+            <label><strong>Modo de Impressão:</strong></label>
+            <select id="printMode" onchange="applyPrintMode(this.value)">
+                <option value="normal">Normal</option>
+                <option value="columns">Duas Colunas</option>
+                <option value="accessibility">Acessibilidade (Fonte 24)</option>
+            </select>
+            <button onclick="window.print()" class="btn btn-secondary" style="padding: 5px 15px;">Imprimir Aula</button>
+        </div>
+
         {% if user.is_staff or user == disciplina.professor %}
             {% if not aula.publicado %}
                 <div style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
-                    <strong>Modo Edição:</strong> Aula em <strong>Rascunho</strong> (invisível aos alunos).
+                    <strong>Modo Edição:</strong> Aula em Rascunho.
                 </div>
             {% endif %}
             
-            <h4>templates/academico/aulas/visualizar_aula.html (professor) </h4>
             <div class="actions" style="margin-bottom: 20px;">
-                
-                <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn-info" style="text-decoration: none; padding: 5px 15px; background: #17a2b8; color: white; border-radius: 4px; margin-right: 10px;">
-                    Gerenciar Aulas
-                </a>
-
+                <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn-info" style="text-decoration: none; padding: 5px 15px; background: #17a2b8; color: white; border-radius: 4px;">Gerenciar Aulas</a>
                 <a href="{% url 'editar_aula' aula.pk %}" class="btn-primary" style="text-decoration: none; padding: 5px 15px; background: #007bff; color: white; border-radius: 4px;">Editar Conteúdo</a>
-                
-                <a href="{% url 'menu_recursos' aula.pk %}" class="btn-secondary" style="margin-left: 10px; text-decoration: none; padding: 5px 15px; background: #6c757d; color: white; border-radius: 4px;">Gerenciar Recursos</a>
-                
-                <a href="{% url 'criar_aula' disciplina.pk %}" style="margin-left: 10px; text-decoration: none; color: #28a745; font-weight: bold;">+ Nova Aula</a>
-
+                <a href="{% url 'menu_recursos' aula.pk %}" class="btn-secondary" style="text-decoration: none; padding: 5px 15px; background: #6c757d; color: white; border-radius: 4px;">Gerenciar Recursos</a>
+                <a href="{% url 'criar_aula' disciplina.pk %}" style="text-decoration: none; color: #28a745; font-weight: bold; margin-left: 10px;">+ Nova Aula</a>
                 <form action="{% url 'alternar_publicacao' aula.pk %}" method="post" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" style="background: none; border: none; color: green; cursor: pointer; text-decoration: underline; margin-left: 15px;">
+                    <button type="submit" style="background:none; border:none; color:green; cursor:pointer; text-decoration:underline; margin-left: 15px;">
                         {% if aula.publicado %}Ocultar aula{% else %}Publicar aula{% endif %}
                     </button>
                 </form>
@@ -86,7 +77,6 @@
         {% endif %}
 
         <h1>{{ aula.titulo }}</h1>
-
         <article class="markdown-body">
             {{ conteudo_html|markdown }}
         </article>
@@ -94,47 +84,24 @@
 
     <aside style="width: 250px; padding: 15px; border-left: 1px solid #eee;">
         <h3>Recursos</h3>
-        
         <div class="extra-card">
             <h4>🎥 Vídeos</h4>
-            <div class="video-list">
-                {% for video in aula.videos.all %}
-                   <figure class="video-item">
-                        <a href="{{ video.url }}" target="_blank" class="video-thumb">
-                            <img src="{{ video.get_thumbnail }}" alt="{{ video.titulo }}">
-                            <span class="play-button">▶</span>
-                        </a>
-                        <figcaption style="font-size: 0.9em; margin-top: 5px;">
-                            {{ video.titulo }}
-                        </figcaption>
-                    </figure>
-                {% empty %}
-                    <p>Nenhum vídeo cadastrado.</p>
-                {% endfor %}
-            </div>
-        </div>
-
-        <div class="card" style="margin-top: 20px;">
-            <p><strong>📄 PDFs / Materiais</strong></p>
-            {% for pdf in aula.pdfs.all %}
-                <a href="{{ pdf.link }}" target="_blank">📄 {{ pdf.titulo }}</a><br>
-            {% empty %}
-                <small>Nenhum material disponível.</small>
+            {% for video in aula.videos.all %}
+                <figure class="video-item">
+                    <a href="{{ video.url }}" target="_blank" class="video-thumb">
+                        <img src="{{ video.get_thumbnail }}" alt="{{ video.titulo }}">
+                        <span class="play-button">▶</span>
+                    </a>
+                </figure>
             {% endfor %}
         </div>
-
-        <div class="card" style="margin-top: 20px;">
-            <h4>🔗 Links Úteis</h4>
-            <ul>
-                {% for link in aula.links_uteis.all %}
-                    <li><a href="{{ link.url }}" target="_blank">{{ link.titulo }}</a></li>
-                {% empty %}
-                    <li>Nenhum link adicionado.</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-    </aside>
-
+        </aside>
 </div>
+
+<script>
+function applyPrintMode(mode) {
+    document.body.classList.remove('print-columns', 'print-accessibility');
+    if (mode !== 'normal') document.body.classList.add('print-' + mode);
+}
+</script>
 {% endblock %}

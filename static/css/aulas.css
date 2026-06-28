@@ -73,3 +73,37 @@
 .video-thumb:hover .play-button {
     background: #FF0000;
 }
+
+/* ==========================================================================
+   CENTRAL DE CONTROLE DA IMPRESSÃO
+   ========================================================================== */
+
+@media print {
+    /* Esconde elementos desnecessários na impressão */
+    aside, .actions, .header, .card, .extra-card {
+        display: none !important;
+    }
+
+    /* Otimiza o container principal para ocupar toda a folha */
+    main {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    .markdown-body {
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* Modos de Impressão */
+    body.print-columns .markdown-body {
+        column-count: 2;
+        column-gap: 40px;
+    }
+
+    body.print-accessibility .markdown-body {
+        font-size: 24px !important;
+        line-height: 1.4 !important;
+    }
+}

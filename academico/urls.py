@@ -58,5 +58,6 @@ urlpatterns = [
     path('aluno/minhas-disciplinas/', aluno.ver_disciplinas_do_aluno, name='ver_disciplinas_aluno'),
     path('aluno/matricular-manual/', aluno.matricular_aluno_manual, name='matricular_aluno_manual'),
     path('aluno/matricular-manual/<int:turma_id>/', aluno.matricular_aluno_manual, name='matricular_aluno'),
+    path('turma/<int:turma_id>/remover-aluno/<int:aluno_id>/', aluno.remover_aluno_turma, name='remover_aluno_da_turma'),
     
 ]

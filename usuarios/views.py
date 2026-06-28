@@ -75,11 +75,10 @@ from django.db.models import Count, Q
 def dashboard_professor(request):
     instituicoes = Instituicao.objects.filter(professor=request.user).prefetch_related(
         'turmas__disciplinas__aulas',
-        'turmas__alunos'
+        'turmas__turmas' # <--- Corrigido de 'turmas__alunos' para 'turmas__turmas'
     )
-    
-    # Dica: Se quiser contagens separadas, o Django fará isso automaticamente 
-    # se acessarmos as propriedades da relação 'aulas' filtrada no template.
     return render(request, 'usuarios/dashboard_professor.html', {
         'instituicoes': instituicoes
     })
+
+

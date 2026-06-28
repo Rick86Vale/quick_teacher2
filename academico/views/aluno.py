@@ -6,13 +6,11 @@ from django.contrib import messages
 from usuarios.views import eh_professor
 
 
-@login_required
-@user_passes_test(eh_professor)
 def listar_alunos_turma(request, turma_id):
     turma = get_object_or_404(Turma, pk=turma_id, instituicao__professor=request.user)
-    alunos = Aluno.objects.filter(turma=turma)
-    return render(request, 'academico/aluno/listar_alunos_turma.html', {'turma': turma, 'alunos': alunos})
-
+    
+    alunos = Aluno.objects.filter(turmas=turma) 
+    return render(request, 'academico/listar_alunos_turma.html', {'turma': turma, 'alunos': alunos})
 
 @login_required
 def ver_disciplinas_do_aluno(request):
@@ -56,3 +54,15 @@ def matricular_aluno_manual(request, turma_id=None):
             messages.error(request, "Código de turma não encontrado.")
             
     return redirect('ver_disciplinas_aluno')
+
+@login_required
+@user_passes_test(eh_professor)
+def remover_aluno_turma(request, turma_id, aluno_id):
+    turma = get_object_or_404(Turma, pk=turma_id, instituicao__professor=request.user)
+    aluno = get_object_or_404(Aluno, pk=aluno_id)
+    
+    # Remove a turma do aluno (ManyToMany)
+    if aluno.turmas.filter(pk=turma.pk).exists():
+        aluno.turmas.remove(turma)
+        
+    return redirect('listar_alunos_turma', turma_id=turma.pk)
