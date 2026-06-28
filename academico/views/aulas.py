@@ -12,9 +12,8 @@ from academico.models import Aula, Disciplina, Aluno
 from ..models import Disciplina, Aula, Aluno, Video, PDF
 from ..forms import AulaForm, VideoFormSet, PDFFormSet, LinkUtilFormSet
 
+
 # --- GESTÃO DE AULAS
-
-
 # 1. Listagem de Aulas
 @login_required
 def gerenciar_aulas(request, disciplina_id):
@@ -45,7 +44,16 @@ def criar_aula(request, disciplina_id):
         form = AulaForm()
     return render(request, 'academico/aulas/criar_aula.html', {'form': form, 'disciplina': disciplina})
 
-# 3. Edição de Aula
+# 3. Excluir Aula
+@login_required
+def excluir_aula(request, pk):
+    aula = get_object_or_404(Aula, pk=pk)
+    # Opcional: checar se o usuário é o professor da disciplina
+    disciplina_id = aula.disciplina.id
+    aula.delete()
+    return redirect('gerenciar_aulas', disciplina_id=disciplina_id)
+
+# 4. Edição de Aula
 @login_required
 def editar_aula(request, pk):
     aula = get_object_or_404(Aula, pk=pk)
@@ -61,7 +69,7 @@ def editar_aula(request, pk):
         form = AulaForm(instance=aula)
     return render(request, 'academico/aulas/editar_aula.html', {'form': form, 'aula': aula})
 
-# 4. Visualizar Aula
+# 45. Visualizar Aula
 def visualizar_aula(request, aula_id):
     # Busca a aula pelo ID
     aula = get_object_or_404(Aula, pk=aula_id)
@@ -86,7 +94,7 @@ def visualizar_aula(request, aula_id):
     })
 
 
-# 5. Alternar Publicação
+# 6. Alternar Publicação
 @login_required
 @require_POST
 def alternar_publicacao(request, aula_id):
@@ -96,7 +104,7 @@ def alternar_publicacao(request, aula_id):
         aula.save()
     return redirect('gerenciar_aulas', disciplina_id=aula.disciplina.id)
 
-# 6. Seletor de Disciplina
+# 7. Seletor de Disciplina
 @login_required
 def selecionar_disciplina_para_aula(request):
     disciplinas = Disciplina.objects.filter(professor=request.user)

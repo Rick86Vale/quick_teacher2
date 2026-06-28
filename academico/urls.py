@@ -45,6 +45,8 @@ urlpatterns = [
     path('aula/<int:aula_id>/alternar-publicacao/', aulas.alternar_publicacao, name='alternar_publicacao'),
     path('aula/<int:aula_id>/', aulas.visualizar_aula, name='visualizar_aula'),
     path('aula/selecionar-disciplina/', aulas.selecionar_disciplina_para_aula, name='selecionar_disciplina_para_aula'),
+    path('aula/<int:pk>/excluir/', aulas.excluir_aula, name='excluir_aula'),
+    path('aula/<int:pk>/editar/', aulas.editar_aula, name='editar_aula'),
     
     # 6.1 Recursos (views/academico.py)
     path('aula/<int:aula_id>/recursos/', aulas.menu_recursos, name='menu_recursos'),

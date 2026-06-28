@@ -11,7 +11,7 @@
 
 {% block content %}
 <div style="display: flex; gap: 20px; padding: 20px;">
-
+    <!--Barra Lateral Esquerda (Índice)-->
     <aside style="width: 250px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
         <h3>Capítulos</h3>
         <ul style="list-style: none; padding: 0;">
@@ -30,7 +30,7 @@
             {% endfor %}
         </ul>
     </aside>
-
+    <!--Conteúdo Principal (Aula)-->
     <main style="flex: 1; background: white; padding: 30px; border-radius: 8px;">
         
         {% if user.is_staff or user == disciplina.professor %}
@@ -40,7 +40,13 @@
                 </div>
             {% endif %}
             
+            <h4>templates/academico/aulas/visualizar_aula.html (professor) </h4>
             <div class="actions" style="margin-bottom: 20px;">
+                
+                <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn-info" style="text-decoration: none; padding: 5px 15px; background: #17a2b8; color: white; border-radius: 4px; margin-right: 10px;">
+                    Gerenciar Aulas
+                </a>
+
                 <a href="{% url 'editar_aula' aula.pk %}" class="btn-primary" style="text-decoration: none; padding: 5px 15px; background: #007bff; color: white; border-radius: 4px;">Editar Conteúdo</a>
                 
                 <a href="{% url 'menu_recursos' aula.pk %}" class="btn-secondary" style="margin-left: 10px; text-decoration: none; padding: 5px 15px; background: #6c757d; color: white; border-radius: 4px;">Gerenciar Recursos</a>
