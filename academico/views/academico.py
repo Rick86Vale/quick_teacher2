@@ -6,7 +6,7 @@ from ..models import AreaConhecimento, Disciplina, Turma, Instituicao, Aluno
 from ..forms import TurmaForm, InstituicaoForm, DisciplinaForm, AreaConhecimentoForm
 from usuarios.views import eh_professor
 
-# --- UTILS ---
+# --- 0. UTILS ---
 def verificar_senha_e_executar(request, acao_func, pk=None):
     """Função utilitária para exigir senha antes de ações destrutivas."""
     if request.method == 'POST':
@@ -17,13 +17,13 @@ def verificar_senha_e_executar(request, acao_func, pk=None):
             messages.error(request, "Senha incorreta. Ação cancelada.")
     return render(request, 'academico/confirmar_senha.html', {'pk': pk})
 
-# --- 0. INDEX ---
+# --- 1. INDEX ---
 def index(request):
     areas = AreaConhecimento.objects.all()
     orfas = Disciplina.objects.filter(area__isnull=True)
     return render(request, 'academico/index.html', {'areas': areas, 'orfas': orfas})
 
-# --- 1. INSTITUIÇÕES ---
+# --- 2. INSTITUIÇÕES ---
 @login_required
 @user_passes_test(eh_professor)
 def criar_instituicao(request):
@@ -60,7 +60,7 @@ def excluir_instituicao(request, pk):
         return redirect('listar_instituicoes')
     return verificar_senha_e_executar(request, acao_excluir, pk)
 
-# --- 2. TURMAS ---
+# --- 3. TURMAS ---
 @login_required
 def criar_turma(request):
     if request.method == 'POST':
@@ -102,13 +102,14 @@ def excluir_turma(request, pk):
 @login_required
 @user_passes_test(eh_professor)
 def remover_aluno_turma(request, aluno_id):
+    # Nota: Lógica mantida caso você utilize ForeignKey simples, adapte conforme migração para M2M
     aluno = get_object_or_404(Aluno, pk=aluno_id, turma__instituicao__professor=request.user)
     aluno.turma = None
     aluno.save()
     messages.success(request, f"Matrícula do aluno {aluno.user.username} removida com sucesso.")
     return redirect('listar_alunos_turma', turma_id=aluno.turma_id if aluno.turma else 1)
 
-# --- 3. ÁREAS DO CONHECIMENTO ---
+# --- 4. ÁREAS DO CONHECIMENTO ---
 @login_required
 def criar_area(request):
     if request.method == 'POST':
@@ -144,7 +145,7 @@ def excluir_area(request, pk):
         return redirect('listar_areas')
     return verificar_senha_e_executar(request, acao_excluir, pk)
 
-# --- 4. DISCIPLINAS ---
+# --- 5. DISCIPLINAS ---
 @login_required
 def criar_disciplina(request):
     if request.method == 'POST':
@@ -187,42 +188,3 @@ def excluir_disciplina(request, pk):
         get_object_or_404(Disciplina, pk=p, professor=req.user).delete()
         return redirect('listar_disciplinas')
     return verificar_senha_e_executar(request, acao_excluir, pk)
-
-# --- 5. ALUNO ---
-@login_required
-def ver_disciplinas_do_aluno(request):
-    aluno = getattr(request.user, 'aluno', None)
-    turma = aluno.turma if aluno else None
-    disciplinas = turma.disciplinas.all() if turma else []
-    return render(request, 'academico/disciplinas/disciplinas_aluno.html', {'disciplinas': disciplinas})
-
-# --- 6. MATRÍCULAS ---
-@login_required
-@user_passes_test(eh_professor)
-def listar_alunos_turma(request, turma_id):
-    turma = get_object_or_404(Turma, pk=turma_id, instituicao__professor=request.user)
-    alunos = Aluno.objects.filter(turma=turma)
-    return render(request, 'academico/listar_alunos_turma.html', {'turma': turma, 'alunos': alunos})
-
-@login_required
-def matricular_aluno(request, turma_id):
-    turma = get_object_or_404(Turma, pk=turma_id)
-    aluno, created = Aluno.objects.get_or_create(user=request.user)
-    aluno.turma = turma
-    aluno.save()
-    messages.success(request, f"Matrícula realizada na turma: {turma.nome}!")
-    return redirect('ver_disciplinas_aluno')
-
-@login_required
-def matricular_aluno_manual(request):
-    if request.method == 'POST':
-        turma_id = request.POST.get('turma_id')
-        try:
-            turma = Turma.objects.get(pk=turma_id)
-            aluno, created = Aluno.objects.get_or_create(user=request.user)
-            aluno.turma = turma
-            aluno.save()
-            messages.success(request, f"Matrícula realizada na turma: {turma.nome}!")
-        except Turma.DoesNotExist:
-            messages.error(request, "Turma não encontrada. Verifique o ID.")
-    return redirect('ver_disciplinas_aluno')

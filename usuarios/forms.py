@@ -5,8 +5,9 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
 import random
 import datetime
+import string
 
-# --- Formulário do Aluno (Mantém a lógica da matrícula automática) ---
+# --- Formulário do Aluno (Mantém a lógica do número da matrícula automática) ---
 class AlunoRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
     first_name = forms.CharField(max_length=150, required=True, label="Nome")
@@ -24,9 +25,15 @@ class AlunoRegistrationForm(UserCreationForm):
         user.last_name = self.cleaned_data['last_name']
 
         while True:
-            nome_completo = (user.first_name + user.last_name).upper()
-            letras = "".join([c for c in nome_completo if c.isalpha()])[:3]
+            # Lógica alterada:
+            # Pega 1ª letra do nome + 1ª letra do sobrenome + 1 letra aleatória
+            primeira_nome = user.first_name[0].upper()
+            primeira_sobrenome = user.last_name[0].upper()
+            letra_aleatoria = random.choice(string.ascii_uppercase)
+            letras = f"{primeira_nome}{primeira_sobrenome}{letra_aleatoria}"
+            # Pega o ano atual
             ano = str(datetime.date.today().year)
+            # Gera um código de 3 dígitos numéricos aleatórios
             aleatorio = str(random.randint(100, 999))
             nova_matricula = f"{letras}{ano}{aleatorio}"
             

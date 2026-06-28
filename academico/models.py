@@ -176,14 +176,5 @@ class Convite(models.Model):
 # 7. Aluno
 class Aluno(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    turma = models.ForeignKey(
-        Turma, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True, 
-        related_name='alunos'
-    )
-
-    def __str__(self):
-        return self.user.username
-    
+    # Altere de ForeignKey para ManyToManyField
+    turmas = models.ManyToManyField(Turma, related_name='alunos', blank=True)

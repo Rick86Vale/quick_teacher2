@@ -2,9 +2,7 @@
 {% block content %}
 <div class="header">
     <h1>Turma: {{ turma.nome }}</h1>
-    <p style="background: #e1e1e1; display: inline-block; padding: 5px 10px; border-radius: 4px; font-family: monospace;">
-        ID da Turma: <strong>{{ turma.pk }}</strong>
-    </p>
+    
 </div>
 
 <div class="turma-info" style="margin-top: 20px;">
@@ -24,6 +22,14 @@
     <p>Envie este link para seus alunos:</p>
     <code style="background: #eee; padding: 5px; display: block; word-break: break-all;">
         {{ request.scheme }}://{{ request.get_host }}{% url 'matricular_aluno' turma.pk %}
+    </code>
+</div>
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; border: 1px dashed #007bff;">
+    <h3>Código da Turma</h3>
+    <p>Passe este código para seus alunos:</p>
+    
+    <code style="background: #eee; padding: 10px; font-size: 1.5em; display: block; letter-spacing: 2px;">
+        {{ turma.codigo_convite }}
     </code>
 </div>
 
