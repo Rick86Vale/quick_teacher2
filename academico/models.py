@@ -185,7 +185,13 @@ class Convite(models.Model):
 # 7. Aluno
 class Aluno(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    turmas = models.ManyToManyField(Turma, related_name='turmas', blank=True)
+    # Mudamos o related_name para algo que NÃO existe em nenhum outro lugar
+    turmas = models.ManyToManyField(Turma, related_name='alunos_na_turma', blank=True)
+    
+
+    def __str__(self):
+        return self.user.get_full_name() or self.user.username
+    
 
 # 8. Tutoriais
 class Tutorial(models.Model):

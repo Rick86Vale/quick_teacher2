@@ -57,14 +57,12 @@ def dashboard_aluno(request):
     orfas = Disciplina.objects.filter(area__isnull=True)
     return render(request, 'home.html', {'areas': areas, 'orfas': orfas})
 
-# Esta view renderiza o DASHBOARD PROFISSIONAL (Antigo template)
-# Chamada pelo link "Dashboard" no menu Gestão
-@user_passes_test(eh_professor, login_url='login')
+
+# Em usuarios/views.py - Função dashboard_professor
 def dashboard_professor(request):
-    instituicoes = Instituicao.objects.filter(professor=request.user).prefetch_related(
-        'turmas__disciplinas__aulas',
-        'turmas__turmas'
-    )
+    # Use prefetch_related apenas para o que você realmente vai usar no template
+    instituicoes = Instituicao.objects.filter(professor=request.user).prefetch_related('turmas')
+    
     return render(request, 'usuarios/dashboard_professor.html', {
         'instituicoes': instituicoes
     })
