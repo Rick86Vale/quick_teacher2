@@ -10,7 +10,7 @@ from django.db import transaction
 from django.views.decorators.http import require_POST
 
 # Seus modelos e formulários
-from ..models import Disciplina, Aula, Video, PDF, LinkUtil
+from academico.models import Disciplina, Aula, Video, PDF, LinkUtil, Aluno, AulaLida
 from ..forms import AulaForm, VideoFormSet, PDFFormSet, LinkUtilFormSet
 
 # Configuração de Logger
@@ -215,3 +215,15 @@ def reordenar_aulas_salvar(request, pk):
 def reordenar_confirmacao(request, pk):
     disciplina = get_object_or_404(Disciplina, pk=pk)
     return render(request, 'academico/aulas/confirmar_reordenacao.html', {'disciplina': disciplina})
+
+
+@login_required
+def marcar_aula_lida(request, aula_id):
+    aula = get_object_or_404(Aula, pk=aula_id)
+    aluno = get_object_or_404(Aluno, user=request.user)
+    
+    # Validação de tempo (ex: 30 segundos)
+    # Se você quiser uma regra de negócio, pode checar data_criacao ou similar
+    
+    AulaLida.objects.get_or_create(aluno=aluno, aula=aula)
+    return JsonResponse({'status': 'success'})

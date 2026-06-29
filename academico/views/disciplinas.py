@@ -48,9 +48,18 @@ def detalhes_disciplina(request, pk):
     if not e_autor and not e_aluno:
         raise PermissionDenied("Você não tem acesso a esta disciplina.")
 
+    # Se for aluno, buscamos as aulas que ele marcou como lidas
+    aulas_lidas_ids = []
+    if e_aluno:
+        # Import local ou no topo para evitar dependência circular
+        from academico.models import AulaLida
+        aluno = Aluno.objects.get(user=request.user)
+        aulas_lidas_ids = AulaLida.objects.filter(aluno=aluno, aula__disciplina=disciplina).values_list('aula_id', flat=True)
+
     return render(request, 'academico/disciplinas/detalhes_disciplina.html', {
         'disciplina': disciplina,
-        'e_autor': e_autor
+        'e_autor': e_autor,
+        'aulas_lidas_ids': aulas_lidas_ids # Passamos a lista de IDs para o template
     })
 
 @login_required

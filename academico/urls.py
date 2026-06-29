@@ -59,6 +59,8 @@ urlpatterns = [
 
     path('disciplina/<int:pk>/reordenar/confirmar/', aulas.reordenar_confirmacao, name='reordenar_confirmacao'),
 
+    path('aula/<int:aula_id>/marcar-lida/', aulas.marcar_aula_lida, name='marcar_aula_lida'),
+
     
     # 6.1 Recursos (views/academico.py)
     path('aula/<int:aula_id>/recursos/', aulas.menu_recursos, name='menu_recursos'),

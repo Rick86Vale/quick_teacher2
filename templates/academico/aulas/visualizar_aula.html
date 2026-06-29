@@ -5,22 +5,10 @@
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/aulas.css' %}">
     <style>
-        .codehilite { 
-            background: #272822 !important; 
-            color: #f8f8f2 !important; 
-            padding: 15px; 
-            border-radius: 6px; 
-            overflow-x: auto; 
-            font-family: 'Consolas', 'Monaco', monospace;
-            margin: 15px 0;
-        }
-        .codehilite .k { color: #f92672; } 
-        .codehilite .nf { color: #a6e22e; } 
-        .codehilite .s { color: #e6db74; } 
-        .codehilite .c { color: #75715e; } 
-        .codehilite .o { color: #f92672; } 
-        .codehilite .m { color: #ae81ff; } 
-        .codehilite .n { color: #f8f8f2; } 
+        .codehilite { background: #272822 !important; color: #f8f8f2 !important; padding: 15px; border-radius: 6px; overflow-x: auto; font-family: 'Consolas', 'Monaco', monospace; margin: 15px 0; }
+        .codehilite .k { color: #f92672; } .codehilite .nf { color: #a6e22e; } 
+        .codehilite .s { color: #e6db74; } .codehilite .c { color: #75715e; } 
+        .codehilite .o { color: #f92672; } .codehilite .m { color: #ae81ff; } .codehilite .n { color: #f8f8f2; } 
     </style>
 {% endblock %}
 
@@ -30,7 +18,7 @@
         <h3>Capítulos</h3>
         <ul style="list-style: none; padding: 0;">
             {% for a in disciplina.aulas.all %}
-                {% if a.publicado or user.is_staff or user == disciplina.professor %}
+                {% if a.publicado or e_autor %}
                     <li style="margin-bottom: 10px;">
                         <a href="{% url 'visualizar_aula' a.pk %}"
                            style="text-decoration: none; color: {% if a == aula %}#007bff{% else %}#333{% endif %}; font-weight: bold;">
@@ -44,7 +32,6 @@
     </aside>
 
     <main style="flex: 1; background: white; padding: 30px; border-radius: 8px;">
-        
         <div class="actions" style="margin-bottom: 20px; padding: 15px; background: #e9ecef; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
             <label><strong>Modo de Impressão:</strong></label>
             <select id="printMode" onchange="applyPrintMode(this.value)">
@@ -55,7 +42,7 @@
             <button onclick="window.print()" class="btn btn-secondary" style="padding: 5px 15px;">Imprimir Aula</button>
         </div>
 
-        {% if user.is_staff or user == disciplina.professor %}
+        {% if e_autor %}
             {% if not aula.publicado %}
                 <div style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
                     <strong>Modo Edição:</strong> Aula em Rascunho.
@@ -63,28 +50,13 @@
             {% endif %}
             
             <div class="actions" style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
-    
-                <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn btn-sm btn-info">
-                    <i class="fas fa-list"></i> Gerenciar Aulas
-                </a>
-                
-                <a href="{% url 'editar_aula' aula.pk %}" class="btn btn-sm btn-primary">
-                    <i class="fas fa-edit"></i> Editar Conteúdo
-                </a>
-                
-                <a href="{% url 'menu_recursos' aula.pk %}" class="btn btn-sm btn-secondary">
-                    <i class="fas fa-paperclip"></i> Recursos
-                </a>
-                
-                <a href="{% url 'criar_aula' disciplina.pk %}" class="btn btn-sm btn-success">
-                    <i class="fas fa-plus"></i> Nova Aula
-                </a>
-
+                <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn btn-sm btn-info"><i class="fas fa-list"></i> Gerenciar</a>
+                <a href="{% url 'editar_aula' aula.pk %}" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i> Editar</a>
+                <a href="{% url 'menu_recursos' aula.pk %}" class="btn btn-sm btn-secondary"><i class="fas fa-paperclip"></i> Recursos</a>
                 <form action="{% url 'alternar_publicacao' aula.pk %}" method="post" style="display: inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm {% if aula.publicado %}btn-warning{% else %}btn-success{% endif %}">
-                        <i class="fas {% if aula.publicado %}fa-eye-slash{% else %}fa-eye{% endif %}"></i>
-                        {% if aula.publicado %} Ocultar{% else %} Publicar{% endif %}
+                        <i class="fas {% if aula.publicado %}fa-eye-slash{% else %}fa-eye{% endif %}"></i> {% if aula.publicado %}Ocultar{% else %}Publicar{% endif %}
                     </button>
                 </form>
             </div>
@@ -94,6 +66,17 @@
         <article class="markdown-body">
             {{ conteudo_html|markdown }}
         </article>
+
+        {% if not e_autor %}
+            <div style="margin-top: 40px; padding: 25px; border-top: 2px solid #eee; text-align: center; background: #fafafa; border-radius: 8px;">
+                <p id="timer-text" style="color: #666; font-weight: 500;">
+                    Leia o conteúdo com atenção. O botão será liberado em 30 segundos.
+                </p>
+                <button id="btn-marcar-lida" class="btn btn-success" disabled>
+                    <i class="fas fa-clock"></i> Aguardando leitura...
+                </button>
+            </div>
+        {% endif %}
     </main>
 
     <aside style="width: 250px; padding: 15px; border-left: 1px solid #eee;">
@@ -101,15 +84,10 @@
         <div class="extra-card">
             <h4>🎥 Vídeos</h4>
             {% for video in aula.videos.all %}
-                <figure class="video-item">
-                    <a href="{{ video.url }}" target="_blank" class="video-thumb">
-                        <img src="{{ video.get_thumbnail }}" alt="{{ video.titulo }}">
-                        <span class="play-button">▶</span>
-                    </a>
-                </figure>
+                <figure class="video-item"><a href="{{ video.url }}" target="_blank"><img src="{{ video.get_thumbnail }}" alt="{{ video.titulo }}"></a></figure>
             {% endfor %}
         </div>
-        </aside>
+    </aside>
 </div>
 
 <script>
@@ -117,5 +95,38 @@ function applyPrintMode(mode) {
     document.body.classList.remove('print-columns', 'print-accessibility');
     if (mode !== 'normal') document.body.classList.add('print-' + mode);
 }
+
+{% if not e_autor %}
+    document.addEventListener("DOMContentLoaded", function() {
+        const btn = document.getElementById('btn-marcar-lida');
+        const timerText = document.getElementById('timer-text');
+        let timeLeft = 30;
+
+        const countdown = setInterval(() => {
+            timeLeft--;
+            if (timeLeft > 0) {
+                timerText.innerText = `O botão será liberado em ${timeLeft} segundos.`;
+            } else {
+                clearInterval(countdown);
+                timerText.innerText = "Conteúdo lido? Marque abaixo.";
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Marcar como Lida';
+                btn.classList.replace('btn-success', 'btn-primary');
+            }
+        }, 1000);
+
+        btn.onclick = function() {
+            fetch("{% url 'marcar_aula_lida' aula.pk %}", {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json' }
+            }).then(r => r.json()).then(() => {
+                btn.disabled = true;
+                btn.innerText = "Aula Concluída!";
+                btn.classList.replace('btn-primary', 'btn-success');
+                timerText.innerText = "✅ Você concluiu esta aula.";
+            });
+        };
+    });
+{% endif %}
 </script>
 {% endblock %}

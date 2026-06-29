@@ -3,6 +3,7 @@
 {% block content %}
 <div style="max-width: 900px; margin: 0 auto; padding: 20px;">
     
+    <!-- Cabeçalho -->
     <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px;">
         <div>
             <h1 style="margin: 0; color: #2c3e50;">{{ disciplina.nome }}</h1>
@@ -15,11 +16,13 @@
         </span>
     </div>
 
+    <!-- Descrição -->
     <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
         <h4 style="margin: 0 0 10px 0; color: #7f8c8d; text-transform: uppercase; font-size: 0.8em;">Descrição</h4>
         <p style="margin: 0; line-height: 1.6; color: #34495e;">{{ disciplina.descricao|default:"Nenhuma descrição fornecida." }}</p>
     </div>
 
+    <!-- Painel do Professor -->
     {% if e_autor %}
     <div style="display: flex; gap: 10px; margin-bottom: 40px;">
         <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn btn-secondary">
@@ -31,19 +34,34 @@
     </div>
     {% endif %}
 
+    <!-- Cronograma e Status do Aluno -->
     {% if not e_autor %} 
         <h3 style="color: #2c3e50; margin-bottom: 20px;">Cronograma de Aulas</h3>
         <div style="display: flex; flex-direction: column; gap: 10px;">
             {% for aula in disciplina.aulas.all %}
-                {% if aula.publicado %} <div style="display: flex; align-items: center; justify-content: space-between; padding: 15px; border: 1px solid #e1e8ed; border-radius: 8px; background: #fff;">
+                {% if aula.publicado %}
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 15px; border: 1px solid #e1e8ed; border-radius: 8px; 
+                            background: {% if aula.pk in aulas_lidas_ids %}#e8f5e9{% else %}#fff{% endif %};">
+                    
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <span style="background: #eef2f7; color: #34495e; padding: 5px 12px; border-radius: 5px; font-weight: bold;">
+                        <span style="background: {% if aula.pk in aulas_lidas_ids %}#c8e6c9{% else %}#eef2f7{% endif %}; 
+                                     color: #34495e; padding: 5px 12px; border-radius: 5px; font-weight: bold;">
                             {{ aula.ordem }}
                         </span>
-                        <span style="font-weight: 500;">{{ aula.titulo }}</span>
+                        <div style="display: flex; flex-direction: column;">
+                            <span style="font-weight: 500;">{{ aula.titulo }}</span>
+                            {% if aula.pk in aulas_lidas_ids %}
+                                <span style="font-size: 0.75em; color: #2e7d32; font-weight: bold;">
+                                    <i class="fas fa-check-circle"></i> Aula Concluída
+                                </span>
+                            {% endif %}
+                        </div>
                     </div>
-                    <a href="{% url 'visualizar_aula' aula.pk %}" class="btn btn-sm btn-info">
-                        <i class="fas fa-eye"></i> Acessar
+
+                    <a href="{% url 'visualizar_aula' aula.pk %}" 
+                       class="btn btn-sm {% if aula.pk in aulas_lidas_ids %}btn-outline-info{% else %}btn-info{% endif %}">
+                        <i class="fas {% if aula.pk in aulas_lidas_ids %}fa-redo{% else %}fa-eye{% endif %}"></i> 
+                        {% if aula.pk in aulas_lidas_ids %}Revisar{% else %}Acessar{% endif %}
                     </a>
                 </div>
                 {% endif %}

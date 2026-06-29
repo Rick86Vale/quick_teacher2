@@ -133,6 +133,15 @@ class Aula(models.Model):
     def __str__(self):
         return f"{self.titulo} ({'Público' if self.publicado else 'Rascunho'})"
     
+class AulaLida(models.Model):
+    # Use 'Aluno' e 'Aula' como strings para o Django resolver depois
+    aluno = models.ForeignKey('academico.Aluno', on_delete=models.CASCADE)
+    aula = models.ForeignKey('academico.Aula', on_delete=models.CASCADE)
+    data_leitura = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('aluno', 'aula')
+    
 # 5.1 Recursos (Vídeos)
 class Video(models.Model):
     aula = models.ForeignKey('Aula', related_name='videos', on_delete=models.CASCADE)
