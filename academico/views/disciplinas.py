@@ -9,7 +9,7 @@ from django.db import transaction
 from django.urls import reverse
 
 # Importações dos seus módulos locais
-from ..models import Disciplina, Aula, Aluno
+from ..models import Disciplina, Aula, Aluno, Turma
 from ..forms import DisciplinaForm
 from usuarios.views import eh_professor
 from .academico import verificar_senha_e_executar
@@ -118,3 +118,42 @@ def importar_disciplina(request):
             messages.error(request, f"Erro na importação: {str(e)}")
     return redirect('listar_disciplinas')
 
+@login_required
+@user_passes_test(eh_professor)
+def progresso_aluno_individual(request, turma_id, aluno_id):
+    from academico.models import Turma, Aluno, Aula, AulaLida, Disciplina
+    
+    turma = get_object_or_404(Turma, pk=turma_id, instituicao__professor=request.user)
+    aluno = get_object_or_404(Aluno, pk=aluno_id, turmas=turma)
+    
+    disciplinas = turma.disciplinas.all()
+    aulas = Aula.objects.filter(disciplina__in=disciplinas, publicado=True)
+    total_aulas = aulas.count()
+    
+    # Busca quais dessas aulas o aluno já marcou como lidas
+    aulas_lidas_ids = AulaLida.objects.filter(
+        aluno=aluno, 
+        aula__in=aulas
+    ).values_list('aula_id', flat=True)
+    
+    progresso_por_disciplina = []
+    for disc in disciplinas:
+        aulas_disc = aulas.filter(disciplina=disc)
+        total = aulas_disc.count()
+        lidas = aulas_disc.filter(pk__in=aulas_lidas_ids).count()
+        porcentagem = (lidas / total * 100) if total > 0 else 0
+        
+        progresso_por_disciplina.append({
+            'disciplina': disc,
+            'total': total,
+            'lidas': lidas,
+            'porcentagem': round(porcentagem, 1)
+        })
+
+    return render(request, 'academico/progresso_alunos.html', {
+        'aluno': aluno,
+        'turma': turma,
+        'progresso_por_disciplina': progresso_por_disciplina,
+        # Adicione isto para corrigir o erro:
+        'disciplina': disciplinas.first() if disciplinas.exists() else None 
+    })

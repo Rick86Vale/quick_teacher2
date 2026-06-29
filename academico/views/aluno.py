@@ -6,11 +6,23 @@ from django.contrib import messages
 from usuarios.views import eh_professor
 
 
+
+@login_required
 def listar_alunos_turma(request, turma_id):
+    # Busca a turma com segurança e otimização
     turma = get_object_or_404(Turma, pk=turma_id, instituicao__professor=request.user)
     
-    alunos = Aluno.objects.filter(turmas=turma) 
-    return render(request, 'academico/listar_alunos_turma.html', {'turma': turma, 'alunos': alunos})
+    # Busca os alunos matriculados nesta turma
+    alunos = Aluno.objects.filter(turmas=turma).select_related('user')
+    
+    # Busca as disciplinas vinculadas a esta turma
+    disciplinas = turma.disciplinas.all()
+    
+    return render(request, 'academico/listar_alunos_turma.html', {
+        'turma': turma, 
+        'alunos': alunos,
+        'disciplinas': disciplinas
+    })
 
 @login_required
 def ver_disciplinas_do_aluno(request):
