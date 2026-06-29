@@ -22,34 +22,41 @@
 
     {% if e_autor %}
     <div style="display: flex; gap: 10px; margin-bottom: 40px;">
-        <a href="{% url 'gerenciar_aulas' disciplina.pk %}" style="background: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: 500;">Gerenciar Aulas</a>
-        <a href="{% url 'criar_aula' disciplina.pk %}" style="background: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: 500;">+ Nova Aula</a>
+        <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn btn-secondary">
+            <i class="fas fa-list"></i> Gerenciar Aulas
+        </a>
+        <a href="{% url 'criar_aula' disciplina.pk %}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Nova Aula
+        </a>
     </div>
     {% endif %}
 
-    <h3 style="color: #2c3e50; margin-bottom: 20px;">Cronograma de Aulas</h3>
-    <div style="display: flex; flex-direction: column; gap: 10px;">
-        {% for aula in disciplina.aulas.all %}
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 15px; border: 1px solid #e1e8ed; border-radius: 8px; background: #fff;">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span style="background: #eef2f7; color: #34495e; padding: 5px 12px; border-radius: 5px; font-weight: bold;">
-                        {{ aula.ordem }}
-                    </span>
-                    <span style="font-weight: 500;">{{ aula.titulo }}</span>
+    {% if not e_autor %} 
+        <h3 style="color: #2c3e50; margin-bottom: 20px;">Cronograma de Aulas</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            {% for aula in disciplina.aulas.all %}
+                {% if aula.publicado %} <div style="display: flex; align-items: center; justify-content: space-between; padding: 15px; border: 1px solid #e1e8ed; border-radius: 8px; background: #fff;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span style="background: #eef2f7; color: #34495e; padding: 5px 12px; border-radius: 5px; font-weight: bold;">
+                            {{ aula.ordem }}
+                        </span>
+                        <span style="font-weight: 500;">{{ aula.titulo }}</span>
+                    </div>
+                    <a href="{% url 'visualizar_aula' aula.pk %}" class="btn btn-sm btn-info">
+                        <i class="fas fa-eye"></i> Acessar
+                    </a>
                 </div>
-                <a href="{% url 'visualizar_aula' aula.pk %}" style="color: #007bff; text-decoration: none; font-weight: 600; font-size: 0.9em;">
-                    Acessar Conteúdo →
-                </a>
-            </div>
-        {% empty %}
-            <div style="padding: 30px; text-align: center; border: 2px dashed #e1e8ed; border-radius: 8px; color: #95a5a6;">
-                Nenhuma aula cadastrada ainda.
-            </div>
-        {% endfor %}
-    </div>
+                {% endif %}
+            {% empty %}
+                <div style="padding: 30px; text-align: center; border: 2px dashed #e1e8ed; border-radius: 8px; color: #95a5a6;">
+                    Nenhuma aula disponível no momento.
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <a href="{% url 'listar_disciplinas' %}" style="display: inline-block; margin-top: 30px; color: #7f8c8d; text-decoration: none;">
-        « Voltar para disciplinas
+        <i class="fas fa-arrow-left"></i> Voltar para disciplinas
     </a>
 </div>
 {% endblock %}

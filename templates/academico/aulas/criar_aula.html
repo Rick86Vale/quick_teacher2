@@ -6,10 +6,10 @@
     <h1>Nova Aula</h1>
 </div>
 
-<form method="post" enctype="multipart/form-data" style="display: flex; gap: 30px; align-items: flex-start;">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     
-    <main style="flex: 3;">
+    <main>
         <div style="margin-bottom: 15px;">
             <label><strong>Título da Aula:</strong></label>
             {{ form.titulo }}
@@ -20,13 +20,14 @@
             {{ form.conteudo }}
         </div>
 
-        <button type="submit" style="background: #28a745; color: white; padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-            Salvar Aula
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> Salvar Aula
         </button>
-        <a href="{% url 'gerenciar_aulas' disciplina.pk %}" style="margin-left: 15px; color: #555;">Cancelar</a>
+        
+        <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </a>
     </main>
-
-    
 </form>
 
 <script>

@@ -62,15 +62,29 @@
                 </div>
             {% endif %}
             
-            <div class="actions" style="margin-bottom: 20px;">
-                <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn-info" style="text-decoration: none; padding: 5px 15px; background: #17a2b8; color: white; border-radius: 4px;">Gerenciar Aulas</a>
-                <a href="{% url 'editar_aula' aula.pk %}" class="btn-primary" style="text-decoration: none; padding: 5px 15px; background: #007bff; color: white; border-radius: 4px;">Editar Conteúdo</a>
-                <a href="{% url 'menu_recursos' aula.pk %}" class="btn-secondary" style="text-decoration: none; padding: 5px 15px; background: #6c757d; color: white; border-radius: 4px;">Gerenciar Recursos</a>
-                <a href="{% url 'criar_aula' disciplina.pk %}" style="text-decoration: none; color: #28a745; font-weight: bold; margin-left: 10px;">+ Nova Aula</a>
+            <div class="actions" style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+    
+                <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn btn-sm btn-info">
+                    <i class="fas fa-list"></i> Gerenciar Aulas
+                </a>
+                
+                <a href="{% url 'editar_aula' aula.pk %}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-edit"></i> Editar Conteúdo
+                </a>
+                
+                <a href="{% url 'menu_recursos' aula.pk %}" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-paperclip"></i> Recursos
+                </a>
+                
+                <a href="{% url 'criar_aula' disciplina.pk %}" class="btn btn-sm btn-success">
+                    <i class="fas fa-plus"></i> Nova Aula
+                </a>
+
                 <form action="{% url 'alternar_publicacao' aula.pk %}" method="post" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" style="background:none; border:none; color:green; cursor:pointer; text-decoration:underline; margin-left: 15px;">
-                        {% if aula.publicado %}Ocultar aula{% else %}Publicar aula{% endif %}
+                    <button type="submit" class="btn btn-sm {% if aula.publicado %}btn-warning{% else %}btn-success{% endif %}">
+                        <i class="fas {% if aula.publicado %}fa-eye-slash{% else %}fa-eye{% endif %}"></i>
+                        {% if aula.publicado %} Ocultar{% else %} Publicar{% endif %}
                     </button>
                 </form>
             </div>

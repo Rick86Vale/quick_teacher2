@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <div class="header" style="margin-bottom: 25px;">
+        <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+        <h1 style="margin-top: 15px;">Reordenar: {{ disciplina.nome }}</h1>
+        <p style="color: #666;">Arraste e solte os cards para alterar a ordem das aulas.</p>
+    </div>
+
+    <div id="lista-reordenar" style="display: flex; flex-direction: column; gap: 10px;">
+        {% for aula in aulas %}
+        <div class="aula-card" data-id="{{ aula.pk }}" 
+             style="padding: 20px; border: 1px solid #ddd; background: #fff; border-radius: 8px; 
+                    display: flex; align-items: center; cursor: grab; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <i class="fas fa-grip-vertical" style="margin-right: 15px; color: #ccc;"></i>
+            <span style="font-weight: bold; margin-right: 15px; color: #007bff;">{{ aula.ordem }}</span>
+            <span>{{ aula.titulo }}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div style="margin-top: 30px; text-align: right;">
+        <button type="button" onclick="salvarNovaOrdem()" class="btn btn-primary">
+            <i class="fas fa-save"></i> Salvar Nova Ordem
+        </button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script>
+    // Inicializa o Sortable
+    const el = document.getElementById('lista-reordenar');
+    new Sortable(el, {
+        animation: 150,
+        ghostClass: 'sortable-ghost'
+    });
+
+   // Dentro do seu script em reordenar_aulas.html
+function salvarNovaOrdem() {
+    const items = Array.from(document.querySelectorAll('.aula-card'));
+    const ordem = items.map((item, index) => ({
+        id: item.dataset.id,
+        nova_ordem: index + 1
+    }));
+
+    // Tenta pegar o token do formulário que o Django gera automaticamente
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]') ? 
+                      document.querySelector('[name=csrfmiddlewaretoken]').value : '';
+
+    fetch("{% url 'reordenar_aulas' disciplina.pk %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken 
+        },
+        body: JSON.stringify({ ordem: ordem })
+    })
+    
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success') {
+                window.location.href = "{% url 'gerenciar_aulas' disciplina.pk %}";
+            } else {
+                alert("Erro ao salvar: " + (data.message || "Tente novamente"));
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert("Erro de conexão.");
+        });
+    }
+</script>
+
+<style>
+    .sortable-ghost { opacity: 0.5; background: #eef; border: 2px dashed #007bff; }
+</style>
+{% endblock %}

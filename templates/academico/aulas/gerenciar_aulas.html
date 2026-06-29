@@ -1,58 +1,61 @@
-<!--templates/academico/gerenciar_aulas.html-->
-
-
 {% extends 'base.html' %}
 {% block content %}
 <div class="header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-    <h4>gerenciar_aulas.html</h4>
-    <h1>Aulas: {{ disciplina.nome }}</h1>
-    <a href="{% url 'criar_aula' disciplina.pk %}" class="btn-primary" style="padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">+ Nova Aula</a>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <a href="{% url 'detalhes_disciplina' disciplina.pk %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1>Aulas: {{ disciplina.nome }}</h1>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+        <a href="{% url 'reordenar_aulas_template' disciplina.pk %}" class="btn btn-info">
+            <i class="fas fa-sort"></i> Reordenar
+        </a>
+        <a href="{% url 'criar_aula' disciplina.pk %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nova Aula
+        </a>
+    </div>
 </div>
 
-<!-- Container preparado para o futuro Drag & Drop -->
 <div id="lista-aulas" style="display: flex; flex-direction: column; gap: 12px;">
     {% for aula in aulas %}
     <div class="aula-card" data-id="{{ aula.pk }}" style="padding: 15px; border: 1px solid #ddd; background: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
         
-        <!-- Esquerda: Ordem e Título -->
         <div style="display: flex; align-items: center; gap: 15px;">
             <span style="background: #eee; padding: 5px 10px; border-radius: 4px; font-weight: bold; color: #555;">{{ aula.ordem }}</span>
             <span style="font-weight: 500; font-size: 1.1em;">{{ aula.titulo }}</span>
         </div>
 
-        <!-- Direita: Estado e Ações -->
         <div style="display: flex; align-items: center; gap: 20px;">
-            <!-- Estado -->
-            <div style="text-align: right;">
-                <span style="font-size: 0.85em; font-weight: bold; color: {% if aula.publicado %}#28a745{% else %}#fd7e14{% endif %};">
+            <form action="{% url 'alternar_publicacao' aula.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm {% if aula.publicado %}btn-success{% else %}btn-warning{% endif %}">
+                    <i class="fas {% if aula.publicado %}fa-eye{% else %}fa-eye-slash{% endif %}"></i>
                     {{ aula.publicado|yesno:"Publicado,Rascunho" }}
-                </span>
-                <br>
-                <form action="{% url 'alternar_publicacao' aula.pk %}" method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" style="background:none; border:none; color:#007bff; cursor:pointer; font-size: 0.8em; text-decoration: underline;">
-                        Alternar
-                    </button>
-                </form>
-            </div>
+                </button>
+            </form>
 
-            <!-- Ações -->
             <div style="display: flex; gap: 10px; border-left: 1px solid #ddd; padding-left: 15px;">
-                <a href="{% url 'visualizar_aula' aula.pk %}" style="color: #333; text-decoration: none;">Ver</a>
-                <a href="{% url 'editar_aula' aula.pk %}" style="color: #ffc107; text-decoration: none;">Editar</a>
-                
-                <form action="{% url 'excluir_aula' aula.pk %}" method="post" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta aula?');">
+                <a href="{% url 'visualizar_aula' aula.pk %}" class="btn btn-sm btn-info">
+                    <i class="fas fa-eye"></i> Ver
+                </a>
+                <a href="{% url 'editar_aula' aula.pk %}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-edit"></i> Editar
+                </a>
+                <form action="{% url 'excluir_aula' aula.pk %}" method="post" onsubmit="return confirm('Tem certeza?');">
                     {% csrf_token %}
-                    <button type="submit" style="background:none; border:none; color: #dc3545; cursor:pointer; padding: 0;">Excluir</button>
+                    <button type="submit" class="btn btn-sm btn-danger">
+                        <i class="fas fa-trash"></i> Excluir
+                    </button>
                 </form>
             </div>
         </div>
     </div>
     {% empty %}
     <div style="padding: 40px; text-align: center; border: 2px dashed #ddd; border-radius: 8px; color: #666;">
-        Nenhuma aula cadastrada nesta disciplina ainda.
+        Nenhuma aula cadastrada.
     </div>
     {% endfor %}
 </div>
-
 {% endblock %}

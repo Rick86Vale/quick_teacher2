@@ -52,6 +52,12 @@ urlpatterns = [
     path('aula/<int:aula_id>/', aulas.visualizar_aula, name='visualizar_aula'),
     path('aula/selecionar-disciplina/', aulas.selecionar_disciplina_para_aula, name='selecionar_disciplina_para_aula'),
     path('aula/<int:pk>/excluir/', aulas.excluir_aula, name='excluir_aula'),
+    # Rota para abrir a tela de reordenação
+    path('disciplina/<int:pk>/reordenar/', aulas.reordenar_aulas_template, name='reordenar_aulas_template'),
+    # Rota que o JavaScript chama para salvar a nova ordem
+    path('disciplina/<int:pk>/reordenar/salvar/', aulas.reordenar_aulas_salvar, name='reordenar_aulas'),
+
+    path('disciplina/<int:pk>/reordenar/confirmar/', aulas.reordenar_confirmacao, name='reordenar_confirmacao'),
 
     
     # 6.1 Recursos (views/academico.py)
@@ -65,5 +71,6 @@ urlpatterns = [
     path('aluno/matricular-manual/', aluno.matricular_aluno_manual, name='matricular_aluno_manual'),
     path('aluno/matricular-manual/<int:turma_id>/', aluno.matricular_aluno_manual, name='matricular_aluno'),
     path('turma/<int:turma_id>/remover-aluno/<int:aluno_id>/', aluno.remover_aluno_turma, name='remover_aluno_da_turma'),
+    
     
 ]

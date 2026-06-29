@@ -1,18 +1,25 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="header">
+<div class="header" style="margin-bottom: 20px;">
     <h1>{% if form.instance.pk %}Editar Disciplina{% else %}Nova Disciplina{% endif %}</h1>
 </div>
 
-<form method="post" class="card" style="padding: 20px;">
+<form method="post" class="card" style="padding: 20px; background: #fff; border: 1px solid #ddd; border-radius: 8px;">
     {% csrf_token %}
     
-    {{ form.as_p }}
+    <div style="margin-bottom: 20px;">
+        {{ form.as_p }}
+    </div>
 
-    <div class="actions" style="margin-top: 20px;">
-        <button type="submit" class="btn-primary">Salvar Disciplina</button>
-        <a href="{% url 'listar_disciplinas' %}">Cancelar</a>
+    <div class="actions" style="margin-top: 20px; display: flex; gap: 10px;">
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> Salvar Disciplina
+        </button>
+        
+        <a href="{% url 'listar_disciplinas' %}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> Cancelar
+        </a>
     </div>
 </form>
 {% endblock %}

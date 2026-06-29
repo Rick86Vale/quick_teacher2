@@ -1,19 +1,20 @@
-import markdown
+import json
+import logging
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
-from django.utils.safestring import mark_safe
+from django.http import JsonResponse
+from django.urls import reverse
+from django.db import transaction
 from django.views.decorators.http import require_POST
-from django.forms import inlineformset_factory
-from academico.models import Aula, Disciplina, Aluno
 
-# Importações dos modelos e formulários
-from ..models import Disciplina, Aula, Aluno, Video, PDF, LinkUtil
+# Seus modelos e formulários
+from ..models import Disciplina, Aula, Video, PDF, LinkUtil
 from ..forms import AulaForm, VideoFormSet, PDFFormSet, LinkUtilFormSet
 
-
-
+# Configuração de Logger
+logger = logging.getLogger(__name__)
 
 # --- GESTÃO DE AULAS
 # 1. Listagem de Aulas
@@ -178,3 +179,39 @@ def gerenciar_links(request, aula_id):
         'formset': formset
     })
 
+# --- Reordenação de Aulas ---
+
+@login_required
+def reordenar_aulas_template(request, pk):
+    disciplina = get_object_or_404(Disciplina, pk=pk)
+    aulas = disciplina.aulas.all().order_by('ordem')
+    return render(request, 'academico/aulas/reordenar_aulas.html', {'disciplina': disciplina, 'aulas': aulas})
+
+from django.db import transaction, models  # Adicione o ', models' aqui
+
+@login_required
+def reordenar_aulas_salvar(request, pk):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            with transaction.atomic():
+                # Deslocamento para evitar conflito de UNIQUE constraint
+                Aula.objects.filter(disciplina_id=pk).update(ordem=models.F('ordem') + 10000)
+                
+                # Aplicar nova ordem
+                for item in data['ordem']:
+                    Aula.objects.filter(pk=item['id']).update(ordem=item['nova_ordem'])
+            
+            return JsonResponse({
+                'status': 'success', 
+                'redirect_url': reverse('reordenar_confirmacao', args=[pk])
+            })
+        except Exception as e:
+            logger.error(f"Erro ao salvar reordenação: {e}")
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Método inválido'}, status=400)
+
+@login_required
+def reordenar_confirmacao(request, pk):
+    disciplina = get_object_or_404(Disciplina, pk=pk)
+    return render(request, 'academico/aulas/confirmar_reordenacao.html', {'disciplina': disciplina})

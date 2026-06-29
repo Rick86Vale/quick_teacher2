@@ -1,0 +1,24 @@
+/* static/css/buttons.css */
+
+/* Adicione 'a' para garantir que links se comportem como botões */
+.btn, a.btn {
+    padding: 8px 16px; /* Ajustei um pouco para ficar mais equilibrado */
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-flex; /* Facilita alinhar ícone + texto */
+    align-items: center;
+    gap: 8px; /* Espaço entre o ícone e o texto */
+    transition: background 0.2s;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+/* Garante que o hover funcione para links */
+.btn:hover, a.btn:hover { opacity: 0.85; }
+
+/* Variações */
+.btn-info    { background: #17a2b8; color: white; }
+.btn-success { background: #28a745; color: white; }
+/* ... outras cores ... */

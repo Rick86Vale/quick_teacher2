@@ -1,9 +1,23 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h2>Editar Aula: {{ aula.titulo }}</h2>
-<form method="post">
+<div class="header" style="margin-bottom: 20px;">
+    <h1>Editar Aula: {{ aula.titulo }}</h1>
+</div>
+
+<form method="post" class="card" style="padding: 20px;">
     {% csrf_token %}
+    
     {{ form.as_p }}
-    <button type="submit">Salvar Alterações</button>
+
+    <div class="actions" style="margin-top: 20px; display: flex; gap: 10px;">
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> Salvar Alterações
+        </button>
+        
+        <a href="{% url 'gerenciar_aulas' aula.disciplina.pk %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
 </form>
 {% endblock %}
