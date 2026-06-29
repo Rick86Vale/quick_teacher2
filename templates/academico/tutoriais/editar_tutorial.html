@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; margin: 40px auto; padding: 25px; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+    <h2 style="color: #2c3e50; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">
+        Editar: {{ tutorial.titulo }}
+    </h2>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 15px;">
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Título</label>
+            {{ form.titulo }}
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Descrição Curta</label>
+            {{ form.descricao }}
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Conteúdo (Markdown)</label>
+            {{ form.conteudo }}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <div>
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Trocar Imagem</label>
+                {{ form.imagem }}
+            </div>
+            <div>
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Ou URL da Imagem</label>
+                {{ form.imagem_url }}
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="submit" class="btn btn-warning" style="padding: 10px 25px;">Salvar Alterações</button>
+            <a href="{% url 'listar_tutoriais' %}" class="btn btn-secondary" style="padding: 10px 25px;">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    input[type="text"], input[type="url"], textarea, input[type="file"] {
+        width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;
+    }
+    textarea { height: 250px; font-family: monospace; }
+</style>
+{% endblock %}

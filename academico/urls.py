@@ -1,6 +1,6 @@
 # Path: academico/urls.py
 from django.urls import path
-from .views import academico, admin, aluno, aulas, disciplinas
+from .views import academico, admin, aluno, aulas, disciplinas, tutoriais
 
 
 
@@ -75,5 +75,13 @@ urlpatterns = [
     path('turma/<int:turma_id>/remover-aluno/<int:aluno_id>/', aluno.remover_aluno_turma, name='remover_aluno_da_turma'),
     # Progresso Aluno
     path('turma/<int:turma_id>/aluno/<int:aluno_id>/progresso/', disciplinas.progresso_aluno_individual, name='progresso_aluno_individual'),
+
+    # 8. Tutorias
+    path('tutoriais/', tutoriais.listar_tutoriais, name='listar_tutoriais'),
+    path('tutoriais/criar/', tutoriais.criar_tutorial, name='criar_tutorial'),
+    path('tutoriais/<int:pk>/', tutoriais.detalhe_tutorial, name='detalhe_tutorial'),
+
+    path('tutoriais/<int:pk>/editar/', tutoriais.editar_tutorial, name='editar_tutorial'),
+    path('tutoriais/<int:pk>/excluir/', tutoriais.excluir_tutorial, name='excluir_tutorial'),
     
 ]

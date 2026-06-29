@@ -20,3 +20,16 @@ def excluir_turma_admin(request, turma_id):
     turma.delete()
     messages.success(request, f"Turma '{nome_turma}' excluída com sucesso.")
     return redirect('admin_dashboard')
+
+from collections import defaultdict
+
+def dashboard(request):
+    disciplinas = Disciplina.objects.all().select_related('professor')
+    disciplinas_por_professor = defaultdict(list)
+    
+    for d in disciplinas:
+        disciplinas_por_professor[d.professor].append(d)
+        
+    return render(request, 'dashboard.html', {
+        'disciplinas_por_professor': dict(disciplinas_por_professor)
+    })

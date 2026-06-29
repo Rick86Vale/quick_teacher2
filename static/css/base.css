@@ -50,25 +50,34 @@ body {
    NAVBAR
    ========================================================================== */
 
+/* Navbar moderna e responsiva */
 .navbar {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Afasta logo e links */
     align-items: center;
-    padding: 1rem 2rem;
-    background: #333;
-    color: #fff;
+    padding: 0 20px; /* Padding interno seguro */
+    background-color: #2c3e50;
+    color: white;
+    height: 60px;
+    width: 100%;
+    box-sizing: border-box; /* Garante que o padding não aumente a largura */
 }
 
 .nav-links {
     display: flex;
-    gap: 20px;
     list-style: none;
     margin: 0;
+    padding: 0;
+    gap: 15px; /* Espaço entre os itens do menu */
+    align-items: center;
 }
 
-.nav-links a {
-    color: #fff;
+/* Garante que o texto não corte em telas menores */
+.nav-links li a {
+    color: white;
     text-decoration: none;
+    white-space: nowrap; /* Impede que o texto quebre em duas linhas */
+    font-size: 14px; /* Ajuste o tamanho se necessário */
 }
 
 /* ==========================================================================

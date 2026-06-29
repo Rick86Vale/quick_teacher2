@@ -186,3 +186,15 @@ class Convite(models.Model):
 class Aluno(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     turmas = models.ManyToManyField(Turma, related_name='turmas', blank=True)
+
+# 8. Tutoriais
+class Tutorial(models.Model):
+    titulo = models.CharField(max_length=200)
+    descricao = models.TextField()
+    conteudo = models.TextField()
+    imagem = models.ImageField(upload_to='tutoriais/', blank=True, null=True)
+    imagem_url = models.URLField(blank=True, null=True, help_text="Ou cole a URL da imagem aqui")
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.titulo

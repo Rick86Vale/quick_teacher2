@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="max-width: 900px; margin: 40px auto; padding: 20px;">
+    
+    <!-- Saudação Personalizada -->
+    <div style="background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 30px; border-left: 8px solid #3498db;">
+        <h1 style="margin: 0; color: #2c3e50;">Olá, {{ user.first_name|default:user.username }}!</h1>
+        <p style="color: #7f8c8d; font-size: 1.2em; margin-top: 15px; line-height: 1.6;">
+            {% if user.is_staff %}
+                Você está no painel administrativo. Utilize o menu ou o botão abaixo para realizar configurações globais do sistema.
+            {% elif user.tipo_usuario == 'PROFESSOR' %}
+                Bem-vindo ao seu ambiente de gestão acadêmica. Aqui você pode criar disciplinas, organizar turmas, planejar suas aulas com recursos multimídia e acompanhar o progresso dos seus alunos.
+            {% else %}
+                Bem-vindo ao seu espaço de aprendizado. Explore suas disciplinas, acompanhe suas aulas e monitore seu progresso acadêmico em um ambiente focado em seu desenvolvimento.
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- Conteúdo Específico por Papel -->
+    <div style="display: grid; gap: 20px;">
+        
+        {% if user.is_staff %}
+            <div style="text-align: center; padding: 20px;">
+                <a href="{% url 'admin:index' %}" class="btn btn-primary" style="padding: 15px 30px;">Acessar Painel Admin</a>
+            </div>
+
+        {% elif user.tipo_usuario == 'PROFESSOR' %}
+            <div style="background: #f0f7ff; padding: 25px; border-radius: 10px; border: 1px solid #d1e7ff;">
+                <h3 style="margin-top: 0; color: #2980b9;">Funcionalidades do Professor</h3>
+                <ul style="line-height: 2; color: #555;">
+                    <li><strong>Gestão de Base:</strong> Cadastre Instituições e Áreas de Conhecimento.</li>
+                    <li><strong>Disciplinas & Turmas:</strong> Crie, edite e organize seus grupos de alunos.</li>
+                    <li><strong>Planejamento de Aulas:</strong> Adicione vídeos, PDFs e links organizados por aula.</li>
+                    <li><strong>Acompanhamento:</strong> Monitore o desempenho individual de cada estudante.</li>
+                </ul>
+            </div>
+
+        {% elif user.tipo_usuario == 'ALUNO' %}
+            <div style="background: #f0fff4; padding: 25px; border-radius: 10px; border: 1px solid #d1e7dd;">
+                <h3 style="margin-top: 0; color: #27ae60;">Como utilizar o sistema</h3>
+                <ul style="line-height: 2; color: #555;">
+                    <li><strong>Minhas Disciplinas:</strong> Visualize todas as matérias em que você está matriculado.</li>
+                    <li><strong>Ambiente de Aula:</strong> Acesse conteúdos, materiais de apoio e recursos extras.</li>
+                    <li><strong>Progresso:</strong> Veja o seu desempenho nas atividades.</li>
+                    <li><strong>Central de Ajuda:</strong> Utilize os tutoriais para aprender a navegar na plataforma.</li>
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Botão de Acesso Rápido -->
+    <div style="margin-top: 40px; text-align: center;">
+        <a href="{% url 'listar_tutoriais' %}" style="display: inline-block; padding: 12px 25px; background: #3498db; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold;">
+            Ver Tutoriais de Ajuda →
+        </a>
+    </div>
+
+</div>
+{% endblock %}

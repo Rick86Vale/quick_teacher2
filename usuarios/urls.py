@@ -22,8 +22,10 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     
     # Dashboards
-    path('dashboard/', dashboard_aluno, name='dashboard'),
-    path('professor/dashboard/', dashboard_professor, name='dashboard_professor'),
+    #path('dashboard/', dashboard_aluno, name='dashboard'),
+    #path('professor/dashboard/', dashboard_professor, name='dashboard_professor'),
+    path('dashboard/', views.dashboard_aluno, name='dashboard'), # Rota aluno
+    path('dashboard-professor/', views.dashboard_professor, name='dashboard_professor'), # Rota professor
 
     #Usuários
     path('', include('django.contrib.auth.urls')), # <--- ISSO adiciona 'password_change', 'login', 'logout', etc.

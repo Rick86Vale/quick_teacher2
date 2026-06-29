@@ -1,6 +1,6 @@
 # Path: academico/forms.py
 from django import forms
-from .models import Turma, Instituicao, Disciplina, AreaConhecimento, Aula, Video, PDF, LinkUtil
+from .models import Turma, Instituicao, Disciplina, AreaConhecimento, Aula, Video, PDF, LinkUtil, Tutorial
 from django.forms import inlineformset_factory
 
 
@@ -82,3 +82,9 @@ LinkUtilFormSet = inlineformset_factory(
     extra=1, 
     can_delete=True
 )
+
+# --- TUTORIAIS ---
+class TutorialForm(forms.ModelForm):
+    class Meta:
+        model = Tutorial
+        fields = ['titulo', 'descricao', 'conteudo', 'imagem', 'imagem_url']

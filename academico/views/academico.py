@@ -3,9 +3,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from ..models import AreaConhecimento, Turma, Instituicao, Aluno
+from ..models import AreaConhecimento, Turma, Instituicao, Aluno, Disciplina
 from ..forms import TurmaForm, InstituicaoForm, AreaConhecimentoForm
 from usuarios.views import eh_professor
+
 
 # --- 0. UTILS ---
 def verificar_senha_e_executar(request, acao_func, pk=None):
@@ -19,13 +20,18 @@ def verificar_senha_e_executar(request, acao_func, pk=None):
     return render(request, 'academico/confirmar_senha.html', {'pk': pk})
 
 # --- 1. INDEX ---
+@login_required
 def index(request):
-    # Importante: Como movi as Disciplinas, se o index precisar delas, 
-    # você deve importar o modelo Disciplina aqui.
-    from ..models import Disciplina
-    areas = AreaConhecimento.objects.all()
-    orfas = Disciplina.objects.filter(area__isnull=True)
-    return render(request, 'academico/index.html', {'areas': areas, 'orfas': orfas})
+    user = request.user
+    # Apenas passamos o 'tipo_view' para o template decidir o que exibir
+    if user.is_staff:
+        tipo_view = 'ADMIN'
+    elif user.tipo_usuario == 'PROFESSOR':
+        tipo_view = 'PROFESSOR'
+    else:
+        tipo_view = 'ALUNO'
+        
+    return render(request, 'home.html', {'tipo_view': tipo_view})
 
 # --- 2. INSTITUIÇÕES ---
 @login_required
