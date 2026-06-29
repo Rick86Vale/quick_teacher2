@@ -62,6 +62,13 @@ def detalhes_disciplina(request, pk):
 @login_required
 def editar_disciplina(request, pk):
     disc = get_object_or_404(Disciplina, pk=pk, professor=request.user)
+    if request.method == 'POST':
+        form = DisciplinaForm(request.POST, instance=disc, user=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_disciplinas')
+        else:
+            print(form.errors) # <--- OLHE O TERMINAL AQUI
     def acao_editar(req, p):
         form = DisciplinaForm(req.POST, instance=disc, user=req.user)
         if form.is_valid():
@@ -73,6 +80,7 @@ def editar_disciplina(request, pk):
         return verificar_senha_e_executar(request, acao_editar, pk)
         
     return render(request, 'academico/disciplinas/criar_disciplina.html', {'form': DisciplinaForm(instance=disc, user=request.user)})
+
 
 @login_required
 def excluir_disciplina(request, pk):

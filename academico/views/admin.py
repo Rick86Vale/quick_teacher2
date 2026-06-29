@@ -6,7 +6,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 from ..models import Turma
 
 # --- ADMINISTRADOR ---
-
 @staff_member_required
 def dashboard_administrativo(request):
     """Exibe o painel de controle administrativo com contagem de alunos."""
