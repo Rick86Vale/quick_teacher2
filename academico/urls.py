@@ -43,6 +43,7 @@ urlpatterns = [
     path('disciplina/<int:disciplina_id>/exportar/', disciplinas.exportar_disciplina, name='exportar_disciplina'),
     path('disciplina/importar/', disciplinas.importar_disciplina, name='importar_disciplina'),
 
+
     # 6. Aulas (views/academico.py)
     path('disciplina/<int:disciplina_id>/aulas/', aulas.gerenciar_aulas, name='gerenciar_aulas'),
     path('disciplina/<int:disciplina_id>/aula/nova/', aulas.criar_aula, name='criar_aula'),

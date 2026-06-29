@@ -1,4 +1,11 @@
 asgiref==3.11.1
+brotli==1.2.0
+cffi==2.0.0
 Django==6.0.6
+fonttools==4.63.0
 Markdown==3.10.2
+pillow==12.2.0
+pycparser==3.0
 sqlparse==0.5.5
+webencodings==0.5.1
+zopfli==0.4.3
