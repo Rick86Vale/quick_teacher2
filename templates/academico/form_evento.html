@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    <h2 style="margin-bottom: 25px; color: #2c3e50;">📅 {% if evento %}Editar{% else %}Novo{% endif %} Evento</h2>
+    
+    <form method="post" style="display: flex; flex-direction: column; gap: 20px;">
+        {% csrf_token %}
+        
+        <div>
+            <label style="font-weight: 600; margin-bottom: 5px; display: block;">Título do Evento</label>
+            {{ form.titulo }}
+        </div>
+        
+        <div style="display: flex; gap: 20px;">
+            <div style="flex: 1;">
+                <label style="font-weight: 600; margin-bottom: 5px; display: block;">Data</label>
+                {{ form.data }}
+            </div>
+        </div>
+
+        <div>
+            <label style="font-weight: 600; margin-bottom: 5px; display: block;">Descrição (Opcional)</label>
+            {{ form.descricao }}
+        </div>
+        
+        <div style="margin-top: 10px; display: flex; gap: 10px;">
+            <button type="submit" class="btn btn-primary" style="flex: 2; padding: 12px; border-radius: 8px;">Salvar Evento</button>
+            <a href="{% url 'listar_avisos' turma.pk %}" class="btn btn-secondary" style="flex: 1; padding: 12px; border-radius: 8px; text-align: center;">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

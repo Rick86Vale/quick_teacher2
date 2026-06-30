@@ -50,6 +50,9 @@
             {% endif %}
             
             <div class="actions" style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+                <a href="{% url 'criar_aula' disciplina.pk %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nova Aula
+        </a>
                 <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn btn-sm btn-info"><i class="fas fa-list"></i> Gerenciar</a>
                 <a href="{% url 'editar_aula' aula.pk %}" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i> Editar</a>
                 <a href="{% url 'menu_recursos' aula.pk %}" class="btn btn-sm btn-secondary"><i class="fas fa-paperclip"></i> Recursos</a>
@@ -83,10 +86,24 @@
         <h3>Recursos</h3>
         <div class="extra-card">
             <h4>🎥 Vídeos</h4>
-            {% for video in aula.videos.all %}
-                <figure class="video-item"><a href="{{ video.url }}" target="_blank"><img src="{{ video.get_thumbnail }}" alt="{{ video.titulo }}"></a></figure>
-            {% endfor %}
-        </div>
+                <div class="video-list" style="display: flex; flex-direction: column; gap: 20px; max-width: 640px; margin: 20px 0;">
+                    {% for video in aula.videos.all %}
+                    <a href="{{ video.url }}" target="_blank" style="text-decoration: none; color: inherit; display: block;">
+                        
+                        <div style="position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); background-color: #000;">
+                            <img src="{{ video.get_thumbnail }}" 
+                                alt="{{ video.titulo }}" 
+                                style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; display: block;" 
+                                onmouseover="this.style.transform='scale(1.05)'" 
+                                onmouseout="this.style.transform='scale(1)'">
+                        </div>
+                        
+                        <div style="margin-top: 12px; font-family: sans-serif; font-size: 16px; font-weight: 500; color: #0f0f0f; line-height: 1.4;">
+                            {{ video.titulo }}
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
     </aside>
 </div>
 

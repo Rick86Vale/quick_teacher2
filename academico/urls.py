@@ -1,8 +1,7 @@
 # Path: academico/urls.py
 from django.urls import path
 from .views import academico, admin, aluno, aulas, disciplinas, tutoriais
-
-
+from academico.views import disciplinas
 
 urlpatterns = [
     # 0. Index
@@ -75,6 +74,8 @@ urlpatterns = [
     path('turma/<int:turma_id>/remover-aluno/<int:aluno_id>/', aluno.remover_aluno_turma, name='remover_aluno_da_turma'),
     # Progresso Aluno
     path('turma/<int:turma_id>/aluno/<int:aluno_id>/progresso/', disciplinas.progresso_aluno_individual, name='progresso_aluno_individual'),
+    
+    path('aluno/turmas/', academico .listar_turmas_aluno, name='listar_turmas_aluno'),
 
     # 8. Tutorias
     path('tutoriais/', tutoriais.listar_tutoriais, name='listar_tutoriais'),
@@ -83,5 +84,17 @@ urlpatterns = [
 
     path('tutoriais/<int:pk>/editar/', tutoriais.editar_tutorial, name='editar_tutorial'),
     path('tutoriais/<int:pk>/excluir/', tutoriais.excluir_tutorial, name='excluir_tutorial'),
-    
+
+    #9. Avisos e Eventos
+    path('turma/<int:pk>/avisos/', disciplinas.listar_avisos, name='listar_avisos'),
+    path('turma/<int:turma_pk>/aviso/novo/', disciplinas.criar_aviso, name='criar_aviso'),
+    path('aviso/<int:pk>/editar/', disciplinas.editar_aviso, name='editar_aviso'),
+    path('aviso/<int:pk>/excluir/', disciplinas.excluir_aviso, name='excluir_aviso'),
+    path('turma/<int:turma_pk>/evento/novo/', disciplinas.criar_evento, name='criar_evento'),
+    path('evento/<int:pk>/editar/', disciplinas.editar_evento, name='editar_evento'),
+    path('evento/<int:pk>/excluir/', disciplinas.excluir_evento, name='excluir_evento'),
+
 ]
+
+
+    

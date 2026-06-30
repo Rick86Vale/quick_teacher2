@@ -46,6 +46,7 @@
 
             {% if user.tipo_usuario == 'ALUNO' %}
                 <li><a href="{% url 'ver_disciplinas_aluno' %}">Minhas Disciplinas</a></li>
+                <li><a href="{% url 'listar_turmas_aluno' %}">Mural de Avisos</a></li>
             {% endif %}
 
             <li><a href="{% url 'perfil_usuario' %}">Perfil</a></li>

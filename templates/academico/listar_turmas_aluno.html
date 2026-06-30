@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; margin: 40px auto; padding: 20px;">
+    <h2>📢 Minhas Turmas</h2>
+    <hr>
+    
+    {% if turmas %}
+        <div class="row" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+            {% for turma in turmas %}
+                <div class="card" style="padding: 20px; border: 1px solid #ddd; border-radius: 12px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                    <h4 style="margin-top: 0;">{{ turma.nome }}</h4>
+                    <p>Ano: {{ turma.ano }}</p>
+                    <a href="{% url 'listar_avisos' turma.pk %}" class="btn btn-primary">Acessar Mural</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info" style="padding: 20px; background: #e7f3fe; border-radius: 8px;">
+            Você ainda não está matriculado em nenhuma turma.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

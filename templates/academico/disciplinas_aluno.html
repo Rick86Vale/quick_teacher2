@@ -1,42 +1,60 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container" style="padding: 20px;">
+<style>
+    .turma-card { transition: transform 0.2s, box-shadow 0.2s; background: #fff; border-radius: 12px; padding: 20px; border: 1px solid #e1e8ed; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .turma-card:hover { box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+    .btn-avisos { 
+        display: inline-flex; align-items: center; gap: 8px; 
+        padding: 8px 16px; background: #f3e5f5; color: #8e44ad; 
+        text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 0.9em;
+    }
+    .btn-avisos:hover { background: #e1bee7; }
+    .disciplina-box { border: 1px solid #f0f0f0; padding: 15px; border-radius: 8px; background: #fafafa; }
+</style>
 
-            <div class="card" style="padding: 20px; margin-bottom: 20px; background-color: #f8f9fa; border: 1px solid #dee2e6;">
-            <h3>Matricular-se em nova turma</h3>
-            <form action="{% url 'matricular_aluno_manual' %}" method="post">
-                {% csrf_token %}
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" name="turma_codigo" placeholder="Digite o código (ex: A1B)" required maxlength="3" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-                    <button type="submit" class="btn-primary" style="padding: 8px 15px;">Confirmar Matrícula</button>
-                </div>
-            </form>
-        </div>
+<div class="container" style="max-width: 900px; margin: 0 auto; padding: 20px;">
 
-    <h2>Minhas Turmas e Disciplinas</h2>
+    <!-- Card de Matrícula -->
+    <div style="background: #ffffff; padding: 25px; margin-bottom: 30px; border-radius: 12px; border: 1px solid #e1e8ed; box-shadow: 0 4px 6px rgba(0,0,0,0.03);">
+        <h3 style="margin-top: 0; color: #2c3e50;">🎓 Matricular-se em nova turma</h3>
+        <form action="{% url 'matricular_aluno_manual' %}" method="post" style="display: flex; gap: 10px;">
+            {% csrf_token %}
+            <input type="text" name="turma_codigo" placeholder="Digite o código (ex: A1B)" required maxlength="3" 
+                   style="flex-grow: 1; padding: 10px; border-radius: 6px; border: 1px solid #ced4da;">
+            <button type="submit" class="btn btn-primary" style="padding: 10px 20px;">Confirmar Matrícula</button>
+        </form>
+    </div>
+
+    <h2 style="color: #2c3e50; margin-bottom: 25px;">Minhas Turmas e Disciplinas</h2>
     
     {% if turmas %}
         {% for turma in turmas %}
-            <div class="turma-card" style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 8px;">
-                <h3>🎓 Turma: {{ turma.nome }}</h3>
+            <div class="turma-card" style="margin-bottom: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="margin: 0; color: #2c3e50;">Turma: {{ turma.nome }}</h3>
+                    <!-- Botão Avisos para o Aluno -->
+                    <a href="{% url 'listar_avisos' turma.pk %}" class="btn-avisos">
+                        <i class="fas fa-bullhorn"></i> Mural de Avisos
+                    </a>
+                </div>
                 
-                <div class="resource-group" style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 15px;">
                     {% for disciplina in turma.disciplinas.all %}
-                        <div class="card" style="width: 300px; border: 1px solid #ddd; padding: 10px;">
-                            <h4>{{ disciplina.nome }}</h4>
-                            <p><strong>Código:</strong> {{ disciplina.codigo }}</p>
-                            <a href="{% url 'detalhes_disciplina' disciplina.pk %}" class="btn-primary">Acessar Aulas</a>
+                        <div class="disciplina-box">
+                            <h4 style="margin: 0 0 10px 0; color: #34495e;">{{ disciplina.nome }}</h4>
+                            <p style="margin: 0 0 15px 0; font-size: 0.85em; color: #7f8c8d;">Código: {{ disciplina.codigo }}</p>
+                            <a href="{% url 'detalhes_disciplina' disciplina.pk %}" class="btn btn-sm btn-outline-primary" style="width: 100%;">Acessar Aulas</a>
                         </div>
                     {% empty %}
-                        <p>Nenhuma disciplina nesta turma.</p>
+                        <p style="color: #999; font-style: italic;">Nenhuma disciplina nesta turma.</p>
                     {% endfor %}
                 </div>
             </div>
         {% endfor %}
     {% else %}
-        <div class="card" style="padding: 20px; border: 1px dashed #ccc;">
-            <p>Você ainda não está matriculado em nenhuma turma.</p>
+        <div style="padding: 40px; text-align: center; background: #f8f9fa; border-radius: 12px; border: 1px dashed #ccc;">
+            <p style="color: #6c757d; font-size: 1.1em;">Você ainda não está matriculado em nenhuma turma.</p>
         </div>
     {% endif %}
 </div>

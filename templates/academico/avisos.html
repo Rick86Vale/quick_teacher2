@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load markdown_extras %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/avisos.css' %}">
+    <style>
+        .mural-wrapper { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; }
+        .mural-main { flex: 3; min-width: 320px; }
+        .mural-sidebar { flex: 1; min-width: 300px; position: sticky; top: 20px; }
+        
+        .mini-calendar { 
+            background: #ffffff; padding: 20px; border-radius: 16px; 
+            border: 1px solid #eef2f6; box-shadow: 0 6px 12px rgba(0,0,0,0.04); 
+        }
+        
+        .agenda-item { 
+            padding: 12px 0; border-bottom: 1px solid #f4f7f9; 
+            display: flex; justify-content: space-between; align-items: flex-start;
+        }
+        .agenda-item:last-child { border-bottom: none; }
+        
+        /* Ajuste para botões de ação */
+        .btn-delete { color: #d63031; font-size: 0.85em; text-decoration: none; margin-left: 10px; }
+        .btn-delete:hover { text-decoration: underline; }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1100px; margin: 40px auto; padding: 0 20px;">
+    
+    <div style="margin-bottom: 35px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+        <h2 style="color: #2d3436; margin: 0;">📢 Mural: {{ turma.nome }}</h2>
+        {% if e_autor %}
+            <a href="{% url 'criar_aviso' turma.pk %}" class="btn btn-primary" style="border-radius: 10px;">+ Novo Aviso</a>
+        {% endif %}
+    </div>
+
+    <div class="mural-wrapper">
+        
+        <div class="mural-main">
+            {% for aviso in avisos %}
+                <div class="card-aviso {% if aviso.prioridade == 'ALTA' %}aviso-urgente{% endif %}" style="margin-bottom: 25px; border-radius: 12px;">
+                    <div style="padding: 25px;">
+                        <h3 style="margin: 0;">{{ aviso.titulo }}</h3>
+                        <div class="markdown-body" style="margin-top: 10px;">{{ aviso.conteudo|markdown }}</div>
+                        {% if e_autor %}
+                            <div class="actions" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+                                <a href="{% url 'editar_aviso' aviso.pk %}" class="btn btn-sm btn-outline-info">Editar</a>
+                                <a href="{% url 'excluir_aviso' aviso.pk %}" class="btn-delete" onclick="return confirm('Tem certeza que deseja excluir este aviso?')">Excluir</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <aside class="mural-sidebar">
+            <div class="mini-calendar">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4 style="margin: 0; color: #2d3436;">📅 Agenda</h4>
+                    {% if e_autor %}
+                        <a href="{% url 'criar_evento' turma.pk %}" style="font-size: 0.8em;">+ Adicionar</a>
+                    {% endif %}
+                </div>
+                
+                <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                    {% for evento in eventos %}
+                        <li class="agenda-item">
+                            <div>
+                                <strong style="color: #5e72e4;">{{ evento.data|date:"d/m" }}:</strong> {{ evento.titulo }}
+                                <div style="font-size: 0.75em;">
+                                    {% now "Y-m-d" as hoje %}
+                                    {% if evento.data|date:"Y-m-d" < hoje %}
+                                        <span style="color: #e74c3c;">🚫 Encerrado</span>
+                                    {% else %}
+                                        <span style="color: #27ae60;">Faltam {{ evento.data|timeuntil }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if e_autor %}
+                                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                    <a href="{% url 'editar_evento' evento.pk %}" style="font-size: 0.75em;">Editar</a>
+                                    <a href="{% url 'excluir_evento' evento.pk %}" class="btn-delete" style="margin-left: 0;" onclick="return confirm('Excluir este evento?')">Excluir</a>
+                                </div>
+                            {% endif %}
+                        </li>
+                    {% empty %}
+                        <li style="color: #999; font-size: 0.9em;">Sem datas agendadas.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}

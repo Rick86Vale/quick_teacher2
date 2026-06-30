@@ -23,55 +23,66 @@
     margin-top: 1.5em; /* Melhor espaçamento vertical */
 }
 
+
 /* ==========================================================================
-   ESTILO YOUTUBE (VÍDEOS)
+   ESTILO YOUTUBE (VÍDEOS) - REFINADO
    ========================================================================== */
 
 .video-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.video-item {
-    width: 100%; /* Mudança: Use 100% e deixe o pai controlar o padding lateral */
+    max-width: 400px; /* Ajuste aqui o tamanho máximo da lista na tela */
 }
 
 .video-thumb {
-    position: relative;
     display: block;
+    aspect-ratio: 16 / 9; /* Mantém o formato de vídeo */
     overflow: hidden;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .video-thumb img {
-    width: 100%;
-    height: 150px;
+    width: 100% !important;   /* A imagem sempre ocupará 100% do espaço do pai */
+    height: 100% !important;  /* E terá a altura proporcional ao 16:9 */
+    object-fit: cover !important; /* Recorta o excesso sem deformar */
+}
+
+/* Define a proporção 16:9 automática */
+.video-thumb {
+    aspect-ratio: 16 / 9;
+    width: 300px;
+}
+
+.video-thumb img {
+    width: 50%;
+    height: 50%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s ease;
     display: block;
 }
 
 .video-thumb:hover img {
-    transform: scale(1.05);
+    transform: scale(1.08); /* Efeito zoom mais suave */
+    opacity: 0.9;
 }
 
+/* Botão de Play mais minimalista */
 .play-button {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(255, 0, 0, 0.8); /* Vermelho YouTube */
     color: white;
-    padding: 5px 12px; /* Mudança: Use padding em vez de largura fixa */
-    border-radius: 8px;
+    padding: 8px 16px;
+    border-radius: 4px;
     font-size: 14px;
+    font-weight: bold;
+    pointer-events: none; /* Não atrapalha o clique */
     transition: background 0.2s;
 }
 
 .video-thumb:hover .play-button {
-    background: #FF0000;
+    background: #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
 }
 
 /* ==========================================================================

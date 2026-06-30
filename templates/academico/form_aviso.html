@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+    <h2 style="margin-bottom: 25px; color: #333;">{% if aviso %}Editar{% else %}Novo{% endif %} Aviso</h2>
+    
+    <form method="post" style="display: flex; flex-direction: column; gap: 20px;">
+        {% csrf_token %}
+        
+        <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Título</label>
+            <input type="text" name="titulo" value="{{ aviso.titulo }}" required 
+                   style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+        </div>
+        
+        <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Conteúdo (Markdown)</label>
+            <textarea name="conteudo" rows="8" 
+                      style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; resize: vertical; box-sizing: border-box;">{{ aviso.conteudo }}</textarea>
+        </div>
+        
+        <div style="display: flex; gap: 20px;">
+            <div style="flex: 1;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Prioridade</label>
+                <select name="prioridade" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px;">
+                    <option value="BAIXA" {% if aviso.prioridade == 'BAIXA' %}selected{% endif %}>Informativo</option>
+                    <option value="ALTA" {% if aviso.prioridade == 'ALTA' %}selected{% endif %}>Urgente</option>
+                </select>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 25px;">
+                <input type="checkbox" name="fixado" {% if aviso.fixado %}checked{% endif %} style="width: 18px; height: 18px;">
+                <label style="font-weight: 600;">Fixar no topo</label>
+            </div>
+        </div>
+        
+        <div style="margin-top: 10px; display: flex; gap: 10px;">
+            <button type="submit" style="flex: 2; padding: 12px; background: #007bff; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                Salvar Aviso
+            </button>
+            <a href="{% url 'listar_avisos' turma.pk %}" style="flex: 1; padding: 12px; background: #6c757d; color: white; text-align: center; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

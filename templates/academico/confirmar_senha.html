@@ -1,26 +1,29 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<h2>Confirmação de Segurança</h2>
-<p>Para concluir esta alteração, por favor, confirme a sua senha de professor:</p>
-
-<form method="post">
-    {% csrf_token %}
-    <div class="form-group">
-        <label>Senha:</label>
-        <input type="password" name="password_confirm" class="form-control" required autofocus>
+<div class="container" style="max-width: 500px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <h2>Confirmar Exclusão</h2>
+    <div class="alert alert-warning" style="padding: 20px; background: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px;">
+        <p>Você está prestes a excluir permanentemente: <strong>{{ item.nome }}</strong></p>
+        <p style="font-size: 0.9em; color: #856404;">O sistema baixará um backup em JSON antes da exclusão.</p>
     </div>
-    <div style="margin-top: 15px;">
-        <button type="submit" class="btn-primary">Confirmar Ação</button>
-        <a href="javascript:history.back()" class="btn-secondary">Cancelar</a>
-    </div>
-</form>
+    
+    <h2>Autenticação Necessária</h2>
+    <form method="post" action="{% url 'excluir_disciplina' pk %}" id="form-excluir">
+        {% csrf_token %}
+        <div style="margin-bottom: 15px;">
+            <input type="password" name="password_confirm" class="form-control" required placeholder="Digite sua senha" style="width: 100%; padding: 10px;">
+        </div>
+        <button type="submit" class="btn btn-danger" style="width: 100%; padding: 10px;">Confirmar Exclusão e Baixar Backup</button>
+        <a href="{% url 'listar_disciplinas' %}" class="btn btn-secondary" style="display: block; text-align: center; margin-top: 10px;">Cancelar</a>
+    </form>
+</div>
 
-{% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li style="color: red;">{{ message }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
-{% endblock %}  
+<script>
+    // Após o clique, aguarda um instante e redireciona para a listagem
+    document.getElementById('form-excluir').addEventListener('submit', function() {
+        setTimeout(function() {
+            window.location.href = "{% url 'listar_disciplinas' %}";
+        }, 1500); 
+    });
+</script>
+{% endblock %}

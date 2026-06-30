@@ -1,0 +1,67 @@
+/* Estilo Base dos Avisos */
+.card-aviso {
+    border-left: 5px solid #007bff; /* Azul para informativo */
+    background: #ffffff;
+}
+
+/* Estilo de Destaque para Prioridade Alta */
+.aviso-urgente {
+    border-left-color: #dc3545; /* Vermelho para urgente */
+    background: #fff5f5; /* Fundo levemente avermelhado */
+}
+
+/* Espaçamento interno */
+.card-aviso h3 {
+    color: #333;
+}
+
+/* Estilo Base dos Avisos */
+.card-aviso {
+    border-left: 5px solid #007bff; /* Azul para informativo */
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-aviso:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Estilo de Destaque para Prioridade Alta */
+.aviso-urgente {
+    border-left-color: #dc3545; /* Vermelho para urgente */
+    background: #fff5f5; /* Fundo levemente avermelhado */
+}
+
+/* Tipografia e cabeçalho do aviso */
+.card-aviso h3 {
+    color: #2c3e50;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* Estilização específica para a badge de urgente (opcional) */
+.aviso-urgente h3::after {
+    content: " 🔥 URGENTE";
+    color: #dc3545;
+    font-size: 0.8rem;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+/* Ajuste fino para os botões de ação dentro do card */
+.card-aviso .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+/* Markdown body spacing */
+.markdown-body {
+    color: #444;
+    line-height: 1.6;
+}

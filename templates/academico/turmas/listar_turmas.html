@@ -37,7 +37,12 @@
                 </div>
             </div>
 
-            <div style="border-top: 1px solid #eee; padding-top: 15px; display: flex; gap: 15px; justify-content: flex-end;">
+            <div style="border-top: 1px solid #eee; padding-top: 15px; display: flex; gap: 15px; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
+                
+                <a href="{% url 'listar_avisos' t.pk %}" style="text-decoration: none; color: #8e44ad; font-size: 0.85em; font-weight: 600; margin-right: auto; display: flex; align-items: center; gap: 5px;">
+                    <i class="fas fa-bullhorn"></i> Avisos
+                </a>
+
                 <a href="{% url 'editar_turma' t.pk %}" style="text-decoration: none; color: #f39c12; font-size: 0.85em; font-weight: 600;">Editar</a>
                 <a href="{% url 'detalhes_turma' t.pk %}" style="text-decoration: none; color: #3498db; font-size: 0.85em; font-weight: 600;">Detalhes</a>
                 <a href="{% url 'listar_alunos_turma' t.pk %}" style="text-decoration: none; color: #27ae60; font-size: 0.85em; font-weight: 600;">Alunos</a>

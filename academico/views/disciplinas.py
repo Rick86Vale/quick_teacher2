@@ -1,4 +1,4 @@
-import json
+import json, os
 import logging
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -7,12 +7,16 @@ from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.db import transaction
 from django.urls import reverse
+from django.conf import settings
+from academico.forms import EventoForm
 
 # Importações dos seus módulos locais
-from ..models import Disciplina, Aula, Aluno, Turma
+from ..models import Disciplina, Aula, Aluno, Turma, Aviso, Evento
 from ..forms import DisciplinaForm
 from usuarios.views import eh_professor
 from .academico import verificar_senha_e_executar
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -78,12 +82,33 @@ def editar_disciplina(request, pk):
         
     return render(request, 'academico/disciplinas/criar_disciplina.html', {'form': DisciplinaForm(instance=disc, user=request.user)})
 
+
+
 @login_required
 def excluir_disciplina(request, pk):
-    def acao_excluir(req, p):
-        get_object_or_404(Disciplina, pk=p, professor=req.user).delete()
-        return redirect('listar_disciplinas')
-    return verificar_senha_e_executar(request, acao_excluir, pk)
+    def acao_excluir_e_baixar(req, p):
+        disciplina = get_object_or_404(Disciplina, pk=p, professor=req.user)
+        
+        # 1. Preparar o JSON
+        data = {
+            'disciplina': disciplina.nome,
+            'codigo': disciplina.codigo,
+            'descricao': disciplina.descricao,
+            'aulas': list(disciplina.aulas.values('titulo', 'ordem', 'publicado', 'conteudo'))
+        }
+        
+        # 2. Criar resposta de download
+        response = HttpResponse(json.dumps(data, indent=4), content_type="application/json")
+        response['Content-Disposition'] = f'attachment; filename="backup_{disciplina.codigo}.json"'
+        
+        # 3. Excluir (O objeto deixará de existir, por isso fazemos isso APÓS preparar o JSON)
+        disciplina.delete()
+        
+        # 4. Retornar apenas o arquivo
+        return response
+
+    return verificar_senha_e_executar(request, acao_excluir_e_baixar, pk)
+
 
 # --- Importação/Exportação ---
 
@@ -157,3 +182,129 @@ def progresso_aluno_individual(request, turma_id, aluno_id):
         # Adicione isto para corrigir o erro:
         'disciplina': disciplinas.first() if disciplinas.exists() else None 
     })
+
+
+# --- Quadro de Avisos
+@login_required
+def listar_avisos(request, pk):
+    turma = get_object_or_404(Turma, pk=pk)
+    
+    # 1. Defina as permissões primeiro
+    e_autor = (request.user == turma.instituicao.professor or request.user.is_staff)
+    e_aluno = Aluno.objects.filter(user=request.user, turmas=turma).exists()
+    
+    if not e_autor and not e_aluno:
+        raise PermissionDenied()
+
+    # 2. Busque os dados
+    avisos = Aviso.objects.filter(turma=turma).order_by('-fixado', '-data_criacao')
+    eventos = Evento.objects.filter(turma=turma).order_by('data')
+    
+    # 3. Retorne tudo no contexto
+    return render(request, 'academico/avisos.html', {
+        'turma': turma,
+        'avisos': avisos,
+        'eventos': eventos, # Certifique-se que isso está aqui
+        'e_autor': e_autor  # A variável que o template está cobrando
+    })
+
+
+@login_required
+def criar_aviso(request, turma_pk):
+    turma = get_object_or_404(Turma, pk=turma_pk)
+    
+    # Validação: Só o professor daquela turma (ou staff) pode criar
+    e_autor = (request.user == turma.instituicao.professor or request.user.is_staff)
+    
+    if not e_autor:
+        raise PermissionDenied("Apenas o professor desta turma pode criar avisos.")
+    
+    if request.method == 'POST':
+        Aviso.objects.create(
+            turma=turma,
+            titulo=request.POST.get('titulo'),
+            conteudo=request.POST.get('conteudo'),
+            prioridade=request.POST.get('prioridade'),
+            fixado=(request.POST.get('fixado') == 'on')
+        )
+        return redirect('listar_avisos', pk=turma.pk)
+        
+    return render(request, 'academico/form_aviso.html', {'turma': turma})
+
+@login_required
+@user_passes_test(eh_professor)
+def editar_aviso(request, pk):
+    aviso = get_object_or_404(Aviso, pk=pk)
+    turma = aviso.turma
+    
+    if request.method == 'POST':
+        # Atualiza os dados
+        aviso.titulo = request.POST.get('titulo')
+        aviso.conteudo = request.POST.get('conteudo')
+        aviso.prioridade = request.POST.get('prioridade')
+        aviso.fixado = (request.POST.get('fixado') == 'on')
+        aviso.save()
+        return redirect('listar_avisos', pk=turma.pk)
+        
+    return render(request, 'academico/form_aviso.html', {'aviso': aviso, 'turma': turma})
+
+@login_required
+def excluir_aviso(request, pk):
+    # 1. Busca o aviso
+    aviso = get_object_or_404(Aviso, pk=pk)
+    turma = aviso.turma
+    
+    # 2. Validação de permissão (apenas o professor da turma pode excluir)
+    # Ajuste 'eh_professor' para a sua função de permissão real
+    e_autor = (request.user == turma.instituicao.professor or request.user.is_staff)
+    
+    if not e_autor:
+        raise PermissionDenied("Você não tem permissão para excluir este aviso.")
+    
+    # 3. Processa a exclusão
+    if request.method == 'POST':
+        aviso.delete()
+        return redirect('listar_avisos', pk=turma.pk)
+    
+    # 4. Renderiza uma página de confirmação (opcional, mas recomendado)
+    return render(request, 'academico/confirmar_exclusao_aviso.html', {'aviso': aviso})
+
+# Eventos (são mostrados no template de avisos - são as datas programadas para atividades e provas)
+@login_required
+@user_passes_test(eh_professor)
+def criar_evento(request, turma_pk):
+    turma = get_object_or_404(Turma, pk=turma_pk)
+    if request.method == 'POST':
+        form = EventoForm(request.POST)
+        if form.is_valid():
+            evento = form.save(commit=False)
+            evento.turma = turma
+            evento.save()
+            return redirect('listar_avisos', pk=turma.pk)
+    else:
+        form = EventoForm()
+    return render(request, 'academico/form_evento.html', {'form': form, 'turma': turma})
+
+@login_required
+@user_passes_test(eh_professor)
+def editar_evento(request, pk):
+    evento = get_object_or_404(Evento, pk=pk)
+    turma = evento.turma
+    if request.method == 'POST':
+        form = EventoForm(request.POST, instance=evento)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_avisos', pk=turma.pk)
+    else:
+        form = EventoForm(instance=evento)
+    return render(request, 'academico/form_evento.html', {'form': form, 'turma': turma, 'evento': evento})
+
+@login_required
+@user_passes_test(eh_professor)
+def excluir_evento(request, pk):
+    evento = get_object_or_404(Evento, pk=pk)
+    turma = evento.turma
+    if request.method == 'POST':
+        evento.delete()
+        return redirect('listar_avisos', pk=turma.pk)
+    return render(request, 'academico/confirmar_exclusao_evento.html', {'evento': evento, 'turma': turma})

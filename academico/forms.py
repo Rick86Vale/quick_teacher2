@@ -1,8 +1,10 @@
 # Path: academico/forms.py
 from django import forms
-from .models import Turma, Instituicao, Disciplina, AreaConhecimento, Aula, Video, PDF, LinkUtil, Tutorial
+from .models import (
+    Turma, Instituicao, Disciplina, AreaConhecimento, Aula, 
+    Video, PDF, LinkUtil, Tutorial, Evento  # Adicionei Evento aqui
+)
 from django.forms import inlineformset_factory
-
 
 # --- 1. TURMAS ---
 class TurmaForm(forms.ModelForm):
@@ -17,9 +19,7 @@ class TurmaForm(forms.ModelForm):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         if user:
-            # Filtra apenas as disciplinas que o professor logado criou
             self.fields['disciplinas'].queryset = Disciplina.objects.filter(professor=user)
-            # Filtra também as instituições do professor
             self.fields['instituicao'].queryset = Instituicao.objects.filter(professor=user)
 
 # --- 2. INSTITUIÇÕES ---
@@ -41,47 +41,36 @@ class DisciplinaForm(forms.ModelForm):
         fields = ['nome', 'area', 'descricao']
 
     def __init__(self, *args, **kwargs):
-        # Capturamos o usuário para filtrar as áreas disponíveis
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         if user:
-            # Garante que o professor veja apenas as áreas que ele criou
             self.fields['area'].queryset = AreaConhecimento.objects.filter(professor=user)
 
 # --- 5. AULAS ---
 class AulaForm(forms.ModelForm):
     class Meta:
         model = Aula
-        fields = ['titulo', 'conteudo'] # Ordem removida daqui
+        fields = ['titulo', 'conteudo']
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control', 'style': 'width: 100%; padding: 10px;'}),
             'conteudo': forms.Textarea(attrs={'class': 'form-control', 'style': 'width: 100%; height: 400px; font-family: monospace;', 'placeholder': 'Escreva o conteúdo da aula em Markdown...'}),
         }
 
+# --- 6. EVENTOS (AGENDA) ---
+class EventoForm(forms.ModelForm):
+    class Meta:
+        model = Evento
+        fields = ['titulo', 'data', 'descricao']
+        widgets = {
+            'data': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+            'descricao': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
 
-VideoFormSet = inlineformset_factory(
-    Aula, 
-    Video, 
-    fields=('titulo', 'url', 'thumbnail_url'), 
-    extra=1, 
-    can_delete=True
-)
-
-PDFFormSet = inlineformset_factory(
-    Aula, 
-    PDF, 
-    fields=('titulo', 'link'), 
-    extra=1, 
-    can_delete=True
-)
-
-LinkUtilFormSet = inlineformset_factory(
-    Aula, 
-    LinkUtil, 
-    fields=('titulo', 'url'), 
-    extra=1, 
-    can_delete=True
-)
+# --- FORMSETS ---
+VideoFormSet = inlineformset_factory(Aula, Video, fields=('titulo', 'url', 'thumbnail_url'), extra=1, can_delete=True)
+PDFFormSet = inlineformset_factory(Aula, PDF, fields=('titulo', 'link'), extra=1, can_delete=True)
+LinkUtilFormSet = inlineformset_factory(Aula, LinkUtil, fields=('titulo', 'url'), extra=1, can_delete=True)
 
 # --- TUTORIAIS ---
 class TutorialForm(forms.ModelForm):

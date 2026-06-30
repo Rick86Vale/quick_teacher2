@@ -118,6 +118,12 @@ def remover_aluno_turma(request, aluno_id):
     messages.success(request, f"Matrícula do aluno {aluno.user.username} removida com sucesso.")
     return redirect('listar_alunos_turma', turma_id=aluno.turma_id if aluno.turma else 1)
 
+@login_required
+def listar_turmas_aluno(request):
+    # Filtra as turmas onde o aluno está matriculado
+    turmas = Turma.objects.filter(alunos_na_turma__user=request.user)
+    return render(request, 'academico/listar_turmas_aluno.html', {'turmas': turmas})
+
 # --- 4. ÁREAS DO CONHECIMENTO ---
 @login_required
 def criar_area(request):

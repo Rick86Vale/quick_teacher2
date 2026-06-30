@@ -4,7 +4,7 @@ import random
 import string
 from django.db import models
 from django.contrib.auth import get_user_model
-
+from django import forms
 
 # Obtém o modelo de usuário configurado no projeto
 User = get_user_model()
@@ -204,3 +204,28 @@ class Tutorial(models.Model):
     
     def __str__(self):
         return self.titulo
+
+# 9. Avisos e Comunicações
+class Aviso(models.Model):
+    turma = models.ForeignKey('academico.Turma', on_delete=models.CASCADE, related_name='avisos')
+    titulo = models.CharField(max_length=200)
+    conteudo = models.TextField()
+    PRIORIDADES = [('BAIXA', 'Informativo'), ('ALTA', 'Urgente')]
+    prioridade = models.CharField(max_length=10, choices=PRIORIDADES, default='BAIXA')
+    fixado = models.BooleanField(default=False)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-fixado', '-data_criacao']
+
+
+
+
+class Evento(models.Model):
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='eventos')
+    titulo = models.CharField(max_length=100)
+    data = models.DateField()
+    descricao = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.titulo} - {self.data}"
