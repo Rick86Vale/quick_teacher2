@@ -83,29 +83,38 @@
     </main>
 
     <aside style="width: 250px; padding: 15px; border-left: 1px solid #eee;">
-        <h3>Recursos</h3>
-        <div class="extra-card">
-            <h4>🎥 Vídeos</h4>
-                <div class="video-list" style="display: flex; flex-direction: column; gap: 20px; max-width: 640px; margin: 20px 0;">
-                    {% for video in aula.videos.all %}
-                    <a href="{{ video.url }}" target="_blank" style="text-decoration: none; color: inherit; display: block;">
-                        
-                        <div style="position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); background-color: #000;">
-                            <img src="{{ video.get_thumbnail }}" 
-                                alt="{{ video.titulo }}" 
-                                style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; display: block;" 
-                                onmouseover="this.style.transform='scale(1.05)'" 
-                                onmouseout="this.style.transform='scale(1)'">
-                        </div>
-                        
-                        <div style="margin-top: 12px; font-family: sans-serif; font-size: 16px; font-weight: 500; color: #0f0f0f; line-height: 1.4;">
-                            {{ video.titulo }}
-                        </div>
-                    </a>
-                    {% endfor %}
-                </div>
-    </aside>
-</div>
+    <h3>Recursos</h3>
+    
+    <!-- VÍDEOS: O related_name no models é 'videos' -->
+    <div class="extra-card" style="margin-bottom: 25px;">
+        <h4>🎥 Vídeos</h4>
+        <div class="video-list">
+            {% for video in aula.videos.all %}
+                <a href="{{ video.url }}" target="_blank">{{ video.titulo }}</a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- PDFS: O related_name no models é 'pdfs' -->
+    <div class="extra-card" style="margin-bottom: 25px;">
+        <h4>📄 PDFs</h4>
+        <ul style="list-style: none; padding: 0;">
+            {% for pdf in aula.pdfs.all %}
+                <li><a href="{{ pdf.link }}" target="_blank">{{ pdf.titulo }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- LINKS: O related_name no models é 'links_uteis' -->
+    <div class="extra-card">
+        <h4>🔗 Links</h4>
+        <ul style="list-style: none; padding: 0;">
+            {% for link in aula.links_uteis.all %}
+                <li><a href="{{ link.url }}" target="_blank">{{ link.titulo }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</aside>
 
 <script>
 function applyPrintMode(mode) {

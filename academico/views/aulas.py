@@ -84,10 +84,6 @@ def visualizar_aula(request, aula_id):
     if not aula.publicado and not e_autor:
         raise PermissionDenied("Esta aula ainda não foi publicada.")
     
-    # A MUDANÇA PRINCIPAL:
-    # Passamos o texto puro (aula.conteudo) diretamente para o template.
-    # A renderização e a aplicação de cores (codehilite) acontecerão
-    # através do filtro personalizado que criamos no 'markdown_extras.py'.
     
     return render(request, 'academico/aulas/visualizar_aula.html', {
         'aula': aula, 
