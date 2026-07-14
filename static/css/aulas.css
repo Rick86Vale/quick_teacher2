@@ -29,7 +29,7 @@
    ========================================================================== */
 
 .video-list {
-    max-width: 400px; /* Ajuste aqui o tamanho máximo da lista na tela */
+    max-width: 300px; /* Ajuste aqui o tamanho máximo da lista na tela */
 }
 
 .video-thumb {

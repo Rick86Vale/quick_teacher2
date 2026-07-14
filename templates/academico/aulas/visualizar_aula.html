@@ -94,6 +94,9 @@
 
     <!-- Conteúdo Principal -->
     <main style="flex: 1; background: white; padding: 30px; border-radius: 8px;">
+
+        <h2 style="margin: 0; color: #061c78; font-size: 1.8rem;">{{ disciplina.nome }}</h2>
+
         <div class="actions" style="margin-bottom: 20px; padding: 15px; background: #e9ecef; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
             <label><strong>Modo de Impressão:</strong></label>
             <select id="printMode" onchange="applyPrintMode(this.value)">
@@ -142,7 +145,20 @@
         <h3>Recursos</h3>
         <div class="extra-card" style="margin-bottom: 25px;">
             <h4>🎥 Vídeos</h4>
-            <div class="video-list">{% for video in aula.videos.all %}<a href="{{ video.url }}" target="_blank">{{ video.titulo }}</a><br>{% endfor %}</div>
+            <div class="video-list">
+                {% for video in aula.videos.all %}
+                    <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; padding: 5px;">
+                        <a href="{{ video.url }}" target="_blank" style="text-decoration: none;">
+                            <img src="{{ video.get_thumbnail }}" 
+                                alt="{{ video.titulo }}" 
+                                style="width: 80%; height: auto; display: block; border-radius: 4px;">
+                            <p style="margin: 8px 0 0 0; font-size: 0.9em; font-weight: bold; color: #333; text-align: center;">
+                                {{ video.titulo }}
+                            </p>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
         <div class="extra-card" style="margin-bottom: 25px;">
             <h4>📄 PDFs</h4>

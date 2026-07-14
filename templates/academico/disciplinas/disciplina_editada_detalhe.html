@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin: 40px auto;">
+    <div class="card" style="padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <div style="text-align: center; color: #16ac75; margin-bottom: 20px;">
+            <i class="fas fa-check-circle" style="font-size: 3rem;"></i>
+            <h2 style="margin-top: 10px;">Sucesso!</h2>
+        </div>
+        
+        <p style="text-align: center; color: #555;">Os dados da disciplina foram atualizados com sucesso.</p>
+
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <h4 style="color: #061c78;">{{ disciplina.nome }}</h4>
+            <p style="margin: 5px 0;"><strong>Área:</strong> {{ disciplina.area.nome|default:"Sem área definida" }}</p>
+            <p style="margin: 5px 0;"><strong>Instituição:</strong> {{ disciplina.instituicao.nome }}</p>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

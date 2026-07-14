@@ -150,11 +150,21 @@ class Video(models.Model):
     thumbnail_url = models.URLField(blank=True, null=True, help_text="Opcional: link da imagem da capa")
 
     def get_thumbnail(self):
+        # 1. Se o professor cadastrou a thumb, retorna ela
         if self.thumbnail_url:
             return self.thumbnail_url
-        # Lógica automática mantida
-        video_id = self.url.split('v=')[-1].split('&')[0] if 'v=' in self.url else None
-        return f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg" if video_id else ""
+        
+        # 2. Tenta extrair o ID do vídeo do YouTube
+        if 'v=' in self.url:
+            video_id = self.url.split('v=')[-1].split('&')[0]
+            return f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
+        
+        # 3. Caso não seja um link do YouTube ou não tenha thumb, retorna uma imagem padrão
+        # Você pode trocar este link pelo caminho de um ícone/imagem no seu static
+        return "/static/images/default-video-thumb.jpg" 
+
+    def __str__(self):
+        return self.titulo
     
 # 5.2 Recursos (PDF)
 class PDF(models.Model):
