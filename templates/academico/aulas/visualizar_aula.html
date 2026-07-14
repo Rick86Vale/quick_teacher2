@@ -1,11 +1,44 @@
+<!-- path: templates/academico/disciplinas/visualizar_aula.html -->
+
 {% extends 'base.html' %}
 {% load static %}
 {% load markdown_extras %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/aulas.css' %}">
+    <!--<link rel="stylesheet" href="{% static 'css/aulas.css' %}">-->
         <style>
-            /* Estilização do Código - Controle Total */
+            /* ###### Estilizaçao de imagens ###### */
+            /* Ajuste de Imagens no Markdown */
+            .markdown-body img {
+                max-width: 100% !important; /* Impede que a imagem ultrapasse a largura da div */
+                height: auto !important;    /* Mantém a proporção correta */
+                display: block;             /* Remove espaços estranhos */
+                margin: 20px auto;          /* Centraliza a imagem */
+                border-radius: 4px;         /* Suaviza as bordas */
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Dá um toque profissional */
+            }
+            
+            /* Container para o trio de imagens */
+            .img-trio {
+                display: flex;
+                flex-wrap: wrap; /* Faz com que empilhem se não houver espaço */
+                gap: 15px;
+                margin: 20px 0;
+            }
+
+            /* Cada imagem ocupa 1/3 do espaço menos o gap */
+            .img-trio img {
+                flex: 1 1 calc(33.333% - 15px); /* Divide por 3 e subtrai o gap */
+                min-width: 200px; /* Garante que não fiquem minúsculas demais */
+                height: 200px !important; /* Altura fixa para manter todas iguais */
+                object-fit: cover; /* Corta para preencher o quadrado sem distorcer */
+                margin: 0 !important; /* Sobrescreve a margem padrão das imagens */
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                border-radius: 4px;
+            }
+
+
+            /* ###### Estilização do Código - Controle Total ######### */
             .codehilite { 
                 background: #272822 !important; 
                 color: #f8f8f2 !important; 
@@ -70,6 +103,30 @@
                 background-color: #fdfdfd;
                 text-align: justify;
             }
+
+            /* Estilos para a Sidebar de Recursos */
+            .video-item { 
+                margin-bottom: 15px; 
+                border: 1px solid #ddd; 
+                border-radius: 8px; 
+                padding: 8px; 
+                background: #fff; 
+            }
+            .video-item a { text-decoration: none; color: #333; display: block; }
+            .video-item img { 
+                width: 100% !important; 
+                height: auto !important; 
+                display: block; 
+                border-radius: 4px; 
+            }
+            .video-item p { 
+                margin: 8px 0 0 0; 
+                font-size: 0.85em; 
+                font-weight: bold; 
+                text-align: center; 
+            }
+            .extra-card { margin-bottom: 25px; }
+            .extra-card h4 { margin-top: 0; margin-bottom: 10px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         </style>
 {% endblock %}
 
@@ -93,8 +150,8 @@
     </aside>
 
     <!-- Conteúdo Principal -->
-    <main style="flex: 1; background: white; padding: 30px; border-radius: 8px;">
-
+    <main style="flex: 1; min-width: 0; background: white; padding: 30px; border-radius: 8px;">
+    
         <h2 style="margin: 0; color: #061c78; font-size: 1.8rem;">{{ disciplina.nome }}</h2>
 
         <div class="actions" style="margin-bottom: 20px; padding: 15px; background: #e9ecef; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
@@ -104,71 +161,91 @@
                 <option value="columns">Duas Colunas</option>
                 <option value="accessibility">Acessibilidade (Fonte 24)</option>
             </select>
-            <button onclick="window.print()" class="btn btn-secondary" style="padding: 5px 15px;">Imprimir Aula</button>
+            <button onclick="window.print()" class="btn btn-secondary">Imprimir Aula</button>
         </div>
 
         {% if e_autor %}
             {% if not aula.publicado %}
-                <div style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
+                <div style="background: #fff3cd; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
                     <strong>Modo Edição:</strong> Aula em Rascunho.
                 </div>
             {% endif %}
-            <div class="actions" style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
-                <a href="{% url 'criar_aula' disciplina.pk %}" class="btn btn-primary"><i class="fas fa-plus"></i> Nova Aula</a>
-                <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn btn-sm btn-info"><i class="fas fa-list"></i> Gerenciar</a>
-                <a href="{% url 'editar_aula' aula.pk %}" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i> Editar</a>
-                <a href="{% url 'menu_recursos' aula.pk %}" class="btn btn-sm btn-secondary"><i class="fas fa-paperclip"></i> Recursos</a>
+            <div class="actions" style="margin-bottom: 20px; display: flex; gap: 10px;">
+                <a href="{% url 'criar_aula' disciplina.pk %}" class="btn btn-primary">Nova Aula</a>
+                <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn btn-info">Gerenciar</a>
+                <a href="{% url 'editar_aula' aula.pk %}" class="btn btn-primary">Editar</a>
+                
+                <!-- Adicionando o botão de recursos de volta -->
+                <a href="{% url 'menu_recursos' aula.pk %}" class="btn btn-secondary">Recursos</a>
+                
                 <form action="{% url 'alternar_publicacao' aula.pk %}" method="post" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-sm {% if aula.publicado %}btn-warning{% else %}btn-success{% endif %}">
-                        <i class="fas {% if aula.publicado %}fa-eye-slash{% else %}fa-eye{% endif %}"></i> {% if aula.publicado %}Ocultar{% else %}Publicar{% endif %}
+                    <button type="submit" class="btn {% if aula.publicado %}btn-warning{% else %}btn-success{% endif %}">
+                        {% if aula.publicado %}Ocultar{% else %}Publicar{% endif %}
                     </button>
                 </form>
             </div>
         {% endif %}
 
-        <h1 class="main-title">{{ aula.titulo }}</h1>
-        <article class="markdown-body">
+        <h1 style="font-size: 2.5rem; color: #16ac75; margin-bottom: 30px;">{{ aula.titulo }}</h1>
+        
+        <article class="markdown-body" style="width: 100%; box-sizing: border-box;">
             {{ conteudo_html|markdown }}
         </article>
 
         {% if not e_autor %}
-            <div style="margin-top: 40px; padding: 25px; border-top: 2px solid #eee; text-align: center; background: #fafafa; border-radius: 8px;">
+            <div id="timer-box" style="margin-top: 40px; padding: 25px; border-top: 2px solid #eee; text-align: center; background: #fafafa; border-radius: 8px;">
                 <p id="timer-text" style="color: #666; font-weight: 500;">Leia o conteúdo com atenção. O botão será liberado em 30 segundos.</p>
-                <button id="btn-marcar-lida" class="btn btn-success" disabled><i class="fas fa-clock"></i> Aguardando leitura...</button>
+                <button id="btn-marcar-lida" class="btn btn-success" disabled>Aguardando leitura...</button>
             </div>
         {% endif %}
     </main>
 
     <!-- Recursos -->
-    <aside style="width: 250px; padding: 15px; border-left: 1px solid #eee;">
-        <h3>Recursos</h3>
-        <div class="extra-card" style="margin-bottom: 25px;">
-            <h4>🎥 Vídeos</h4>
-            <div class="video-list">
-                {% for video in aula.videos.all %}
-                    <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; padding: 5px;">
-                        <a href="{{ video.url }}" target="_blank" style="text-decoration: none;">
-                            <img src="{{ video.get_thumbnail }}" 
-                                alt="{{ video.titulo }}" 
-                                style="width: 80%; height: auto; display: block; border-radius: 4px;">
-                            <p style="margin: 8px 0 0 0; font-size: 0.9em; font-weight: bold; color: #333; text-align: center;">
-                                {{ video.titulo }}
-                            </p>
-                        </a>
-                    </div>
-                {% endfor %}
+        <aside style="width: 250px; padding: 15px; border-left: 1px solid #eee;">
+            <h3>Recursos</h3>
+            
+            <!-- Vídeos -->
+            <div class="extra-card">
+                <h4>🎥 Vídeos</h4>
+                <div class="video-list">
+                    {% for video in aula.videos.all %}
+                        <div class="video-item">
+                            <a href="{{ video.url }}" target="_blank">
+                                <img src="{{ video.get_thumbnail }}" alt="{{ video.titulo }}">
+                                <p>{{ video.titulo }}</p>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
-        <div class="extra-card" style="margin-bottom: 25px;">
-            <h4>📄 PDFs</h4>
-            <ul style="list-style: none; padding: 0;">{% for pdf in aula.pdfs.all %}<li><a href="{{ pdf.link }}" target="_blank">{{ pdf.titulo }}</a></li>{% endfor %}</ul>
-        </div>
-        <div class="extra-card">
-            <h4>🔗 Links</h4>
-            <ul style="list-style: none; padding: 0;">{% for link in aula.links_uteis.all %}<li><a href="{{ link.url }}" target="_blank">{{ link.titulo }}</a></li>{% endfor %}</ul>
-        </div>
-    </aside>
+
+            <!-- PDFs -->
+            <div class="extra-card">
+                <h4>📄 PDFs</h4>
+                <ul style="list-style: none; padding: 0; font-size: 0.9em;">
+                    {% for pdf in aula.pdfs.all %}
+                        <li style="margin-bottom: 5px;">
+                            <a href="{{ pdf.link }}" target="_blank">{{ pdf.titulo }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Links Úteis -->
+            <div class="extra-card">
+                <h4>🔗 Links</h4>
+                <ul style="list-style: none; padding: 0; font-size: 0.9em;">
+                    {% for link in aula.links_uteis.all %}
+                        <li style="margin-bottom: 5px;">
+                            <a href="{{ link.url }}" target="_blank">{{ link.titulo }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </aside>
+            <!-- ... -->
+        </aside>
 </div>
 
 <script>
