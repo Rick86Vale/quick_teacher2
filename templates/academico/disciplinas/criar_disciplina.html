@@ -1,25 +1,65 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<div class="header" style="margin-bottom: 20px;">
-    <h1>{% if form.instance.pk %}Editar Disciplina{% else %}Nova Disciplina{% endif %}</h1>
-</div>
+{% block extra_css %}
+<style>
+    .form-card {
+        background: #ffffff;
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        max-width: 800px; /* Aumentado para acomodar melhor a descrição */
+        margin: 2rem auto;
+    }
 
-<form method="post" class="card" style="padding: 20px; background: #fff; border: 1px solid #ddd; border-radius: 8px;">
-    {% csrf_token %}
+    h1 { color: #2c3e50; margin-bottom: 1.5rem; font-weight: 600; text-align: center; }
+
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #4a5568; }
     
-    <div style="margin-bottom: 20px;">
-        {{ form.as_p }}
-    </div>
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+    }
 
-    <div class="actions" style="margin-top: 20px; display: flex; gap: 10px;">
-        <button type="submit" class="btn btn-success">
-            <i class="fas fa-save"></i> Salvar Disciplina
-        </button>
+    /* Destacando a descrição */
+    .form-group textarea {
+        min-height: 250px; /* Altura maior para a descrição */
+        resize: vertical;
+        font-family: inherit;
+    }
+
+    .btn-group { display: flex; gap: 10px; margin-top: 2rem; justify-content: flex-end; }
+    .btn-save { background: #3182ce; color: white; padding: 0.8rem 1.5rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; }
+    .btn-cancel { color: #718096; text-decoration: none; padding: 0.8rem 1.5rem; font-weight: 500; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h1>{% if form.instance.pk %}Editar Disciplina{% else %}Nova Disciplina{% endif %}</h1>
+
+    <form method="post">
+        {% csrf_token %}
         
-        <a href="{% url 'listar_disciplinas' %}" class="btn btn-secondary">
-            <i class="fas fa-times"></i> Cancelar
-        </a>
-    </div>
-</form>
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div style="color: #e53e3e; font-size: 0.8rem; margin-top: 5px;">{{ field.errors.0 }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="btn-group">
+            <a href="{% url 'listar_disciplinas' %}" class="btn-cancel">Cancelar</a>
+            <button type="submit" class="btn-save">
+                <i class="fas fa-save"></i> Salvar Disciplina
+            </button>
+        </div>
+    </form>
+</div>
 {% endblock %}

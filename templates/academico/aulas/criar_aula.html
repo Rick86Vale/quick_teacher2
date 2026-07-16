@@ -1,39 +1,97 @@
 {% extends 'base.html' %}
 
+{% block extra_css %}
+<style>
+    /* Layout de Livro (Side-by-side) */
+    .book-container { display: flex; height: 80vh; width: 100%; box-shadow: 0 0 20px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; background: #fff; }
+    .page { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; }
+    .page-left { background: #fdfdfd; border-right: 1px solid #eee; }
+    .page-right { background: #ffffff; }
+
+    /* Estilos do Preview */
+    .markdown-body { font-family: sans-serif; line-height: 1.6; }
+    .markdown-body img { max-width: 100%; height: auto; display: block; margin: 20px auto; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    
+    /* Inputs */
+    textarea { flex: 1; width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 15px; font-family: monospace; resize: none; background: #fafafa; margin-top: 10px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+{% endblock %}
+
 {% block content %}
 <div class="header" style="margin-bottom: 20px;">
     <h2 style="color: #666; font-size: 0.9em; text-transform: uppercase;">Disciplina: {{ disciplina.nome }}</h2>
     <h1>Nova Aula</h1>
 </div>
 
-<form method="post" enctype="multipart/form-data">
+<form method="post" class="book-container" id="aula-form">
     {% csrf_token %}
     
-    <main>
-        <div style="margin-bottom: 15px;">
-            <label><strong>Título da Aula:</strong></label>
-            {{ form.titulo }}
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label><strong>Conteúdo (Markdown):</strong></label>
-            {{ form.conteudo }}
-        </div>
-
-        <button type="submit" class="btn btn-success">
-            <i class="fas fa-save"></i> Salvar Aula
-        </button>
+    <div class="page page-left">
+        <label><strong>Título:</strong></label>
+        {{ form.titulo }}
         
-        <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn btn-secondary">
-            <i class="fas fa-times"></i> Cancelar
-        </a>
-    </main>
+        <label style="margin-top: 15px;"><strong>Conteúdo (Markdown):</strong></label>
+        {{ form.conteudo }}
+        
+        <div style="margin-top: 20px;">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Salvar Aula
+            </button>
+            <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </div>
+
+    <div class="page page-right">
+        <h2 id="preview-title" style="color: #16ac75;">Preview da Aula</h2>
+        <div id="markdown-preview" class="markdown-body"></div>
+    </div>
 </form>
 
 <script>
-function insertAtCursor(text) {
     const textarea = document.querySelector('textarea[name="conteudo"]');
-    textarea.value += "\n" + text + "\n";
-}
+    const titleInput = document.querySelector('input[name="titulo"]');
+    const previewDiv = document.getElementById('markdown-preview');
+    const previewTitle = document.getElementById('preview-title');
+
+    function updatePreview() {
+        previewDiv.innerHTML = marked.parse(textarea.value, { sanitize: false });
+        previewTitle.textContent = titleInput.value || "Nova Aula";
+    }
+
+    textarea.addEventListener('input', updatePreview);
+    titleInput.addEventListener('input', updatePreview);
+
+    // Evento de Colar (Ctrl+V) para imagens
+    textarea.addEventListener('paste', function(e) {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf("image") !== -1) {
+                const blob = items[i].getAsFile();
+                const formData = new FormData();
+                formData.append('image', blob);
+
+                textarea.value += "\n[Enviando imagem...]\n";
+
+                fetch("{% url 'upload_imagem_ajax' %}", {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(data => {
+                    textarea.value = textarea.value.replace("[Enviando imagem...]", "");
+                    if (data.url) {
+                        textarea.value += `\n![Imagem](${data.url})\n`;
+                        updatePreview();
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    textarea.value = textarea.value.replace("[Enviando imagem...]", "[Erro no upload]");
+                });
+            }
+        }
+    });
 </script>
 {% endblock %}

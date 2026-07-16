@@ -1,5 +1,5 @@
 <nav class="navbar">
-    <div class="logo"><strong>Quick_Teacher2</strong></div>
+    <div class="logo"><strong>DOCENTE WEB</strong></div>
     <div class="menu-toggle" id="mobile-menu">☰</div>
     
     <ul class="nav-links">
@@ -23,26 +23,29 @@
 
             {% if user.tipo_usuario == 'PROFESSOR' %}
                 <li class="dropdown">
-                    <a href="#">Base ▼</a>
+                    <a href="#">Gestão ▼</a>
                     <ul class="dropdown-menu">
                         <li><a href="{% url 'listar_instituicoes' %}">Instituições</a></li>
                         <li><a href="{% url 'listar_areas' %}">Áreas</a></li>
-                    </ul>
-                </li>
-
-                <li class="dropdown">
-                    <a href="#">Gestão ▼</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{% url 'dashboard_professor' %}">Dashboard</a></li>
                         <li><a href="{% url 'listar_disciplinas' %}">Disciplinas</a></li>
                         <li><a href="{% url 'listar_turmas' %}">Turmas</a></li>
                         <li><hr></li>
+                        <li><a href="{% url 'dashboard_professor' %}">Dashboard</a></li>
+                        
+                        
+                    </ul>
+
+                    <li class="dropdown">
+                    <a href="#">Criação ▼</a>
+                    <ul class="dropdown-menu">
                         <li><a href="{% url 'criar_instituicao' %}">+ Nova Instituição</a></li>
                         <li><a href="{% url 'criar_area' %}">+ Nova Área</a></li>
                         <li><a href="{% url 'criar_turma' %}">+ Nova Turma</a></li>
                         <li><a href="{% url 'criar_disciplina' %}">+ Nova Disciplina</a></li>
                         <li><a href="{% url 'selecionar_disciplina_para_aula' %}">+ Nova Aula</a></li>
                     </ul>
+                </li>
+
                 </li>
             {% endif %}
 

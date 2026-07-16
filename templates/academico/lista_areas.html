@@ -1,19 +1,87 @@
 {% extends 'base.html' %}
-{% block content %}
-<div class="header">
-    <h1>Áreas de Conhecimento</h1>
-    <a href="{% url 'criar_area' %}" class="btn-primary">+ Nova Área</a>
-</div>
 
-<div class="card-container">
-    {% for area in areas %}
-        <div class="card">
-            <h3>{{ area.nome }}</h3>
-            <a href="{% url 'editar_area' area.pk %}">Editar</a> |
-            <a href="{% url 'excluir_area' area.pk %}" style="color: red;">Excluir</a>
-        </div>
-    {% empty %}
-        <p>Nenhuma área cadastrada.</p>
-    {% endfor %}
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .areas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .area-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .area-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 12px rgba(0,0,0,0.1);
+    }
+
+    .area-card h3 {
+        margin: 0;
+        color: #2d3748;
+        font-size: 1.1rem;
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-action {
+        padding: 0.5rem 0.8rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .btn-edit { background: #edf2f7; color: #4a5568; }
+    .btn-edit:hover { background: #e2e8f0; }
+
+    .btn-delete { background: #fff5f5; color: #e53e3e; }
+    .btn-delete:hover { background: #fed7d7; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Áreas de Conhecimento</h1>
+        <a href="{% url 'criar_area' %}" class="btn-save">+ Nova Área</a>
+    </div>
+
+    <div class="areas-grid">
+        {% for area in areas %}
+            <div class="area-card">
+                <h3>{{ area.nome }}</h3>
+                <div class="actions">
+                    <a href="{% url 'editar_area' area.pk %}" class="btn-action btn-edit">Editar</a>
+                    <a href="{% url 'excluir_area' area.pk %}" class="btn-action btn-delete" 
+                       onclick="return confirm('Deseja realmente excluir esta área?')">Excluir</a>
+                </div>
+            </div>
+        {% empty %}
+            <div style="text-align: center; padding: 3rem; color: #718096;">
+                <p>Nenhuma área cadastrada ainda.</p>
+                <a href="{% url 'criar_area' %}" class="btn-save" style="display:inline-block; margin-top:10px;">Cadastrar Primeira Área</a>
+            </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

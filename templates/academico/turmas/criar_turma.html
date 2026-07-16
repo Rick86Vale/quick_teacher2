@@ -1,10 +1,105 @@
-{% extends 'base.html' %}
-{% block content %}
-<h2>{{ form.instance.pk|yesno:"Editar Turma,Nova Turma" }}</h2>
 
-<form method="post" class="card">
-    {% csrf_token %}
-    {{ form.as_p }} <button type="submit" class="btn-primary">Salvar Turma</button>
-    <a href="{% url 'listar_turmas' %}">Cancelar</a>
-</form>
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    /* Estilo do Card */
+    .form-card {
+        background: #ffffff;
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        max-width: 600px;
+        margin: 2rem auto;
+    }
+
+    h2 {
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    /* Card Interno */
+.inner-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+    /* Grade de Checkboxes */
+    .disciplinas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        max-height: 200px; /* Limita a altura se tiver muitas */
+        overflow-y: auto;  /* Adiciona scroll se necessário */
+        background: white;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+    }
+
+    /* Ajuste dos labels dos checkboxes */
+    .disciplinas-grid label {
+        font-weight: normal;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #4a5568; }
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%; padding: 0.8rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem; transition: border-color 0.2s;
+    }
+    .form-group input:focus { outline: none; border-color: #3182ce; box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2); }
+    .btn-group { display: flex; gap: 10px; align-items: center; margin-top: 2rem; }
+    .btn-save { background: #3182ce; color: white; padding: 0.8rem 1.5rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn-save:hover { background: #2b6cb0; }
+    .btn-cancel { color: #718096; text-decoration: none; font-weight: 500; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h2>{% if form.instance.pk %}Editar Turma{% else %}Nova Turma{% endif %}</h2>
+
+    <form method="post">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                {% if field.name == 'disciplinas' %}
+                    <!-- Card Interno para Disciplinas -->
+                    <div class="inner-card">
+                        <label style="font-weight: 600; margin-bottom: 10px; display: block;">
+                            {{ field.label }}
+                        </label>
+                        <div class="disciplinas-grid">
+                            {{ field }}
+                        </div>
+                        {% if field.help_text %}
+                            <small style="color: #718096; display: block; margin-top: 10px;">{{ field.help_text }}</small>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <!-- Campos Normais -->
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="btn-group">
+                <button type="submit" class="btn-save">Salvar Turma</button>
+                <a href="{% url 'listar_turmas' %}" class="btn-cancel">Cancelar</a>
+            </div>
+        </form>
+</div>
 {% endblock %}

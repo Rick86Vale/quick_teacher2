@@ -1,18 +1,91 @@
-<!--templates/academico/listar_instituicoes.html-->
 {% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .inst-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        transition: transform 0.2s;
+    }
+
+    .inst-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 12px rgba(0,0,0,0.1);
+    }
+
+    .inst-card h3 {
+        margin: 0;
+        color: #2d3748;
+        font-size: 1.2rem;
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 15px;
+    }
+
+    .btn-action {
+        padding: 0.5rem 0.8rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-align: center;
+        flex: 1;
+    }
+
+    .btn-edit { background: #edf2f7; color: #4a5568; }
+    .btn-edit:hover { background: #e2e8f0; }
+
+    .btn-delete { background: #fff5f5; color: #e53e3e; }
+    .btn-delete:hover { background: #fed7d7; }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Minhas Instituições</h2>
-<table>
-    <tr><th>Nome</th><th>Ações</th></tr>
-    {% for inst in instituicoes %}
-    <tr>
-        <td>{{ inst.nome }}</td>
-        <td>
-            <a href="{% url 'editar_instituicao' inst.pk %}">Editar</a>
-            <a href="{% url 'excluir_instituicao' inst.pk %}">Excluir</a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-<a href="{% url 'criar_instituicao' %}">+ Nova Instituição</a>
+<div class="container">
+    <div class="page-header">
+        <h1>Minhas Instituições</h1>
+        <a href="{% url 'criar_instituicao' %}" class="btn-save">+ Nova Instituição</a>
+    </div>
+
+    <div class="cards-grid">
+        {% for inst in instituicoes %}
+            <div class="inst-card">
+                <h3>{{ inst.nome }}</h3>
+                <div class="actions">
+                    <a href="{% url 'editar_instituicao' inst.pk %}" class="btn-action btn-edit">Editar</a>
+                    <a href="{% url 'excluir_instituicao' inst.pk %}" class="btn-action btn-delete" 
+                       onclick="return confirm('Deseja realmente excluir esta instituição?')">Excluir</a>
+                </div>
+            </div>
+        {% empty %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #718096; background: #f7fafc; border-radius: 12px;">
+                <p>Nenhuma instituição cadastrada.</p>
+                <a href="{% url 'criar_instituicao' %}" class="btn-save" style="display:inline-block; margin-top:10px;">Cadastrar Primeira Instituição</a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}
