@@ -2,6 +2,9 @@
 from django.urls import path
 from .views import academico, admin, aluno, aulas, disciplinas, tutoriais
 from academico.views import disciplinas
+from academico.views import admin as admin_views
+from . import views
+
 
 urlpatterns = [
     # 0. Index
@@ -59,6 +62,10 @@ urlpatterns = [
     path('disciplina/<int:pk>/reordenar/confirmar/', aulas.reordenar_confirmacao, name='reordenar_confirmacao'),
 
     path('aula/<int:aula_id>/marcar-lida/', aulas.marcar_aula_lida, name='marcar_aula_lida'),
+    # Rota para salvar e excluir a imagem copiada
+    path('upload-imagem/', views.upload_imagem_ajax, name='upload_imagem_ajax'),
+    path('admin/imagens/excluir-selecionadas/', admin_views.excluir_imagens_selecionadas, name='excluir_imagens_selecionadas'),
+    path('admin/imagens/excluir-tudo/', admin_views.excluir_tudo_nao_usado, name='excluir_tudo_nao_usado'),
 
     
     # 6.1 Recursos (views/academico.py)
@@ -96,5 +103,8 @@ urlpatterns = [
 
 ]
 
-
+urlpatterns += [
+    path('admin/imagens/', admin_views.gerenciar_imagens, name='gerenciar_imagens'),
+    path('admin/imagens/excluir/<str:nome_imagem>/', admin_views.excluir_imagem, name='excluir_imagem'),
+]
     

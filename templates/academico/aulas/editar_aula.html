@@ -1,23 +1,110 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Editando: {{ aula.titulo }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Reset e layout básico */
+        body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; background: #e0dcd3; }
+        
+        .book-container { display: flex; height: 100vh; width: 100%; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
+        .page { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; }
+        .page-left { background: #fdfdfd; border-right: 1px solid #ccc; }
+        .page-right { background: #ffffff; }
 
-{% block content %}
-<div class="header" style="margin-bottom: 20px;">
-    <h1>Editar Aula: {{ aula.titulo }}</h1>
-</div>
+        /* Estilos do Preview */
+        .markdown-body { font-family: Arial, Helvetica, sans-serif !important; }
+        .markdown-body img { max-width: 100% !important; height: auto !important; display: block; margin: 20px auto; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .markdown-body h1 { color: #061c78; font-size: 1.8rem !important; }
+        .markdown-body p { text-align: justify; line-height: 1.5; }
 
-<form method="post" class="card" style="padding: 20px;">
+        textarea { flex: 1; width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 15px; font-family: 'Consolas', monospace; resize: none; background: #fcfcfc; }
+        .btn { padding: 10px 20px; border-radius: 5px; text-decoration: none; border: none; cursor: pointer; color: white; }
+        .btn-success { background: #28a745; }
+        .btn-secondary { background: #6c757d; }
+    </style>
+</head>
+<body>
+
+<form method="post" class="book-container" id="aula-form">
     {% csrf_token %}
     
-    {{ form.as_p }}
-
-    <div class="actions" style="margin-top: 20px; display: flex; gap: 10px;">
-        <button type="submit" class="btn btn-success">
-            <i class="fas fa-save"></i> Salvar Alterações
-        </button>
+    <div class="page page-left">
+        <h2 style="margin-top: 0;">Editor de Markdown</h2>
         
-        <a href="{% url 'gerenciar_aulas' aula.disciplina.pk %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Voltar
-        </a>
+        <!-- Garantimos que o campo de título também seja enviado -->
+        <div style="margin-bottom: 15px;">
+            <label>Título:</label>
+            {{ form.titulo }}
+        </div>
+
+        <!-- O campo 'conteudo' renderizado pelo Django -->
+        {{ form.conteudo }}
+        
+        <div style="margin-top: 20px; display: flex; gap: 10px;">
+            // Adicione isso no seu botão de Salvar no template
+            <button type="submit" class="btn btn-success" onclick="textarea.value = textarea.value;">
+                <i class="fas fa-save"></i> Salvar Aula
+            </button>
+            <a href="{% url 'gerenciar_aulas' aula.disciplina.pk %}" class="btn btn-secondary">Voltar</a>
+        </div>
+    </div>
+
+    <div class="page page-right">
+        <h2 style="margin-top: 0; color: #16ac75;">{{ aula.titulo }}</h2>
+        <div id="markdown-preview" class="markdown-body"></div>
     </div>
 </form>
-{% endblock %}
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+    const textarea = document.querySelector('textarea[name="conteudo"]');
+    const previewDiv = document.getElementById('markdown-preview');
+
+    // Função de atualização do preview
+    function updatePreview() {
+        previewDiv.innerHTML = marked.parse(textarea.value, { sanitize: false });
+    }
+
+    // Evento de digitação
+    textarea.addEventListener('input', updatePreview);
+
+    // Evento de Colar (Ctrl+V) para imagens
+    textarea.addEventListener('paste', function(e) {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf("image") !== -1) {
+                const blob = items[i].getAsFile();
+                const formData = new FormData();
+                formData.append('image', blob);
+
+                textarea.value += "\n[Enviando imagem...]\n";
+
+                fetch("{% url 'upload_imagem_ajax' %}", {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(data => {
+                    textarea.value = textarea.value.replace("[Enviando imagem...]", "");
+                    if (data.url) {
+                        const markdown = `\n![Imagem](${data.url})\n`;
+                        textarea.value += markdown;
+                        updatePreview();
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    textarea.value = textarea.value.replace("[Enviando imagem...]", "[Erro no upload]");
+                });
+            }
+        }
+    });
+
+    updatePreview();
+</script>
+
+</body>
+</html>

@@ -1,13 +1,17 @@
-import json
+# Path: views/aulas.py
+
+import json, os
 import logging
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django.core.files.storage import default_storage
 from django.http import JsonResponse
 from django.urls import reverse
 from django.db import transaction
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 # Seus modelos e formulários
 from academico.models import Disciplina, Aula, Video, PDF, LinkUtil, Aluno, AulaLida
@@ -60,17 +64,46 @@ def excluir_aula(request, pk):
 @login_required
 def editar_aula(request, pk):
     aula = get_object_or_404(Aula, pk=pk)
+    
+    # Validação de permissão
     if not (request.user == aula.disciplina.professor or request.user.is_staff):
         raise PermissionDenied("Sem permissão.")
 
     if request.method == 'POST':
         form = AulaForm(request.POST, instance=aula)
+        
+        # DEBUG: O print abaixo mostrará no terminal se o Django está recebendo o conteúdo
+        # print(f"Dados recebidos no POST: {request.POST.get('conteudo')}")
+        
         if form.is_valid():
             form.save()
             return redirect('visualizar_aula', aula_id=aula.pk)
+        else:
+            # DEBUG: Se houver erro de validação, ele aparecerá no seu terminal
+            print(f"Erros no formulário: {form.errors}")
+            # Você pode enviar os erros para o template para depurar
+            return render(request, 'academico/aulas/editar_aula.html', {
+                'form': form, 
+                'aula': aula,
+                'erros': form.errors # Adicione isso no template para ver o erro na tela
+            })
     else:
         form = AulaForm(instance=aula)
+    
     return render(request, 'academico/aulas/editar_aula.html', {'form': form, 'aula': aula})
+
+
+#4.1 - Inserir imagem na aula
+@csrf_exempt # Necessário se o form estiver fora do contexto padrão
+def upload_imagem_ajax(request):
+    if request.method == 'POST' and request.FILES.get('image'):
+        file = request.FILES['image']
+        # Salva o arquivo no caminho media/aulas/nome_do_arquivo
+        save_path = default_storage.save(os.path.join('aulas', file.name), file)
+        # Retorna a URL pública da imagem
+        image_url = default_storage.url(save_path)
+        return JsonResponse({'url': image_url})
+    return JsonResponse({'error': 'Falha no upload'}, status=400)
 
 # 5. Visualizar Aula
 def visualizar_aula(request, aula_id):

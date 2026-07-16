@@ -218,3 +218,23 @@ body {
         display: flex;
     }
 }
+
+/* ==========================================================================
+   IDENTIDADE VISUAL AUTOMÁTICA DAS DISCIPLINAS
+   ========================================================================== 
+
+.card-disciplina {
+    transition: transform 0.2s ease;
+    border-top: 5px solid #ccc; 
+}
+
+.card-disciplina:hover {
+    transform: translateY(-5px);
+}
+
+
+.card-disciplina:nth-child(4n+1) { border-top-color: #16ac75 !important; }
+.card-disciplina:nth-child(4n+2) { border-top-color: #061c78 !important; }
+.card-disciplina:nth-child(4n+3) { border-top-color: #f92672 !important; }
+.card-disciplina:nth-child(4n+4) { border-top-color: #ae81ff !important; }
+*/
