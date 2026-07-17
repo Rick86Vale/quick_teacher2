@@ -101,6 +101,10 @@ urlpatterns = [
     path('evento/<int:pk>/editar/', disciplinas.editar_evento, name='editar_evento'),
     path('evento/<int:pk>/excluir/', disciplinas.excluir_evento, name='excluir_evento'),
 
+    #10.Criaçao de Slides
+    path('aula/<int:aula_id>/baixar-slides/', aulas.baixar_slides, name='baixar_slides'),
+    path('aula/<int:aula_id>/editar-slide/', aulas.editar_conteudo_slide, name='editar_conteudo_slide'),
+
 ]
 
 urlpatterns += [

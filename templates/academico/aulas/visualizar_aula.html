@@ -211,6 +211,9 @@
                 
                 <!-- Adicionando o botão de recursos de volta -->
                 <a href="{% url 'menu_recursos' aula.pk %}" class="btn btn-secondary">Recursos</a>
+                <a href="{% url 'editar_conteudo_slide' aula.pk %}" class="btn btn-info">
+                    <i class="fas fa-file-powerpoint"></i> Gerar Slides (Editar)
+                </a>
                 
                 <form action="{% url 'alternar_publicacao' aula.pk %}" method="post" style="display: inline;">
                     {% csrf_token %}

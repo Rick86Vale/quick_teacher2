@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    /* Layout de Livro (Side-by-side) */
+    .book-container { display: flex; height: 75vh; width: 100%; box-shadow: 0 0 20px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; background: #fff; }
+    .page { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; }
+    .page-left { background: #fdfdfd; border-right: 1px solid #eee; }
+    .page-right { background: #ffffff; }
+
+    /* Estilos do Preview */
+    .markdown-body { font-family: sans-serif; line-height: 1.6; }
+    .markdown-body img { max-width: 100%; height: auto; display: block; margin: 20px auto; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    
+    textarea { flex: 1; width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 15px; font-family: monospace; resize: none; background: #fafafa; margin-top: 10px; }
+
+    /* Container que simula o Slide */
+    .slide-preview-container {
+        width: 100%;
+        aspect-ratio: 16 / 9; /* Formato padrão de slides */
+        background: #fff;
+        border: 2px solid #333;
+        border-radius: 8px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Centraliza conteúdo verticalmente */
+        overflow: hidden;
+    }
+
+    /* Ajuste fino da tipografia dentro do "slide" */
+    #markdown-preview {
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+    }
+    
+    .markdown-body h1 { font-size: 2.5rem !important; color: #16ac75; }
+    .markdown-body h2 { font-size: 2rem !important; color: #333; }
+    .markdown-body p { font-size: 1.2rem !important; }
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 20px;">
+    <div style="margin-bottom: 20px;">
+        <h2>Customizar Slides: {{ aula.titulo }}</h2>
+        <p>Ajuste o conteúdo para os slides. Estas alterações são exclusivas para a apresentação.</p>
+    </div>
+
+    <form method="POST" class="book-container" id="slide-form">
+        {% csrf_token %}
+        
+        <div class="page page-left">
+            <label><strong>Markdown dos Slides:</strong></label>
+            <textarea name="conteudo_slide">{{ aula.conteudo }}</textarea>
+            
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-file-powerpoint"></i> Gerar e Baixar .pptx
+                </button>
+                <!-- Botão Voltar para a Aula -->
+                <a href="{% url 'visualizar_aula' aula.pk %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar à Aula
+                </a>
+            </div>
+        </div>
+
+        <div class="page page-right" style="background: #e0dcd3;"> <!-- Cor de fundo para destacar o "slide" -->
+            <h3 style="margin-top: 0;">Preview Visual</h3>
+            
+            <div class="slide-preview-container">
+                <div id="markdown-preview" class="markdown-body"></div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    const textarea = document.querySelector('textarea[name="conteudo_slide"]');
+    const previewDiv = document.getElementById('markdown-preview');
+
+    function updatePreview() {
+        previewDiv.innerHTML = marked.parse(textarea.value, { sanitize: false });
+    }
+
+    textarea.addEventListener('input', updatePreview);
+    
+    // Inicia o preview ao carregar a página
+    updatePreview();
+</script>
+{% endblock %}

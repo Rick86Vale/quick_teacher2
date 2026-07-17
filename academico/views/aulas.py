@@ -1,17 +1,18 @@
 # Path: views/aulas.py
 
-import json, os
+import json, os, io
 import logging
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.files.storage import default_storage
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
 from django.db import transaction
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from academico.utils.gerador_slides import criar_apresentacao
 
 # Seus modelos e formulários
 from academico.models import Disciplina, Aula, Video, PDF, LinkUtil, Aluno, AulaLida
@@ -125,6 +126,33 @@ def visualizar_aula(request, aula_id):
         'e_autor': e_autor
     })
 
+# 5.1 Edição de Slides da aula
+@login_required
+def editar_conteudo_slide(request, aula_id):
+    aula = get_object_or_404(Aula, pk=aula_id)
+    
+    if request.method == 'POST':
+        # CAPTURA O CONTEÚDO EDITADO PELO USUÁRIO NO TEMPLATE
+        conteudo_editado = request.POST.get('conteudo_slide')
+        
+        from academico.utils.gerador_slides import criar_apresentacao
+        import io
+        
+        # PASSA O CONTEÚDO EDITADO, E NÃO O DA AULA ORIGINAL
+        prs = criar_apresentacao(aula.titulo, conteudo_editado)
+        
+        buffer = io.BytesIO()
+        prs.save(buffer)
+        buffer.seek(0)
+        
+        response = HttpResponse(
+            buffer.read(), 
+            content_type='application/vnd.openxmlformats-officedocument.presentationml.presentation'
+        )
+        response['Content-Disposition'] = f'attachment; filename={aula.titulo}_slides.pptx'
+        return response
+
+    return render(request, 'academico/aulas/editar_conteudo_slide.html', {'aula': aula})
 
 # 6. Alternar Publicação
 @login_required
@@ -256,3 +284,17 @@ def marcar_aula_lida(request, aula_id):
     
     AulaLida.objects.get_or_create(aluno=aluno, aula=aula)
     return JsonResponse({'status': 'success'})
+
+
+def baixar_slides(request, aula_id):
+    aula = Aula.objects.get(pk=aula_id)
+    prs = criar_apresentacao(aula.titulo, aula.conteudo)
+    
+    # Salva na memória em vez de disco
+    buffer = io.BytesIO()
+    prs.save(buffer)
+    buffer.seek(0)
+    
+    response = HttpResponse(buffer.read(), content_type='application/vnd.openxmlformats-officedocument.presentationml.presentation')
+    response['Content-Disposition'] = f'attachment; filename={aula.titulo}.pptx'
+    return response

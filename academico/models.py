@@ -183,7 +183,7 @@ class LinkUtil(models.Model):
 
     def __str__(self):
         return self.titulo
-    
+        
 
 # 6. Convite
 class Convite(models.Model):
