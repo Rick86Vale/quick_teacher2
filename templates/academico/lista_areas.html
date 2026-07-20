@@ -41,6 +41,7 @@
     .actions {
         display: flex;
         gap: 10px;
+        align-items: center;
     }
 
     .btn-action {
@@ -49,21 +50,23 @@
         text-decoration: none;
         font-size: 0.85rem;
         font-weight: 500;
+        display: inline-flex;
+        align-items: center;
     }
 
     .btn-edit { background: #edf2f7; color: #4a5568; }
     .btn-edit:hover { background: #e2e8f0; }
 
-    .btn-delete { background: #fff5f5; color: #e53e3e; }
+    .btn-delete { background: #fff5f5; color: #e53e3e; border: none; cursor: pointer; }
     .btn-delete:hover { background: #fed7d7; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container" style="max-width: 1000px; margin: 0 auto; padding: 20px;">
     <div class="page-header">
         <h1>Áreas de Conhecimento</h1>
-        <a href="{% url 'criar_area' %}" class="btn-save">+ Nova Área</a>
+        <a href="{% url 'criar_area' %}" class="btn btn-primary">+ Nova Área</a>
     </div>
 
     <div class="areas-grid">
@@ -71,16 +74,17 @@
             <div class="area-card">
                 <h3>{{ area.nome }}</h3>
                 <div class="actions">
-                    <a href="{% url 'editar_area' area.pk %}" class="btn-action btn-edit">Editar</a>
-                    <a href="{% url 'excluir_area' area.pk %}" class="btn-action btn-delete" 
-                       onclick="return confirm('Deseja realmente excluir esta área?')">Excluir</a>
+    <a href="{% url 'editar_area' area.pk %}" class="btn-action btn-edit">Editar</a>
+    
+    <!-- Link GET simples que direciona para a tela de confirmação de senha -->
+    <a href="{% url 'excluir_area' area.pk %}" class="btn-action btn-delete" style="text-decoration: none;">Excluir</a>
+    </div>
                 </div>
-            </div>
-        {% empty %}
-            <div style="text-align: center; padding: 3rem; color: #718096;">
-                <p>Nenhuma área cadastrada ainda.</p>
-                <a href="{% url 'criar_area' %}" class="btn-save" style="display:inline-block; margin-top:10px;">Cadastrar Primeira Área</a>
-            </div>
+            {% empty %}
+                <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #718096; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <p>Nenhuma área cadastrada ainda.</p>
+                    <a href="{% url 'criar_area' %}" class="btn btn-primary" style="display:inline-block; margin-top:10px;">Cadastrar Primeira Área</a>
+                </div>
         {% endfor %}
     </div>
 </div>

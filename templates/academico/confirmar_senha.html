@@ -1,29 +1,40 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="container" style="max-width: 500px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-    <h2>Confirmar Exclusão</h2>
-    <div class="alert alert-warning" style="padding: 20px; background: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px;">
-        <p>Você está prestes a excluir permanentemente: <strong>{{ item.nome }}</strong></p>
-        <p style="font-size: 0.9em; color: #856404;">O sistema baixará um backup em JSON antes da exclusão.</p>
-    </div>
+<div style="max-width: 500px; margin: 50px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <h2 style="color: #e53e3e; margin-bottom: 20px;">Confirmação de Segurança</h2>
     
-    <h2>Autenticação Necessária</h2>
-    <form method="post" action="{% url 'excluir_disciplina' pk %}" id="form-excluir">
+    <p style="color: #4a5568; margin-bottom: 20px;">
+        Esta é uma ação destrutiva. Por favor, digite sua senha atual para confirmar a exclusão.
+    </p>
+
+    <!-- O formulário envia o POST com o campo 'password_confirm' esperado pela função -->
+    <form method="post">
         {% csrf_token %}
-        <div style="margin-bottom: 15px;">
-            <input type="password" name="password_confirm" class="form-control" required placeholder="Digite sua senha" style="width: 100%; padding: 10px;">
+        
+        <div style="margin-bottom: 20px;">
+            <label for="password_confirm" style="display: block; margin-bottom: 8px; font-weight: 500;">Sua Senha:</label>
+            <input type="password" name="password_confirm" id="password_confirm" required 
+                   style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box;">
         </div>
-        <button type="submit" class="btn btn-danger" style="width: 100%; padding: 10px;">Confirmar Exclusão e Baixar Backup</button>
-        <a href="{% url 'listar_disciplinas' %}" class="btn btn-secondary" style="display: block; text-align: center; margin-top: 10px;">Cancelar</a>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <a href="javascript:history.back()" class="btn btn-secondary" style="text-decoration: none; padding: 10px 15px; background: #e2e8f0; color: #4a5568; border-radius: 6px;">Cancelar</a>
+            <button type="submit" class="btn btn-danger" style="padding: 10px 15px; background: #e53e3e; color: white; border: none; border-radius: 6px; cursor: pointer;">Confirmar Exclusão</button>
+        </div>
     </form>
 </div>
 
 <script>
-    // Após o clique, aguarda um instante e redireciona para a listagem
-    document.getElementById('form-excluir').addEventListener('submit', function() {
-        setTimeout(function() {
+    // Monitora se o cookie de download foi criado pelo backend
+    setInterval(function() {
+        if (document.cookie.indexOf('download_backup_realizado=true') !== -1) {
+            // Remove o cookie para evitar loops
+            document.cookie = 'download_backup_realizado=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            // Redireciona de volta para a lista de disciplinas
             window.location.href = "{% url 'listar_disciplinas' %}";
-        }, 1500); 
-    });
+        }
+    }, 500);
 </script>
+
 {% endblock %}

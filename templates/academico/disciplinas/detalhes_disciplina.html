@@ -23,8 +23,17 @@
     </div>
 
     <!-- Painel do Professor -->
-    {% if e_autor %}
+{% if e_autor %}
     <div style="display: flex; gap: 10px; margin-bottom: 40px;">
+        <!-- Agora usando .aulas conforme o seu loop de aulas abaixo -->
+        {% with primeira_aula=disciplina.aulas.all.first %}
+            {% if primeira_aula %}
+            <a href="{% url 'visualizar_aula' primeira_aula.pk %}" class="btn btn-primary">
+                <i class="fas fa-play"></i> Iniciar Curso
+            </a>
+            {% endif %}
+        {% endwith %}
+
         <a href="{% url 'gerenciar_aulas' disciplina.pk %}" class="btn btn-secondary">
             <i class="fas fa-list"></i> Gerenciar Aulas
         </a>
@@ -32,7 +41,7 @@
             <i class="fas fa-plus"></i> Nova Aula
         </a>
     </div>
-    {% endif %}
+{% endif %}
 
     <!-- Cronograma e Status do Aluno -->
     {% if not e_autor %} 

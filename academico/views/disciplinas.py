@@ -17,7 +17,6 @@ from usuarios.views import eh_professor
 from .academico import verificar_senha_e_executar
 
 
-
 logger = logging.getLogger(__name__)
 
 # --- Disciplinas ---
@@ -33,15 +32,26 @@ def criar_disciplina(request):
             return redirect('listar_disciplinas')
     return render(request, 'academico/disciplinas/criar_disciplina.html', {'form': DisciplinaForm(user=request.user)})
 
+@login_required
 def listar_disciplinas(request):
     disciplinas = Disciplina.objects.filter(professor=request.user).order_by('area__nome')
+    
+    # Lista de cores oficiais da sua identidade visual
+    cores_disponiveis = ['#16ac75', '#061c78', '#f92672', '#ae81ff']
+    
     disciplinas_por_area = {}
     for d in disciplinas:
+        # Atribui a cor fixa baseada no ID único (pk) da disciplina
+        d.cor_final = cores_disponiveis[d.pk % len(cores_disponiveis)]
+        
         nome_area = d.area.nome if d.area else "Sem Área Definida"
         if nome_area not in disciplinas_por_area:
             disciplinas_por_area[nome_area] = []
         disciplinas_por_area[nome_area].append(d)
+        
     return render(request, 'academico/disciplinas/lista_disciplinas.html', {'disciplinas_por_area': disciplinas_por_area})
+
+
 
 @login_required
 def detalhes_disciplina(request, pk):
@@ -86,10 +96,11 @@ def editar_disciplina(request, pk):
 
 @login_required
 def excluir_disciplina(request, pk):
+    # Use get_object_or_404 de forma segura. 
+    # Se o seu modelo Disciplina usa 'professor=request.user', certifique-se de que o ID 28 pertence a ele.
+    disciplina = get_object_or_404(Disciplina, pk=pk)
+    
     def acao_excluir_e_baixar(req, p):
-        disciplina = get_object_or_404(Disciplina, pk=p, professor=req.user)
-        
-        # 1. Preparar o JSON
         data = {
             'disciplina': disciplina.nome,
             'codigo': disciplina.codigo,
@@ -97,18 +108,14 @@ def excluir_disciplina(request, pk):
             'aulas': list(disciplina.aulas.values('titulo', 'ordem', 'publicado', 'conteudo'))
         }
         
-        # 2. Criar resposta de download
         response = HttpResponse(json.dumps(data, indent=4), content_type="application/json")
         response['Content-Disposition'] = f'attachment; filename="backup_{disciplina.codigo}.json"'
         
-        # 3. Excluir (O objeto deixará de existir, por isso fazemos isso APÓS preparar o JSON)
         disciplina.delete()
-        
-        # 4. Retornar apenas o arquivo
+        response.set_cookie('download_backup_realizado', 'true', max_age=10)
         return response
 
     return verificar_senha_e_executar(request, acao_excluir_e_baixar, pk)
-
 
 # --- Importação/Exportação ---
 

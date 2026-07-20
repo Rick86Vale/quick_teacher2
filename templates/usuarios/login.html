@@ -1,15 +1,104 @@
 {% extends 'base.html' %}
 
+{% block extra_css %}
+<style>
+    .login-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 80vh;
+        padding: 20px;
+    }
+
+    .login-card {
+        background: #ffffff;
+        padding: 2.5rem;
+        border-radius: 16px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 400px;
+        border: 1px solid #f0f0f0;
+    }
+
+    .login-card h2 {
+        margin-top: 0;
+        color: #2d3748;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; color: #4a5568; font-weight: 500; }
+    
+    .form-group input {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+
+    .form-group input:focus {
+        border-color: #3182ce;
+        outline: none;
+    }
+
+    .btn-login {
+        width: 100%;
+        padding: 0.9rem;
+        background: #3182ce;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 1rem;
+        transition: background 0.2s;
+    }
+
+    .btn-login:hover { background: #2b6cb0; }
+
+    .register-links {
+        margin-top: 2rem;
+        text-align: center;
+        border-top: 1px solid #edf2f7;
+        padding-top: 1.5rem;
+    }
+
+    .register-links p { color: #718096; margin-bottom: 0.8rem; font-size: 0.9rem; }
+    .register-links a { color: #3182ce; text-decoration: none; font-weight: 500; }
+    .register-links a:hover { text-decoration: underline; }
+</style>
+{% endblock %}
+
 {% block content %}
-    <h2>Login</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Entrar</button>
-    </form>
-    <div class="register-links">
-    <p>Ainda não tem cadastro?</p>
-    <a href="{% url 'registro' %}">Cadastrar como Aluno</a> | 
-    <a href="{% url 'registro_professor' %}">Cadastrar como Professor</a>
+<div class="login-wrapper">
+    <div class="login-card">
+        <h2>Entrar no QuickTeacher</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                </div>
+            {% endfor %}
+            
+            <button type="submit" class="btn-login">Entrar</button>
+        </form>
+
+        <div class="register-links">
+            <p>Ainda não tem cadastro?</p>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <a href="{% url 'registro' %}">Aluno</a> 
+                <span style="color: #cbd5e0;">|</span>
+                <a href="{% url 'registro_professor' %}">Professor</a>
+            </div>
+        </div>
     </div>
+</div>
 {% endblock %}

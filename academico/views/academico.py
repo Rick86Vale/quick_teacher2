@@ -155,7 +155,11 @@ def editar_area(request, pk):
 
 @login_required
 def excluir_area(request, pk):
+    area = get_object_or_404(AreaConhecimento, pk=pk, professor=request.user)
+    
     def acao_excluir(req, p):
-        get_object_or_404(AreaConhecimento, pk=p, professor=req.user).delete()
+        area.delete()
+        messages.success(req, "Área excluída com sucesso.")
         return redirect('listar_areas')
+        
     return verificar_senha_e_executar(request, acao_excluir, pk)
