@@ -16,7 +16,9 @@ from academico.utils.gerador_slides import criar_apresentacao
 
 # Seus modelos e formulários
 from academico.models import Disciplina, Aula, Video, PDF, LinkUtil, Aluno, AulaLida
+
 from ..forms import AulaForm, VideoFormSet, PDFFormSet, LinkUtilFormSet
+from ..models import Disciplina, Aula, Video, PDF, LinkUtil, Aluno, AulaLida, ComentarioContextual
 
 # Configuração de Logger
 logger = logging.getLogger(__name__)
@@ -298,3 +300,48 @@ def baixar_slides(request, aula_id):
     response = HttpResponse(buffer.read(), content_type='application/vnd.openxmlformats-officedocument.presentationml.presentation')
     response['Content-Disposition'] = f'attachment; filename={aula.titulo}.pptx'
     return response
+
+
+@login_required
+def adicionar_comentario_contextual(request, aula_pk):
+    aula = get_object_or_404(Aula, pk=aula_pk)
+    
+    if request.method == 'POST' and aula.disciplina.professor == request.user:
+        comentario_id = request.POST.get('comentario_id')
+        identificador = request.POST.get('identificador_ancora')
+        texto = request.POST.get('texto')
+        
+        if identificador and texto:
+            if comentario_id:
+                # Atualizar (Update) se veio ID
+                comentario = get_object_or_404(ComentarioContextual, pk=comentario_id, professor=request.user)
+                comentario.identificador_ancora = identificador
+                comentario.texto = texto
+                comentario.save()
+                messages.success(request, "Nota atualizada com sucesso!")
+            else:
+                # Criar (Create) se não veio ID
+                ComentarioContextual.objects.create(
+                    aula=aula,
+                    professor=request.user,
+                    identificador_ancora=identificador,
+                    texto=texto
+                )
+                messages.success(request, "Nota adicionada com sucesso!")
+        else:
+            messages.error(request, "Preencha todos os campos da nota.")
+            
+    return redirect('visualizar_aula', aula_id=aula.pk)
+
+@login_required
+def excluir_comentario_contextual(request, comentario_pk):
+    comentario = get_object_or_404(ComentarioContextual, pk=comentario_pk)
+    
+    # Valida se o usuário logado é o dono do comentário/professor
+    if comentario.professor == request.user:
+        aula_pk = comentario.aula.pk
+        comentario.delete()
+        messages.success(request, "Nota excluída com sucesso!")
+        return redirect('visualizar_aula', aula_id=aula_pk)
+    
+    raise PermissionDenied("Acesso negado.")

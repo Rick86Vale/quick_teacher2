@@ -183,7 +183,36 @@ class LinkUtil(models.Model):
 
     def __str__(self):
         return self.titulo
-        
+
+# 5.4 Manual do Professor
+class ComentarioContextual(models.Model):
+    aula = models.ForeignKey(
+        'Aula', 
+        on_delete=models.CASCADE, 
+        related_name='comentarios_contextuais',
+        verbose_name="Aula"
+    )
+    professor = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE,
+        verbose_name="Professor"
+    )
+    identificador_ancora = models.CharField(
+        max_length=50, 
+        help_text="Identificador ou termo do texto onde esta nota se aplica"
+    )
+    texto = models.TextField(
+        verbose_name="Comentário do Professor"
+    )
+    data_criacao = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Comentário Contextual"
+        verbose_name_plural = "Comentários Contextuais"
+        ordering = ['data_criacao']
+
+    def __str__(self):
+        return f"Nota de {self.professor.username} em [{self.identificador_ancora}]"
 
 # 6. Convite
 class Convite(models.Model):

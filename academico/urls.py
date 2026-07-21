@@ -58,15 +58,15 @@ urlpatterns = [
     path('disciplina/<int:pk>/reordenar/', aulas.reordenar_aulas_template, name='reordenar_aulas_template'),
     # Rota que o JavaScript chama para salvar a nova ordem
     path('disciplina/<int:pk>/reordenar/salvar/', aulas.reordenar_aulas_salvar, name='reordenar_aulas'),
-
     path('disciplina/<int:pk>/reordenar/confirmar/', aulas.reordenar_confirmacao, name='reordenar_confirmacao'),
-
     path('aula/<int:aula_id>/marcar-lida/', aulas.marcar_aula_lida, name='marcar_aula_lida'),
     # Rota para salvar e excluir a imagem copiada
     path('upload-imagem/', views.upload_imagem_ajax, name='upload_imagem_ajax'),
     path('admin/imagens/excluir-selecionadas/', admin_views.excluir_imagens_selecionadas, name='excluir_imagens_selecionadas'),
     path('admin/imagens/excluir-tudo/', admin_views.excluir_tudo_nao_usado, name='excluir_tudo_nao_usado'),
-
+    #Comentário do professor
+    path('aula/<int:aula_pk>/comentario/adicionar/', views.adicionar_comentario_contextual, name='adicionar_comentario_contextual'),
+    path('comentario/<int:comentario_pk>/excluir/', views.excluir_comentario_contextual, name='excluir_comentario_contextual'),
     
     # 6.1 Recursos (views/academico.py)
     path('aula/<int:aula_id>/recursos/', aulas.menu_recursos, name='menu_recursos'),
