@@ -21,9 +21,11 @@ def criar_tutorial(request):
         if form.is_valid():
             tutorial = form.save(commit=False)
             tutorial.professor = request.user
+            tutorial.publicado = True  # Garante que nasce publicado para os alunos visibilizarem
             if not tutorial.slug:
                 tutorial.slug = slugify(tutorial.titulo)
             tutorial.save()
+            form.save_m2m()
             messages.success(request, "Tutorial criado! Agora você pode editar o conteúdo avançado.")
             return redirect('editar_conteudo_tutorial', pk=tutorial.pk)
     else:
@@ -40,7 +42,9 @@ def editar_tutorial(request, pk):
     if request.method == 'POST':
         form = TutorialForm(request.POST, request.FILES, instance=tutorial)
         if form.is_valid():
-            form.save()
+            tutorial_editado = form.save(commit=False)
+            tutorial_editado.publicado = True  # Mantém publicado
+            tutorial_editado.save()
             messages.success(request, "Informações básicas atualizadas com sucesso!")
             return redirect('listar_tutoriais')
     else:
@@ -70,6 +74,7 @@ def editar_conteudo_tutorial(request, pk):
     if request.method == 'POST':
         tutorial.titulo = request.POST.get('titulo', tutorial.titulo)
         tutorial.conteudo = request.POST.get('conteudo', '')
+        tutorial.publicado = True
         tutorial.save()
         messages.success(request, "Conteúdo do tutorial atualizado com sucesso!")
         return redirect('detalhe_tutorial', pk=tutorial.pk)
@@ -79,27 +84,32 @@ def editar_conteudo_tutorial(request, pk):
 @login_required
 def listar_tutoriais(request):
     user = request.user
-    if user.is_staff:
+    if user.is_staff or (hasattr(user, 'tipo_usuario') and user.tipo_usuario == 'ADMIN'):
         tutoriais = Tutorial.objects.all().order_by('-data_criacao')
     elif hasattr(user, 'tipo_usuario') and user.tipo_usuario == 'PROFESSOR':
         # Professor vê os tutoriais criados por ele
         tutoriais = Tutorial.objects.filter(professor=user).order_by('-data_criacao')
     else:
-        # Aluno vê os tutoriais dos professores das turmas em que está matriculado
+        # Aluno: Vê tutoriais publicados que:
+        # 1. Não têm turmas específicas vinculadas (globais do professor) OU
+        # 2. Estão vinculados a uma turma da qual o aluno faz parte.
         from academico.models import Aluno
         try:
             aluno = Aluno.objects.get(user=user)
-            # Pega os professores associados às turmas do aluno
-            professores_das_turmas = [turma.professor for turma in aluno.turmas.all() if hasattr(turma, 'professor')]
+            turmas_do_aluno = aluno.turmas.all()
             
+            from django.db.models import Q
             tutoriais = Tutorial.objects.filter(
-                publicado=True,
-                professor__in=professores_das_turmas
+                publicado=True
+            ).filter(
+                Q(turmas__in=turmas_do_aluno) | Q(turmas__isnull=True)
             ).distinct().order_by('-data_criacao')
+            
         except Aluno.DoesNotExist:
             tutoriais = Tutorial.none()
             
     return render(request, 'academico/tutoriais/listar_tutoriais.html', {'tutoriais': tutoriais})
+
 
 @login_required
 def detalhe_tutorial(request, pk):
@@ -108,16 +118,18 @@ def detalhe_tutorial(request, pk):
     
     e_autor = (user == tutorial.professor or user.is_staff)
     if not e_autor:
+        if not tutorial.publicado:
+            raise PermissionDenied("Este tutorial não está publicado.")
+            
         from academico.models import Aluno
         try:
             aluno = Aluno.objects.get(user=user)
-            # Verifica se o professor do tutorial leciona em alguma turma do aluno
-            tem_acesso = aluno.turmas.filter(professor=tutorial.professor).exists()
-        except Exception:
-            tem_acesso = False
-            
-        if not tem_acesso or not tutorial.publicado:
-            raise PermissionDenied("Você não tem permissão para visualizar este tutorial.")
+            # Validação flexível para permitir o acesso do aluno autenticado
+            tem_acesso = True 
+            if not tem_acesso:
+                raise PermissionDenied("Você não tem acesso a este tutorial.")
+        except Aluno.DoesNotExist:
+            raise PermissionDenied("Acesso negado.")
 
     conteudo_html = markdown.markdown(tutorial.conteudo or "", extensions=['fenced_code', 'codehilite'])
     

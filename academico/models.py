@@ -245,15 +245,18 @@ class Tutorial(models.Model):
     imagem = models.ImageField(upload_to='tutoriais/', blank=True, null=True)
     imagem_url = models.URLField(max_length=500, blank=True, null=True, help_text="Ou cole o link de uma imagem externa")
     
-    # Apenas o professor criador
+    # Professor criador
     professor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tutoriais_criados')
+    
+    # Novo campo: Vincula o tutorial diretamente a quais turmas ele estará disponível
+    turmas = models.ManyToManyField(Turma, related_name='tutoriais', blank=True, verbose_name="Turmas com acesso")
 
     data_criacao = models.DateTimeField(auto_now_add=True)
     data_atualizacao = models.DateTimeField(auto_now=True)
     publicado = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.titulo
+        return f"{self.titulo} - ({self.professor.username})"
 
 # 9. Avisos e Comunicações
 class Aviso(models.Model):

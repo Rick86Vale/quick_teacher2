@@ -73,14 +73,25 @@ PDFFormSet = inlineformset_factory(Aula, PDF, fields=('titulo', 'link'), extra=1
 LinkUtilFormSet = inlineformset_factory(Aula, LinkUtil, fields=('titulo', 'url'), extra=1, can_delete=True)
 
 # --- TUTORIAIS ---
+from django import forms
+from .models import Tutorial, Turma
+
 class TutorialForm(forms.ModelForm):
     class Meta:
         model = Tutorial
-        fields = ['titulo', 'descricao', 'imagem', 'imagem_url', 'publicado']
+        fields = ['titulo', 'descricao', 'turmas', 'imagem', 'imagem_url', 'publicado']
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
-            'descricao': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
-            'imagem': forms.FileInput(attrs={'class': 'form-control'}),
-            'imagem_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://exemplo.com/imagem.jpg'}),
+            'descricao': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'turmas': forms.CheckboxSelectMultiple(),  # Exibe em formato de caixas de seleção (checkboxes)
+            'imagem_url': forms.URLInput(attrs={'class': 'form-control'}),
             'publicado': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None) # Recebe o usuário logado opcionalmente
+        super().__init__(*args, **kwargs)
+        if user and not user.is_staff:
+            # Filtra as turmas para que o professor selecione apenas as turmas associadas à instituição dele 
+            # ou às disciplinas lecionadas por ele (ajuste conforme a regra de turmas do seu projeto)
+            self.fields['turmas'].queryset = Turma.objects.filter(instituicao__professor=user).distinct()

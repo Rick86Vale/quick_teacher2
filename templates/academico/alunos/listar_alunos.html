@@ -1,0 +1,48 @@
+<!-- academico/alunos/listar_alunos.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 900px; margin: 40px auto; padding: 25px; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px;">
+        <h2 style="color: #2c3e50; margin: 0; font-weight: 700;">Alunos Matriculados</h2>
+        <span class="badge bg-primary" style="font-size: 0.9rem; padding: 8px 12px;">Total: {{ alunos.count }}</span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Nome do Aluno</th>
+                    <th>E-mail</th>
+                    <th>Turmas Matriculadas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aluno in alunos %}
+                <tr>
+                    <td>
+                        <strong>{{ aluno.user.get_full_name|default:aluno.user.username }}</strong>
+                    </td>
+                    <td>{{ aluno.user.email|default:"Não informado" }}</td>
+                    <td>
+                        {% for turma in aluno.turmas.all %}
+                            <span class="badge bg-secondary" style="margin-right: 3px;">{{ turma.nome }}</span>
+                        {% empty %}
+                            <span class="text-muted">Nenhuma turma</span>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center py-4 text-muted">
+                        Nenhum aluno encontrado nas suas turmas.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

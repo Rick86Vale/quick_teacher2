@@ -1,4 +1,4 @@
-<!-- path: templates/base.html -->
+<!-- path: templates/navbar.html -->
 
 <nav class="navbar">
     <div class="logo"><strong>DOCENTE WEB</strong></div>
@@ -30,6 +30,7 @@
                         <li><a href="{% url 'listar_areas' %}">Áreas</a></li>
                         <li><a href="{% url 'listar_disciplinas' %}">Disciplinas</a></li>
                         <li><a href="{% url 'listar_turmas' %}">Turmas</a></li>
+                        <li><a href="{% url 'listar_alunos' %}">Alunos</a></li> <!-- Novo link adicionado aqui -->
                         <li><hr></li>
                         <li><a href="{% url 'dashboard_professor' %}">Dashboard</a></li>
                     </ul>

@@ -33,12 +33,21 @@
             </div>
         </div>
 
-
-
         <div style="display: flex; gap: 10px; margin-top: 20px;">
             <button type="submit" class="btn btn-warning" style="padding: 10px 25px;">Salvar Alterações</button>
             <a href="{% url 'listar_tutoriais' %}" class="btn btn-secondary" style="padding: 10px 25px;">Cancelar</a>
         </div>
     </form>
 </div>
+
+<!-- Script para controlar os checkboxes das turmas -->
+<script>
+    function marcarTodas(marcar) {
+        // Encontra todos os inputs do tipo checkbox dentro do container de turmas
+        const checkboxes = document.querySelectorAll('#div_id_turmas input[type="checkbox"]');
+        checkboxes.forEach(function(checkbox) {
+            checkbox.checked = marcar;
+        });
+    }
+</script>
 {% endblock %}

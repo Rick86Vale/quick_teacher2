@@ -5,6 +5,7 @@ from academico.views import disciplinas
 from academico.views import admin as admin_views
 from . import views
 
+from .views.alunos import listar_alunos_professor
 
 urlpatterns = [
     # 0. Index
@@ -83,6 +84,8 @@ urlpatterns = [
     path('turma/<int:turma_id>/aluno/<int:aluno_id>/progresso/', disciplinas.progresso_aluno_individual, name='progresso_aluno_individual'),
     
     path('aluno/turmas/', academico .listar_turmas_aluno, name='listar_turmas_aluno'),
+    #listar alunos do professor
+    path('alunos/', listar_alunos_professor, name='listar_alunos'),
 
     # 8. Tutorias
     path('tutoriais/', tutoriais.listar_tutoriais, name='listar_tutoriais'),
@@ -91,7 +94,7 @@ urlpatterns = [
     path('tutoriais/<int:pk>/editar/', tutoriais.editar_tutorial, name='editar_tutorial'),
     path('tutoriais/<int:pk>/conteudo/', tutoriais.editar_conteudo_tutorial, name='editar_conteudo_tutorial'),
     path('tutoriais/<int:pk>/excluir/', tutoriais.excluir_tutorial, name='excluir_tutorial'),
-    
+
     #9. Avisos e Eventos
     path('turma/<int:pk>/avisos/', disciplinas.listar_avisos, name='listar_avisos'),
     path('turma/<int:turma_pk>/aviso/novo/', disciplinas.criar_aviso, name='criar_aviso'),
