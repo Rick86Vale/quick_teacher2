@@ -1,3 +1,5 @@
+<!-- path: templates/base.html -->
+
 <nav class="navbar">
     <div class="logo"><strong>DOCENTE WEB</strong></div>
     <div class="menu-toggle" id="mobile-menu">☰</div>
@@ -15,7 +17,6 @@
                         <li><hr></li>
                         <li><a href="{% url 'admin:usuarios_customuser_add' %}">Cadastrar Usuários</a></li>
                         <li><a href="{% url 'criar_tutorial' %}">+ Novo Tutorial</a></li>
-                        <!-- Adicionado link de gerenciamento -->
                         <li><a href="{% url 'gerenciar_imagens' %}">Gerenciar Imagens</a></li>
                     </ul>
                 </li>
@@ -31,11 +32,10 @@
                         <li><a href="{% url 'listar_turmas' %}">Turmas</a></li>
                         <li><hr></li>
                         <li><a href="{% url 'dashboard_professor' %}">Dashboard</a></li>
-                        
-                        
                     </ul>
+                </li>
 
-                    <li class="dropdown">
+                <li class="dropdown">
                     <a href="#">Criação ▼</a>
                     <ul class="dropdown-menu">
                         <li><a href="{% url 'criar_instituicao' %}">+ Nova Instituição</a></li>
@@ -43,9 +43,9 @@
                         <li><a href="{% url 'criar_turma' %}">+ Nova Turma</a></li>
                         <li><a href="{% url 'criar_disciplina' %}">+ Nova Disciplina</a></li>
                         <li><a href="{% url 'selecionar_disciplina_para_aula' %}">+ Nova Aula</a></li>
+                        <li><hr></li>
+                        <li><a href="{% url 'criar_tutorial' %}">+ Novo Tutorial</a></li>
                     </ul>
-                </li>
-
                 </li>
             {% endif %}
 

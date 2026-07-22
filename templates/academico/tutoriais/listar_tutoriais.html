@@ -2,7 +2,6 @@
 
 {% block extra_css %}
 <style>
-    /* Layout de Linha Horizontal (Cascata) */
     .tutorial-row { 
         display: flex; 
         background: #fff;
@@ -10,25 +9,13 @@
         overflow: hidden;
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         border: 1px solid #eee;
-        margin-bottom: 20px; /* Espaçamento entre os itens */
+        margin-bottom: 20px;
         transition: transform 0.2s;
     }
     .tutorial-row:hover { transform: translateX(5px); }
-
-    .img-container { 
-        width: 250px; /* Largura fixa para a imagem */
-        flex-shrink: 0; 
-        background: #f8f9fa; 
-    }
+    .img-container { width: 250px; flex-shrink: 0; background: #f8f9fa; }
     .img-container img { width: 100%; height: 100%; object-fit: cover; }
-
-    .content-area { 
-        padding: 24px; 
-        display: flex; 
-        flex-direction: column;
-        justify-content: center;
-        flex-grow: 1;
-    }
+    .content-area { padding: 24px; display: flex; flex-direction: column; justify-content: center; flex-grow: 1; }
 </style>
 {% endblock %}
 
@@ -37,12 +24,12 @@
     
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
         <h1 style="color: #2c3e50; font-weight: 700;">Tutoriais e Dicas</h1>
-        {% if user.is_staff %}
+        
+        {% if user.is_staff or user.tipo_usuario == 'PROFESSOR' %}
             <a href="{% url 'criar_tutorial' %}" class="btn btn-success">+ Novo Tutorial</a>
         {% endif %}
     </div>
 
-    <!-- Lista em Cascata -->
     <div class="tutorial-list">
         {% for tut in tutoriais %}
         <article class="tutorial-row">
@@ -52,24 +39,22 @@
                 {% elif tut.imagem_url %}
                     <img src="{{ tut.imagem_url }}" alt="{{ tut.titulo }}">
                 {% else %}
-                    <div style="height: 100%; display:flex; align-items:center; justify-content:center; color:#ccc;">Sem imagem</div>
+                    <div style="height: 100%; min-height: 150px; display:flex; align-items:center; justify-content:center; color:#ccc;">Sem imagem</div>
                 {% endif %}
             </div>
 
             <div class="content-area">
-                <span style="font-size: 0.75em; text-transform: uppercase; color: #3498db; font-weight: 800;">
-                    {{ tut.categoria|default:"Tutorial" }}
-                </span>
                 <h3 style="margin: 8px 0; color: #2c3e50; font-size: 1.3em;">{{ tut.titulo }}</h3>
                 <p style="font-size: 0.95em; color: #666; margin-bottom: 15px;">
-                    {{ tut.descricao|truncatewords:100 }}
+                    {{ tut.descricao|default:"Sem descrição curta." }}
                 </p>
                                 
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <a href="{% url 'detalhe_tutorial' tut.pk %}" class="btn btn-primary btn-sm">Ler Completo</a>
                     
-                    {% if user.is_staff %}
+                    {% if user.is_staff or user.tipo_usuario == 'PROFESSOR' %}
                         <div style="margin-left: auto; display: flex; gap: 5px;">
+                            <a href="{% url 'editar_conteudo_tutorial' tut.pk %}" class="btn btn-info btn-sm" title="Editar Markdown">Markdown</a>
                             <a href="{% url 'editar_tutorial' tut.pk %}" class="btn btn-warning btn-sm">Editar</a>
                             <form method="post" action="{% url 'excluir_tutorial' tut.pk %}" style="margin:0;">
                                 {% csrf_token %}
@@ -82,7 +67,7 @@
         </article>
         {% empty %}
             <div style="padding: 40px; text-align: center; background: #f9f9f9; border-radius: 12px; color: #999;">
-                Nenhum tutorial publicado.
+                Nenhum tutorial encontrado ou publicado.
             </div>
         {% endfor %}
     </div>

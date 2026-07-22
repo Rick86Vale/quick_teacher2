@@ -76,4 +76,11 @@ LinkUtilFormSet = inlineformset_factory(Aula, LinkUtil, fields=('titulo', 'url')
 class TutorialForm(forms.ModelForm):
     class Meta:
         model = Tutorial
-        fields = ['titulo', 'descricao', 'conteudo', 'imagem', 'imagem_url']
+        fields = ['titulo', 'descricao', 'imagem', 'imagem_url', 'publicado']
+        widgets = {
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+            'descricao': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'imagem': forms.FileInput(attrs={'class': 'form-control'}),
+            'imagem_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://exemplo.com/imagem.jpg'}),
+            'publicado': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }

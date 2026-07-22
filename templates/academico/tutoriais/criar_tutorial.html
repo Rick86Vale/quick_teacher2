@@ -17,24 +17,20 @@
             {{ form.descricao }}
         </div>
 
-        <div style="margin-bottom: 20px;">
-            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Conteúdo (Markdown)</label>
-            {{ form.conteudo }}
-        </div>
-
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
             <div>
-                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Upload de Imagem</label>
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Upload de Capa</label>
                 {{ form.imagem }}
             </div>
             <div>
-                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Ou cole a URL</label>
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Ou URL da Capa</label>
                 {{ form.imagem_url }}
             </div>
         </div>
 
+
         <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button type="submit" class="btn btn-success" style="padding: 10px 25px;">Salvar Tutorial</button>
+            <button type="submit" class="btn btn-success" style="padding: 10px 25px;">Salvar e Avançar para o Conteúdo</button>
             <a href="{% url 'listar_tutoriais' %}" class="btn btn-secondary" style="padding: 10px 25px;">Cancelar</a>
         </div>
     </form>
@@ -43,15 +39,8 @@
 
 {% block extra_css %}
 <style>
-    /* Estilização consistente para todos os campos */
     input[type="text"], input[type="url"], textarea, input[type="file"] {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        box-sizing: border-box;
-        font-family: inherit;
+        width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-family: inherit;
     }
-    textarea { height: 250px; font-family: monospace; }
 </style>
 {% endblock %}

@@ -88,10 +88,10 @@ urlpatterns = [
     path('tutoriais/', tutoriais.listar_tutoriais, name='listar_tutoriais'),
     path('tutoriais/criar/', tutoriais.criar_tutorial, name='criar_tutorial'),
     path('tutoriais/<int:pk>/', tutoriais.detalhe_tutorial, name='detalhe_tutorial'),
-
     path('tutoriais/<int:pk>/editar/', tutoriais.editar_tutorial, name='editar_tutorial'),
+    path('tutoriais/<int:pk>/conteudo/', tutoriais.editar_conteudo_tutorial, name='editar_conteudo_tutorial'),
     path('tutoriais/<int:pk>/excluir/', tutoriais.excluir_tutorial, name='excluir_tutorial'),
-
+    
     #9. Avisos e Eventos
     path('turma/<int:pk>/avisos/', disciplinas.listar_avisos, name='listar_avisos'),
     path('turma/<int:turma_pk>/aviso/novo/', disciplinas.criar_aviso, name='criar_aviso'),

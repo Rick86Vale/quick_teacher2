@@ -6,6 +6,9 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django import forms
 
+from django.contrib.auth.models import User
+
+
 # Obtém o modelo de usuário configurado no projeto
 User = get_user_model()
 
@@ -235,12 +238,20 @@ class Aluno(models.Model):
 # 8. Tutoriais
 class Tutorial(models.Model):
     titulo = models.CharField(max_length=200)
-    descricao = models.TextField()
-    conteudo = models.TextField()
-    imagem = models.ImageField(upload_to='tutoriais/', blank=True, null=True)
-    imagem_url = models.URLField(blank=True, null=True, help_text="Ou cole a URL da imagem aqui")
-    data_criacao = models.DateTimeField(auto_now_add=True)
+    slug = models.SlugField(unique=True, blank=True, null=True)
+    descricao = models.TextField(blank=True, null=True, help_text="Descrição curta do tutorial")
+    conteudo = models.TextField(blank=True, null=True, help_text="Conteúdo em Markdown")
     
+    imagem = models.ImageField(upload_to='tutoriais/', blank=True, null=True)
+    imagem_url = models.URLField(max_length=500, blank=True, null=True, help_text="Ou cole o link de uma imagem externa")
+    
+    # Apenas o professor criador
+    professor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tutoriais_criados')
+
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    data_atualizacao = models.DateTimeField(auto_now=True)
+    publicado = models.BooleanField(default=True)
+
     def __str__(self):
         return self.titulo
 
