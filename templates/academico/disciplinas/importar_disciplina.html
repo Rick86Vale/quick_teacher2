@@ -1,0 +1,62 @@
+<!-- path: templates/academico/disciplinas/importar_disciplina.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 40px auto; padding: 30px; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e1e4e8;">
+    
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; border-bottom: 2px solid #007bff; padding-bottom: 15px;">
+        <h1 style="margin: 0; font-size: 1.5rem; color: #061c78;">
+            <i class="fas fa-file-import" style="color: #16ac75; margin-right: 8px;"></i> Importar Disciplina
+        </h1>
+        <a href="{% url 'listar_disciplinas' %}" class="btn btn-sm btn-outline-secondary" title="Voltar">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <!-- Exibição de mensagens de erro ou sucesso, caso haja -->
+    {% if messages %}
+        <div style="margin-bottom: 20px;">
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" style="padding: 10px 15px; border-radius: 6px; font-size: 0.9rem;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Seleção do Arquivo JSON -->
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: bold; color: #333; margin-bottom: 8px;">
+                Arquivo de Backup (JSON):
+            </label>
+            <input type="file" name="arquivo_json" accept=".json" required class="form-control" style="padding: 8px; border: 1px solid #cbd5e0; border-radius: 6px; width: 100%; box-sizing: border-box; background: #fdfdfd;">
+            <small style="color: #666; display: block; margin-top: 5px;">Selecione o arquivo `.json` exportado anteriormente de outra disciplina.</small>
+        </div>
+
+        <!-- Atribuir à Área de Conhecimento -->
+        <div style="margin-bottom: 25px;">
+            <label style="display: block; font-weight: bold; color: #333; margin-bottom: 8px;">
+                Atribuir à Área de Conhecimento (Opcional):
+            </label>
+            <select name="area_conhecimento" class="form-control" style="padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; width: 100%; box-sizing: border-box; background: #fff;">
+                <option value="">-- Manter padrão do arquivo ou sem área --</option>
+                {% for area in areas %}
+                    <option value="{{ area.pk }}">{{ area.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div style="display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid #eee; padding-top: 20px;">
+            <a href="{% url 'listar_disciplinas' %}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-upload"></i> Processar Importação
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

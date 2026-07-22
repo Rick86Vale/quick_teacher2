@@ -11,7 +11,7 @@ from django.conf import settings
 from academico.forms import EventoForm
 
 # Importações dos seus módulos locais
-from ..models import Disciplina, Aula, Aluno, Turma, Aviso, Evento
+from ..models import Disciplina, Aula, Aluno, Turma, Aviso, Evento, AreaConhecimento
 from ..forms import DisciplinaForm
 from usuarios.views import eh_professor
 from .academico import verificar_senha_e_executar
@@ -135,20 +135,42 @@ def exportar_disciplina(request, disciplina_id):
 @login_required
 @user_passes_test(eh_professor)
 def importar_disciplina(request):
-    if request.method == 'POST' and request.FILES.get('arquivo'):
+    if request.method == 'POST':
+        arquivo = request.FILES.get('arquivo_json')
+        area_id = request.POST.get('area_conhecimento')
+        
+        if not arquivo:
+            messages.error(request, "Nenhum arquivo enviado.")
+            return redirect('importar_disciplina')
+            
         try:
-            data = json.load(request.FILES['arquivo'])
-            nova_disciplina = Disciplina.objects.create(
-                nome=data.get('disciplina', 'Disciplina Importada'),
-                descricao=data.get('descricao', ''),
-                professor=request.user
-            )
-            for aula_data in data.get('aulas', []):
-                Aula.objects.create(disciplina=nova_disciplina, **aula_data)
+            dados = json.loads(arquivo.read().decode('utf-8'))
+            
+            with transaction.atomic():
+                disciplina = Disciplina.objects.create(
+                    nome=dados.get('disciplina', 'Sem Nome'),
+                    descricao=dados.get('descricao', ''),
+                    professor=request.user,
+                    area_id=area_id if area_id else None
+                )
+                
+                for a_data in dados.get('aulas', []):
+                    Aula.objects.create(
+                        disciplina=disciplina,
+                        titulo=a_data.get('titulo'),
+                        ordem=a_data.get('ordem', 1),
+                        publicado=a_data.get('publicado', False),
+                        conteudo=a_data.get('conteudo', '')
+                    )
+                    
             messages.success(request, "Disciplina importada com sucesso!")
+            return redirect('listar_disciplinas')
         except Exception as e:
-            messages.error(request, f"Erro na importação: {str(e)}")
-    return redirect('listar_disciplinas')
+            logger.error(f"Erro ao importar disciplina: {e}")
+            messages.error(request, f"Erro ao processar o arquivo: {e}")
+            
+    areas = AreaConhecimento.objects.filter(professor=request.user)
+    return render(request, 'academico/disciplinas/importar_disciplina.html', {'areas': areas})
 
 @login_required
 @user_passes_test(eh_professor)

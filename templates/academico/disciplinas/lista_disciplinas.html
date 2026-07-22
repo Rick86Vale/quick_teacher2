@@ -1,3 +1,5 @@
+<!-- path: templates/academico/disciplinas/lista_disciplinas.html -->
+
 {% extends 'base.html' %}
 
 {% block content %}
@@ -5,7 +7,13 @@
     
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
         <h1>📚 Minhas Disciplinas</h1>
-        <a href="{% url 'criar_disciplina' %}" class="btn btn-primary">Nova Disciplina</a>
+        <div style="display: flex; gap: 10px;">
+            <!-- Botão de Importar Disciplina -->
+            <a href="{% url 'importar_disciplina' %}" class="btn btn-success" title="Importar Disciplina">
+                <i class="fas fa-file-import"></i> Importar Disciplina
+            </a>
+            <a href="{% url 'criar_disciplina' %}" class="btn btn-primary">Nova Disciplina</a>
+        </div>
     </div>
 
     {% for area, disc_list in disciplinas_por_area.items %}
